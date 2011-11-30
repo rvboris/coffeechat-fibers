@@ -1,0 +1,8 @@
+h1 Восстановление пароля
+p Восстановление пароля возможно только если вы указали ваш email в настройках аккаунта.
+form(method='POST').forgot.clearfix.expand
+  div.clearfix
+    label(for='name') Ваш Email
+    input(type='text', name='user[email]', required='true')
+  input(type='submit', value='Восстановить')
+  button.cancel Отмена

@@ -1,0 +1,46 @@
+!!! 5
+html(lang='ru')
+  head
+    title CoffeeChat // #{title}
+
+    meta(charset='utf-8')
+    meta(name='robots', content='noindex, nofollow')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+
+    link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
+    link(rel='icon', type='image/x-icon', href='/favicon.ico')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css')
+    link(rel='stylesheet', href='/web.css')
+
+    script(src='/javascripts/web/loader.js')
+    script
+      yepnope([
+        {
+          load: '/javascripts/web/jquery.js',
+          complete: function () {
+            if (!$) yepnope('//yandex.st/jquery/1.6.3/jquery.min.js');
+            if (!$.ui) yepnope('//yandex.st/jquery-ui/1.8.16/jquery-ui.min.js');
+          }
+        },
+        { load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.interface.plugins.js'] },
+        {
+          load: '/javascripts/web/jquery.recovery.js',
+          complete: function () {
+            if (!$.fn.recovery) return alert('Ошибка загрузки')
+            $.fn.recovery(!{JSON.stringify(user)}, '!{serverKey}', '!{env}');
+          }
+        },
+        { load: 'ie9!/stylesheets/web/ie9.css' },
+      ]);
+  body
+    section.recovery
+      h1 Изменение пароля
+      form(method='POST')
+        div.clearfix
+          label(for='password') Новый пароль
+          input(type='password', name='user[password1]', maxlength='30')
+        div.clearfix
+          label(for='password') Повторите пароль
+          input(type='password', name='user[password2]', maxlength='30')
+        input(type='submit', value='Изменить пароль')

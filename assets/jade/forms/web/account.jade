@@ -1,0 +1,22 @@
+form(method='POST').account.clearfix.expand
+  div.clearfix.pic
+    img(src='/images/web/userpic2.png', width='60', height='60').userpic
+    input(type='file', name='userpic')#userpic
+  div.clearfix
+    label(for='name') Имя пользователя
+    input(type='text', name='user[name]', maxlength='15', placeholder='имя в чате', readonly='true', required='true')
+  div.clearfix
+    label(for='gender') Пол
+    span.gender-container
+      input(type='radio', name='user[gender][male]', value='1')
+      input(type='radio', name='user[gender][female]', value='2')
+      span.male.gender ♂
+      span.female.gender ♀
+  div.clearfix
+    label(for='email') Email
+    input(type='email', name='user[email]', placeholder='для восстановления')
+  div.clearfix
+    label(for='password') Изменить пароль
+    input(type='password', name='user[password]', maxlength='30')
+  input(type='submit', value='Сохранить')
+  button.cancel Отмена
