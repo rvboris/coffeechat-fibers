@@ -248,7 +248,7 @@ sync(function(){
                 if (err) return app.set('log').error(err.stack);
 
                 if (channels.main == null || channels.xxx == null || channels.quizeton == null) {
-                    throw new Error('main channels not found');
+                    return app.set('log').error('channels not found');
                 }
 
                 app.set('log').debug('channels received successful');

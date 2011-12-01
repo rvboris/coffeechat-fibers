@@ -233,7 +233,7 @@
                 $('section.account input[value="2"]').prop('checked', false);
                 $('section.account input[value="1"]').prop('checked', true);
                 try {
-                    yaCounter6276298.hit('/user/account/male', null, null, {
+                    Metrika.hit('/user/account/male', null, null, {
                         user: $.fn.sys().options.currentUser.name
                     });
                 } catch (e) {}
@@ -241,7 +241,7 @@
                 $(this).removeClass('checked');
                 $('section.account input[value="1"]').prop('checked', false);
                 try {
-                    yaCounter6276298.hit('/user/account/neutral', null, null, {
+                    Metrika.hit('/user/account/neutral', null, null, {
                         user: $.fn.sys().options.currentUser.name
                     });
                 } catch (e) {}
@@ -255,7 +255,7 @@
                 $('section.account input[value="1"]').prop('checked', false);
                 $('section.account input[value="2"]').prop('checked', true);
                 try {
-                    yaCounter6276298.hit('/user/account/female', null, null, {
+                    Metrika.hit('/user/account/female', null, null, {
                         user: $.fn.sys().options.currentUser.name
                     });
                 } catch (e) {}
@@ -263,7 +263,7 @@
                 $(this).removeClass('checked');
                 $('section.account input[value="2"]').prop('checked', false);
                 try {
-                    yaCounter6276298.hit('/user/account/neutral', null, null, {
+                    Metrika.hit('/user/account/neutral', null, null, {
                         user: $.fn.sys().options.currentUser.name
                     });
                 } catch (e) {}
@@ -311,7 +311,7 @@
 
                 privateMethods.layers.toogle('account', function() {
                     try {
-                        yaCounter6276298.hit('/user/account', null, null, {
+                        Metrika.hit('/user/account', null, null, {
                             user: $.fn.sys().options.currentUser.name
                         });
                     } catch (e) {}
@@ -344,7 +344,7 @@
 
                 privateMethods.layers.toogle('account', function() {
                     try {
-                        yaCounter6276298.hit('/user/account', null, null, {
+                        Metrika.hit('/user/account', null, null, {
                             user: $.fn.sys().options.currentUser.name
                         });
                     } catch (e) {}
@@ -374,7 +374,7 @@
 
                 privateMethods.layers.toogle('forgot', function() {
                     try {
-                        yaCounter6276298.hit('/user/forgot', null, null, null);
+                        Metrika.hit('/user/forgot', null, null, null);
                     } catch (e) {}
                 });
             }).error(function () {
@@ -963,7 +963,7 @@
                 }
 
                 try {
-                    yaCounter6276298.hit('/message/to', null, null, {
+                    Metrika.hit('/message/to', null, null, {
                         user: $.fn.sys().options.currentUser.name,
                         to: name
                     });
