@@ -1,0 +1,208 @@
+var path     = require('path');
+var cluster  = require('cluster');
+var express  = require('express');
+var dnode    = require('dnode');
+var rbytes   = require('rbytes');
+var bcrypt   = require('bcrypt');
+var log      = require('log');
+var mongoose = require('mongoose');
+var sync     = require('sync');
+var nconf    = require('nconf');
+var app      = express.createServer();
+var aes      = require('../helpers/aes.js');
+var task     = require('./task.js');
+
+module.exports = function (argv) {
+    sync(function () {
+        var Loader = function () {
+            this.preInit();
+            return this.init();
+        };
+
+        Loader.prototype.preInit = function () {
+            app.set('argv', argv);
+            app.set('salt', bcrypt.gen_salt_sync(10));
+            app.set('serverToken', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('serverKey', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('sessionKey', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+
+            process.argv.NODE_ENV = app.set('argv').env;
+
+            nconf.use('file', { file:__dirname + '/../config/' + app.set('argv').env + '.json' });
+        };
+
+        Loader.prototype.init = function () {
+            switch (app.set('argv').env) {
+                case 'production':
+                    app.set('log', require('../helpers/logger.js')(log.INFO));
+                    app.set('log').info('production mode');
+                    break;
+                case 'development':
+                    app.set('log', require('../helpers/logger.js')(log.DEBUG));
+                    app.set('log').info('development mode');
+            }
+
+            this.exceptions();
+            this.mongo();
+            this.helpers();
+            return this.plugins();
+        };
+
+        Loader.prototype.exceptions = function () {
+            app.set('log').debug('handle exceptions');
+            app.use(express.errorHandler({ dumpExceptions:true }));
+            process.on('uncaughtException', function (err) {
+                app.set('log').error(err.stack);
+            });
+        };
+
+        Loader.prototype.mongo = function () {
+            app.set('log').debug('setup mongo');
+
+            mongoose.connect(nconf.get('mongodb'));
+
+            app.set('models', require('./models.js'));
+            app.set('models').define.sync(app.set('models'), app, mongoose);
+
+            app.User = mongoose.model('User');
+            app.Channel = mongoose.model('Channel');
+            app.Subscription = mongoose.model('Subscription');
+            app.Message = mongoose.model('Message');
+            app.PasswordRecovery = mongoose.model('PasswordRecovery');
+
+            if (app.set('argv').env == 'development') {
+                app.set('models').removeCollections.sync(app.set('models'), mongoose);
+                app.set('log').debug('collections removed');
+            }
+
+            app.Subscription.remove.sync(app.Subscription, {});
+        };
+
+        Loader.prototype.helpers = function () {
+            app.set('log').debug('setup helpers');
+            app.set('helpers', {
+                channel:require('../helpers/channel.js')(app),
+                user:require('../helpers/user.js')(app),
+                lang:require('../helpers/lang.js'),
+                plugins:require('../helpers/plugins.js')
+            });
+        };
+
+        Loader.prototype.plugins = function () {
+            app.set('log').debug('setup plugins');
+            var taskFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/tasks'), path.normalize(__dirname + '/../plugins'), /(tasks\/|\/tasks.js)/);
+            var channelFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/channels'), path.normalize(__dirname + '/../plugins'), /(channels\/|\/channel.js)/);
+
+            app.set('tasks', []);
+
+            for (var i = 0; i < taskFiles.length; i++) {
+                var taskObject = task(app, require(taskFiles[i])(app));
+                app.set('tasks')[taskObject.task.name] = taskObject;
+            }
+
+            var channels = [];
+
+            for (i = 0; i < channelFiles.length; i++) {
+                channels.push(require(channelFiles[i]));
+                channels[i].channelId = app.set('helpers').channel.create.sync(app.set('helpers').channel, channels[i].channel, channels[i].name).id;
+            }
+
+            app.set('channels', app.set('helpers').channel.getChannelObjects.sync(app.set('helpers').channel, channels));
+
+            return channels;
+        };
+
+        return new Loader();
+    }, function (err, channels) {
+        if (err) return console.log(err.stack);
+
+        var clients = [];
+
+        dnode(
+            function (client, conn) {
+                conn.on('ready', function () {
+                    clients[conn.id] = client;
+                    app.set('log').debug('client connected');
+                });
+
+                conn.on('end', function () {
+                    delete clients[conn.id];
+                    app.set('log').debug('client disconnected');
+                });
+
+                this.keys = {
+                    getServerToken:function (tKey, callback) {
+                        callback(aes.enc(app.set('serverToken'), tKey));
+                    },
+                    getServerKey:function (tKey, callback) {
+                        callback(aes.enc(app.set('serverKey'), tKey));
+                    },
+                    getSessionKey:function (tKey, callback) {
+                        callback(aes.enc(app.set('sessionKey'), tKey));
+                    }
+                };
+
+                this.getChannels = function (callback) {
+                    callback(channels);
+                };
+
+                this.task = function (plugin, command) {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.shift();
+                    args.shift();
+                    args.unshift(clients[conn.id]);
+
+                    if (app.set('tasks')[plugin] && app.set('tasks')[plugin].task.syncObject && typeof app.set('tasks')[plugin].task.syncObject[command] === 'function') {
+                        if (typeof args[args.length - 1] === 'function') {
+                            args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
+                        } else {
+                            app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
+                        }
+                    }
+                };
+            }).listen(app.set('argv').sync, '127.0.0.1');
+
+        app.set('log').info('master server start listening on port ' + app.set('argv').sync);
+
+        (function () {
+            app.set('log').debug('setup assets');
+
+            var paths = {
+                assets:path.resolve(__dirname + '/../assets'),
+                public:path.resolve(__dirname + '/../public')
+            };
+
+            paths.js = { root:paths.assets + '/javascripts' };
+            paths.js.jqueryPlugins = paths.js.root + '/jquery.plugins';
+            paths.js.library = paths.js.root + '/library';
+
+            paths.css = {
+                root:paths.assets + '/stylesheets',
+                stylus:paths.assets + '/stylus'
+            };
+
+            var options = {
+                uglifyjs:true,
+                cssvendor:false,
+                cssdataimg:false,
+                cssimport:false,
+                cssabspath:false,
+                csshost:false,
+                htmlabspath:false,
+                htmlhost:false,
+                cssmin:true,
+                jstransport:false,
+                texttransport:false
+            };
+
+            require('../helpers/assets.js')(argv.env, paths, options)();
+        })();
+
+        for (var i = 0; i < argv.workers; i++) cluster.fork();
+
+        cluster.on('death', function (worker) {
+            app.set('log').debug('worker ' + worker.pid + ' died. restart...');
+            cluster.fork();
+        });
+    });
+};

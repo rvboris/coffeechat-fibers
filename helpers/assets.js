@@ -2,7 +2,7 @@ var ams    = require('ams');
 var stylus = require('stylus');
 var sync   = require('sync');
 
-module.exports = function (app, paths, options) {
+module.exports = function (env, paths, options) {
     function compileWebAssets() {
         // Javascripts
         ams.build
@@ -15,7 +15,7 @@ module.exports = function (app, paths, options) {
         var webSystem = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.sys.js');
-        if (app.set('argv').env == 'production') webSystem.process(options);
+        if (env == 'production') webSystem.process(options);
         webSystem.combine({ js: 'jquery.system.js' })
             .write(paths['public'] + '/javascripts/web')
             .end();
@@ -23,7 +23,7 @@ module.exports = function (app, paths, options) {
         var webInterface = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.ufc.js');
-        if (app.set('argv').env == 'production') webInterface.process(options);
+        if (env == 'production') webInterface.process(options);
         webInterface.combine({ js: 'jquery.interface.js' })
             .write(paths['public'] + '/javascripts/web')
             .end();
@@ -31,7 +31,7 @@ module.exports = function (app, paths, options) {
         var webRecovery = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.recovery.js');
-        if (app.set('argv').env == 'production') webRecovery.process(options);
+        if (env == 'production') webRecovery.process(options);
         webRecovery.process(options)
             .combine({ js: 'jquery.recovery.js' })
             .write(paths['public'] + '/javascripts/web')
@@ -110,7 +110,7 @@ module.exports = function (app, paths, options) {
             .write(paths['public'] + '/stylesheets/web')
             .end();
 
-        if (app.set('argv').env == 'production') {
+        if (env === 'production') {
             ams.build
                 .create(paths.css.stylus)
                 .add([

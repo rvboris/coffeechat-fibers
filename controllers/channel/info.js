@@ -2,7 +2,7 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id == '0') return res.send(401);
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
 
         if (!req.params.channel) {
             app.set('log').debug('channel param not found');
@@ -11,8 +11,8 @@ module.exports = function (app) {
 
         sync(function () {
             var subsription = app.Subscription.findOne.sync(app.Subscription, {
-                userId: req.session.user.id,
-                channelId: req.params.channel
+                userId:req.session.user.id,
+                channelId:req.params.channel
             });
 
             if (!subsription) throw new Error('subscription not found');
@@ -21,9 +21,9 @@ module.exports = function (app) {
             if (!channel) throw new Error('channel "' + req.params.channel + '" not found');
 
             return {
-                users: app.Subscription.count.sync(app.Subscription, { channelId: req.params.channel }),
-                messages: app.Message.count.sync(app.Message, { channelId: req.params.channel }),
-                date: channel.date
+                users:app.Subscription.count.sync(app.Subscription, { channelId:req.params.channel }),
+                messages:app.Message.count.sync(app.Message, { channelId:req.params.channel }),
+                date:channel.date
             };
         }, function (err, channelInfo) {
             if (err) {

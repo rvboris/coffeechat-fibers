@@ -3,43 +3,43 @@ var sync   = require('sync');
 var rbytes = require('rbytes');
 var get    = require('get');
 
-module.exports = function(app) {
+module.exports = function (app) {
     function successLogin(channels, user) {
         for (var i = 0, newSubscriptions = [], userChannels = [], result; i < channels.length; i++) {
             result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
             if (result.error) return result;
             if (!result.update) {
                 newSubscriptions.push({
-                    id: channels[i],
-                    diff: 1,
-                    count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
+                    id:channels[i],
+                    diff:1,
+                    count:app.Subscription.count.sync(app.Subscription, { channelId:channels[i] })
                 });
                 if (!userChannels[channels[i]]) {
                     userChannels[channels[i]] = [];
                 }
-                userChannels[channels[i]].push({ name: user.name, gender: user.gender, status: user.status });
+                userChannels[channels[i]].push({ name:user.name, gender:user.gender, status:user.status });
             }
         }
 
-        return { user: user, newSubscriptions: newSubscriptions, userChannels: userChannels };
+        return { user:user, newSubscriptions:newSubscriptions, userChannels:userChannels };
     }
 
-    return function(req, res) {
+    return function (req, res) {
         if (!req.isXMLHttpRequest) return res.send(401);
 
         if (!req.body.token || !req.body.channels) {
             app.set('log').debug('token or channels not found');
-            return { error: 'Ошибка получения данных' };
+            return { error:'Ошибка получения данных' };
         }
 
-        var request = new get({ uri: 'http://ulogin.ru/token.php?token=' + req.body.token + '&host=' + app.set('host') });
+        var request = new get({ uri:'http://ulogin.ru/token.php?token=' + req.body.token + '&host=' + app.set('host') });
 
-        sync(function() {
+        sync(function () {
             var response = request.asString.sync(request); // [data,headers]
             var userData = JSON.parse(response[0]);
 
             if (!userData.identity || !userData.network) {
-                return { error: 'Ошибка получения данных пользователя' };
+                return { error:'Ошибка получения данных пользователя' };
             }
 
             var userName = userData.first_name + ' ' + userData.last_name;
@@ -47,19 +47,19 @@ module.exports = function(app) {
             var userProvider = crypto.createHash('md5').update(userData.network).digest('hex');
             var userPassword = rbytes.randomBytes(16).toHex();
 
-            var user = app.User.findOne.sync(app.User, { name: userName });
+            var user = app.User.findOne.sync(app.User, { name:userName });
 
             if (user) {
                 var oauthUser = app.User.findOne.sync(app.User, {
-                    'oauth.identity' : userIdentity,
-                    'oauth.provider' : userProvider
+                    'oauth.identity':userIdentity,
+                    'oauth.provider':userProvider
                 });
                 if (oauthUser) {
-                    req.session.user = { id: oauthUser.id };
+                    req.session.user = { id:oauthUser.id };
                     return successLogin(req.body.channels, oauthUser);
                 }
                 app.set('log').debug('this name is already taken');
-                return { error: 'Такое имя уже занято' };
+                return { error:'Такое имя уже занято' };
             }
 
             var newUser = new app.User();
@@ -73,11 +73,11 @@ module.exports = function(app) {
 
             newUser.save.sync(newUser);
 
-            req.session.user = { id: newUser.id };
+            req.session.user = { id:newUser.id };
             return successLogin(req.body.channels, newUser);
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
-                if (err.name && err.name == 'ValidationError') {
+                if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
                         result.error = 'Имя должно быть от 3 до 15 знаков. Допускаются только русские и латинские буквы и цифры.';
                     }
@@ -92,16 +92,16 @@ module.exports = function(app) {
             }
 
             if (!result) return res.send(500);
-            if (result.error) return res.send({ error: result.error });
+            if (result.error) return res.send({ error:result.error });
 
             res.send(app.set('helpers').user.createPrivate(result.user));
 
             if (result.newSubscriptions.length) {
                 setTimeout(function () {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
-                        token: app.set('serverToken'),
-                        action: 'upd',
-                        channels: result.newSubscriptions
+                        token:app.set('serverToken'),
+                        action:'upd',
+                        channels:result.newSubscriptions
                     });
                 }, 100);
 
@@ -109,9 +109,9 @@ module.exports = function(app) {
                     (function (i) {
                         setTimeout(function () {
                             app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
-                                token: app.set('serverToken'),
-                                action: 'con',
-                                users: result.userChannels[result.newSubscriptions[i].id]
+                                token:app.set('serverToken'),
+                                action:'con',
+                                users:result.userChannels[result.newSubscriptions[i].id]
                             });
                         }, 100 + (10 * i));
                     })(i);

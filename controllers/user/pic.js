@@ -1,8 +1,8 @@
-var formidable   = require('formidable');
-var fs           = require('fs');
-var path         = require('path');
-var sync         = require('sync');
-var gibberishAES = require('../../system/secure.js');
+var formidable = require('formidable');
+var fs         = require('fs');
+var path       = require('path');
+var sync       = require('sync');
+var aes        = require('../../helpers/aes.js');
 
 module.exports = function (app) {
     var uploadPath = path.normalize(__dirname + '/../../public/userpics');
@@ -39,7 +39,7 @@ module.exports = function (app) {
             app.set('log').debug('file ' + file.filename + ' recived');
             userpic = path.basename(file.path);
             sync(function () {
-                var user = app.User.findById.sync(app.User, gibberishAES.dec(req.params.key, app.set('serverKey')));
+                var user = app.User.findById.sync(app.User, aes.dec(req.params.key, app.set('serverKey')));
                 if (!user) throw new Error('user not found');
                 user.pic = userpic;
                 return user.save.sync(user);
@@ -59,9 +59,9 @@ module.exports = function (app) {
         form.on('end', function () {
             if (userpic && userpic.length > 0) {
                 app.set('log').debug('userpic upload ok');
-                res.send({ pic: userpic });
+                res.send({ pic:userpic });
             } else {
-                res.send({ error: 'Ошибка загрузки' });
+                res.send({ error:'Ошибка загрузки' });
             }
         });
 

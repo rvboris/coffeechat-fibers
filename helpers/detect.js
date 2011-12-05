@@ -1,5 +1,5 @@
 module.exports = function (host) {
-    return function(req, res, next) {
+    return function (req, res, next) {
         if (!req.headers['user-agent']) {
             req.mobile = false;
             return next();
@@ -8,7 +8,7 @@ module.exports = function (host) {
         var userAgent = req.headers['user-agent'].toLowerCase();
         var hostname = req.headers.host.split('.');
         var tryPort = req.headers.host.split(':');
-        var port = (tryPort.length == 0) ? false : tryPort[tryPort.length - 1];
+        var port = (tryPort.length === 0) ? false : tryPort[tryPort.length - 1];
 
         req.mobile = (hostname.length > 1 ? hostname[0] : false) == 'm';
 

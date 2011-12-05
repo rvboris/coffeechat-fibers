@@ -1,16 +1,16 @@
 var sync = require('sync');
 
 module.exports = function (app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id == '0') return res.send(401);
+    return function (req, res) {
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
 
         if (!req.body.toUser || !req.body.action) {
             app.set('log').debug('toUser or action param not found');
             return res.send(404);
         }
 
-        sync(function() {
-            var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser });
+        sync(function () {
+            var toUser = app.User.findOne.sync(app.User, { name:req.body.toUser });
             var fromUser = app.User.findById.sync(app.User, req.session.user.id);
             var idx = fromUser.ignore.indexOf(toUser.name);
 
@@ -34,7 +34,7 @@ module.exports = function (app) {
             }
 
             return fromUser.ignore;
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
                 return res.send(500);

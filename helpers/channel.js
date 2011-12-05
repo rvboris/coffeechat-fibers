@@ -33,7 +33,7 @@ module.exports = function (app) {
                 subscription.time = new Date();
                 subscription.save.sync(subscription);
 
-                if (user.status == 'F') {
+                if (user.status === 'F') {
                     user.status = 'O';
                     user.save.sync(user);
                 }
@@ -56,6 +56,13 @@ module.exports = function (app) {
             });
 
             return { channel: channel, subscription: newSubscription, update: false };
+        }.async(),
+        getChannelObjects:function (channels) {
+            for (var i = 0, channelObjects = {}; i < channels.length; i++) {
+                channelObjects[channels[i].name] = app.Channel.findById.sync(app.Channel, channels[i].channelId);
+                channelObjects[channels[i].name].params = channels[i];
+            }
+            return channelObjects;
         }.async(),
         getToken: function (message) {
             return message.token ? message.token : message.data && message.data.token ? message.data.token : false;

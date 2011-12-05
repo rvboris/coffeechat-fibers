@@ -1,4 +1,4 @@
-var secure = require('./secure.js');
+var aes  = require('../helpers/aes.js');
 var sync = require('sync');
 
 module.exports = function (app) {
@@ -24,7 +24,7 @@ module.exports = function (app) {
             }
 
             // Sender is server
-            if (token == app.set('serverToken')) {
+            if (token === app.set('serverToken')) {
                 app.set('log').debug('sent from the server');
                 return callback(message);
             }
@@ -34,7 +34,7 @@ module.exports = function (app) {
                 var channel;
 
                 // Is guest
-                if (token == '0') {
+                if (token === '0') {
                     app.set('log').debug('guest login through the token');
 
                     // Send message
@@ -44,7 +44,7 @@ module.exports = function (app) {
                     }
 
                     // Subscribe
-                    if (message.channel == '/meta/subscribe') {
+                    if (message.channel === '/meta/subscribe') {
                         // Allow channels
                         switch (message.subscription) {
                             case '/channel-list':
@@ -53,7 +53,7 @@ module.exports = function (app) {
 
                         matches = message.subscription.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/users)?$/);
 
-                        if (matches == null || matches.length < 2) {
+                        if (matches === null || matches.length < 2) {
                             app.set('log').debug('unknown channel');
                             return message.error = 'Комната не найдена';
                         }
@@ -89,7 +89,7 @@ module.exports = function (app) {
                     if (message.data) {
                         matches = message.channel.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/private)?$/);
 
-                        if (matches == null || matches.length < 2) {
+                        if (matches === null || matches.length < 2) {
                             app.set('log').debug('unknown channel');
                             return message.error = 'Комната не найдена';
                         }
@@ -113,7 +113,7 @@ module.exports = function (app) {
                             switch(message.data.action) {
                                 case 'type':
                                     matches = message.channel.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/private)$/);
-                                    if (!channel.private || matches == null || matches.length < 2) {
+                                    if (!channel.private || matches === null || matches.length < 2) {
                                         app.set('log').debug('type action on public channel');
                                         return message.error = 'Ошибка отправки';
                                     }
@@ -128,7 +128,7 @@ module.exports = function (app) {
                         }
 
                         try {
-                            var decodedText = secure.dec(message.data.text, app.set('serverKey') + user.id);
+                            var decodedText = aes.dec(message.data.text, app.set('serverKey') + user.id);
                         } catch (e) {
                             app.set('log').debug('message decoding error');
                             return message.error = 'Ошибка декодирования сообщения';
@@ -159,26 +159,32 @@ module.exports = function (app) {
 
                             var users = app.User.find.sync(app.User, { name: { $in: message.data.to } });
 
-                            if (users.length != message.data.to.length) {
+                            if (users.length !== message.data.to.length) {
                                 app.set('log').debug('users in the message is not found');
                                 return message.error = 'Кому вы отправляете?';
                             }
                         }
 
-                        if (channel.private) {
-                            msg.validate.sync(msg);
-                        } else {
+                        if (app.set('channels')[channel.url]) {
+                            if (app.set('channels')[channel.url].params.history) {
+                                msg.save.sync(msg);
+                            } else {
+                                msg.validate.sync(msg);
+                            }
+                        } else if (!channel.private) {
                             msg.save.sync(msg);
+                        } else {
+                            msg.validate.sync(msg);
                         }
 
-                        message.data.text = secure.enc(msg.parsed, app.set('serverKey'));
+                        message.data.text = aes.enc(msg.parsed, app.set('serverKey'));
                         message.data.name = user.name;
 
                         return app.set('events').emit('userSend', user, channel, decodedText);
                     }
 
                     // Subscribe
-                    if (message.channel == '/meta/subscribe') {
+                    if (message.channel === '/meta/subscribe') {
                         // Allow channels
                         switch (message.subscription) {
                             case '/channel-list':
@@ -187,14 +193,14 @@ module.exports = function (app) {
 
                         matches = message.subscription.match(/(?:^\/channel\/)([0-9a-z]+)$/);
 
-                        if (matches == null || matches.length < 2) {
+                        if (matches === null || matches.length < 2) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
-                            if (matches == null || matches.length < 2) {
+                            if (matches === null || matches.length < 2) {
                                 app.set('log').debug('unknown channel');
                                 return message.error = 'Комната не найдена';
                             }
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
-                            if (matches != null && matches.length >= 2) {
+                            if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
                                 if (!channel || !channel.private) {
                                     app.set('log').debug('try to subscribe to private sub channel of public or not exists channel');
@@ -223,14 +229,10 @@ module.exports = function (app) {
                                 app.set('log').debug('channel list updated');
 
                                 app.set('faye').bayeux.getClient().publish('/channel/' + matches[1] + '/users', {
-                                    token: app.set('serverToken'),
-                                    action: 'con',
-                                    users: [
-                                        {
-                                            name: user.name,
-                                            gender: user.gender,
-                                            status: user.status
-                                        }
+                                    token:app.set('serverToken'),
+                                    action:'con',
+                                    users:[
+                                        { name:user.name, gender:user.gender, status:user.status }
                                     ]
                                 });
 
@@ -242,7 +244,7 @@ module.exports = function (app) {
                     }
 
                     // Unsubscribe
-                    if (message.channel == '/meta/unsubscribe') {
+                    if (message.channel === '/meta/unsubscribe') {
                         // Allow channels
                         switch (message.subscription) {
                             case '/channel-list':
@@ -251,14 +253,14 @@ module.exports = function (app) {
 
                         matches = message.subscription.match(/(?:^\/channel\/)([0-9a-z]+)$/);
 
-                        if (matches == null || matches.length < 2) {
+                        if (matches === null || matches.length < 2) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
-                            if (matches == null || matches.length < 2) {
+                            if (matches === null || matches.length < 2) {
                                 app.set('log').debug('unknown channel');
                                 return message.error = 'Комната не найдена';
                             }
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
-                            if (matches != null && matches.length >= 2) {
+                            if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
                                 if (!channel || !channel.private) {
                                     app.set('log').debug('try to unsubscribe from private sub channel of public or not exists channel');
@@ -270,7 +272,7 @@ module.exports = function (app) {
 
                         channelId = matches[1];
 
-                        subscription = app.Subscription.findOne.sync(app.Subscription, { channelId: channelId, userId: user.id });
+                        subscription = app.Subscription.findOne.sync(app.Subscription, { channelId:channelId, userId:user.id });
 
                         if (!subscription) {
                             app.set('log').debug('subscription not found');
@@ -280,13 +282,13 @@ module.exports = function (app) {
                         app.set('events').emit('userUnsubscribe', user, subscription);
 
                         app.set('faye').bayeux.getClient().publish('/channel-list', {
-                            token: app.set('serverToken'),
-                            action: 'upd',
-                            channels: [
+                            token:app.set('serverToken'),
+                            action:'upd',
+                            channels:[
                                 {
-                                    id: subscription.channelId.toHexString(),
-                                    diff: -1,
-                                    count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId })
+                                    id:subscription.channelId.toHexString(),
+                                    diff:-1,
+                                    count:app.Subscription.count.sync(app.Subscription, { channelId:subscription.channelId })
                                 }
                             ]
                         });
@@ -294,12 +296,12 @@ module.exports = function (app) {
                         app.set('log').debug('channel list updated');
 
                         // Execute on other thread (double send bug)
-                        setTimeout(function() {
+                        setTimeout(function () {
                             app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
-                                token: app.set('serverToken'),
-                                action: 'dis',
-                                users: [
-                                    { name: user.name }
+                                token:app.set('serverToken'),
+                                action:'dis',
+                                users:[
+                                    { name:user.name }
                                 ]
                             });
 
@@ -308,19 +310,19 @@ module.exports = function (app) {
                     }
 
                     // Connecting
-                    if (message.channel == '/meta/connect') {
+                    if (message.channel === '/meta/connect') {
                         app.set('log').debug('user ' + user.name + ' is connected');
 
-                        if (!message.activeChannels || message.activeChannels.length == 0) return;
+                        if (!message.activeChannels || message.activeChannels.length === 0) return;
 
-                        app.set('syncServer').collector.start(app.set('faye').timeout);
+                        app.set('syncServer').task('collector', 'start');
 
                         return app.set('events').emit('userConnect', user, message);
                     }
                 }
             }, function (err) {
                 if (err) {
-                    if (err.name && err.name == 'ValidationError') {
+                    if (err.name && err.name === 'ValidationError') {
                         if (err.errors.text) {
                             message.error = 'Сообщение содержит недопустимые символы';
                         } else {
@@ -334,10 +336,10 @@ module.exports = function (app) {
                 callback(message);
             });
         },
-        outgoing: function (message, callback) {
-            if (message.channel.substr(1, 7) == 'channel' && message.data && message.data.text) {
-                if (message.token == app.set('serverToken') || message.data.token == app.set('serverToken')) {
-                    message.data.text = secure.enc(message.data.text, app.set('serverKey'));
+        outgoing:function (message, callback) {
+            if (message.channel.substr(1, 7) === 'channel' && message.data && message.data.text) {
+                if (message.token === app.set('serverToken') || message.data.token === app.set('serverToken')) {
+                    message.data.text = aes.enc(message.data.text, app.set('serverKey'));
                 }
                 if (!message.data.time) message.data.time = new Date();
                 if (message.token) delete message.token;

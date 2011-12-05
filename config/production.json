@@ -1,35 +1,35 @@
 {
-    "sitename": "CoffeeChat",
-    "hostname": "coffeechat.ru",
-    "mongodb": "mongodb://super:k25HVj1EfpCLF5@127.0.0.1/coffeechat_production",
-    "redis": {
-        "host": "127.0.0.1",
-        "port": 6379,
-        "pass": "jJbwJc9Cv8NvWWYUGL77NAsdp",
-        "db": 1
+    "sitename":"CoffeeChat",
+    "hostname":"coffeechat.ru",
+    "mongodb":"mongodb://super:k25HVj1EfpCLF5@127.0.0.1/coffeechat_production",
+    "redis":{
+        "host":"127.0.0.1",
+        "port":6379,
+        "pass":"jJbwJc9Cv8NvWWYUGL77NAsdp",
+        "db":1
     },
-    "smtp": {
-        "host": "smtp.gmail.com",
-        "port": 465,
-        "ssl": true,
-        "use_authentication": true,
-        "user": "no-reply@coffeechat.ru",
-        "pass": "4eH783`*DczS^N:O})5\\"
+    "smtp":{
+        "host":"smtp.gmail.com",
+        "port":465,
+        "ssl":true,
+        "use_authentication":true,
+        "user":"no-reply@coffeechat.ru",
+        "pass":"4eH783`*DczS^N:O})5\\"
     },
-    "faye": {
-        "timeout": 15,
-        "bayeux": {
-            "mount": "/faye",
-            "timeout": 10,
-            "store":  {
-                "namespace": "/faye",
-                "database": 0
+    "faye":{
+        "timeout":15,
+        "bayeux":{
+            "mount":"/faye",
+            "timeout":10,
+            "store":{
+                "namespace":"/faye",
+                "database":0
             }
         }
     },
-    "session": {
-        "cookie": {
-            "maxAge": 43200000
+    "session":{
+        "cookie":{
+            "maxAge":43200000
         }
     }
 }
