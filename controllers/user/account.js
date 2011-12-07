@@ -1,12 +1,12 @@
 var sync = require('sync');
 
-module.exports = function (app) {
-    return function (req, res) {
+module.exports = function(app) {
+    return function(req, res) {
         if (!req.isXMLHttpRequest || req.session.user.id == '0') return res.send(401);
 
-        sync(function () {
+        sync(function() {
             var user = app.User.findById.sync(app.User, req.session.user.id);
-            if (!user) return { error:'Пользователь не найден' };
+            if (!user) return { error: 'Пользователь не найден' };
 
             var pubTrigger = false;
 
@@ -29,7 +29,7 @@ module.exports = function (app) {
 
             if (req.body.user.password && req.body.user.password !== '') {
                 if (req.body.user.password.length < 6 || req.body.user.password.length > 30) {
-                    return { error:'Недопустимый размер пароля' };
+                    return { error: 'Недопустимый размер пароля' };
                 }
                 user.secret = req.body.user.password;
             }
@@ -39,28 +39,28 @@ module.exports = function (app) {
 
             if (!pubTrigger) return;
 
-            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId:req.session.user.id });
+            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.session.user.id });
 
             for (var i = 0; i < subscriptions.length; i++) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {
-                    token:app.set('serverToken'),
-                    action:'update',
-                    user:{ name:user.name, gender:user.gender }
+                    token : app.set('serverToken'),
+                    action: 'update',
+                    user  : { name: user.name, gender: user.gender }
                 });
             }
-        }, function (err, result) {
+        }, function(err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
-                        return res.send({ error:'Имя не должно содержать специальные символы' });
+                        return res.send({ error: 'Имя не должно содержать специальные символы' });
                     }
                     if (err.errors.password) {
-                        return res.send({ error:'Пароль должен быть от 6 до 30 символов' });
+                        return res.send({ error: 'Пароль должен быть от 6 до 30 символов' });
                     }
                     if (err.errors.email) {
-                        return res.send({ error:'Не верный email адрес' });
+                        return res.send({ error: 'Не верный email адрес' });
                     }
-                    return res.send({ error:'Недопустимые данные аккаунта' });
+                    return res.send({ error: 'Недопустимые данные аккаунта' });
                 }
                 app.set('log').error(err.stack);
                 return res.send(500);

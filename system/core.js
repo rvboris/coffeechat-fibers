@@ -1,11 +1,11 @@
 var aes  = require('../helpers/aes.js');
 var sync = require('sync');
 
-module.exports = function (app) {
+module.exports = function(app) {
     app.set('log').debug('bayeux core loaded');
 
     return {
-        incoming: function (message, callback) {
+        incoming: function(message, callback) {
             var token = app.set('helpers').channel.getToken(message);
             var currentTime = new Date();
 
@@ -29,7 +29,7 @@ module.exports = function (app) {
                 return callback(message);
             }
 
-            sync(function () {
+            sync(function() {
                 var matches;
                 var channel;
 
@@ -110,7 +110,7 @@ module.exports = function (app) {
                         }
 
                         if (message.data.action) {
-                            switch(message.data.action) {
+                            switch (message.data.action) {
                                 case 'type':
                                     matches = message.channel.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/private)$/);
                                     if (!channel.private || matches === null || matches.length < 2) {
@@ -142,10 +142,10 @@ module.exports = function (app) {
                         }
 
                         var msg = new app.Message({
-                            userId: user.id,
+                            userId   : user.id,
                             channelId: channelId,
-                            time: currentTime,
-                            text: decodedText
+                            time     : currentTime,
+                            txt      : decodedText
                         });
 
                         msg.parsed = msg.parseText(decodedText);
@@ -219,8 +219,8 @@ module.exports = function (app) {
                             // Execute on other thread (double send bug)
                             setTimeout(function() {
                                 app.set('faye').bayeux.getClient().publish('/channel-list', {
-                                    token: app.set('serverToken'),
-                                    action: 'upd',
+                                    token   : app.set('serverToken'),
+                                    action  : 'upd',
                                     channels: [
                                         { id: matches[1], diff: 1, count: subscriptionsCount }
                                     ]
@@ -229,10 +229,10 @@ module.exports = function (app) {
                                 app.set('log').debug('channel list updated');
 
                                 app.set('faye').bayeux.getClient().publish('/channel/' + matches[1] + '/users', {
-                                    token:app.set('serverToken'),
-                                    action:'con',
-                                    users:[
-                                        { name:user.name, gender:user.gender, status:user.status }
+                                    token : app.set('serverToken'),
+                                    action: 'con',
+                                    users : [
+                                        { name: user.name, gender: user.gender, status: user.status }
                                     ]
                                 });
 
@@ -272,7 +272,7 @@ module.exports = function (app) {
 
                         channelId = matches[1];
 
-                        subscription = app.Subscription.findOne.sync(app.Subscription, { channelId:channelId, userId:user.id });
+                        subscription = app.Subscription.findOne.sync(app.Subscription, { channelId: channelId, userId: user.id });
 
                         if (!subscription) {
                             app.set('log').debug('subscription not found');
@@ -282,13 +282,13 @@ module.exports = function (app) {
                         app.set('events').emit('userUnsubscribe', user, subscription);
 
                         app.set('faye').bayeux.getClient().publish('/channel-list', {
-                            token:app.set('serverToken'),
-                            action:'upd',
-                            channels:[
+                            token   : app.set('serverToken'),
+                            action  : 'upd',
+                            channels: [
                                 {
-                                    id:subscription.channelId.toHexString(),
-                                    diff:-1,
-                                    count:app.Subscription.count.sync(app.Subscription, { channelId:subscription.channelId })
+                                    id   : subscription.channelId.toHexString(),
+                                    diff : -1,
+                                    count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId })
                                 }
                             ]
                         });
@@ -296,12 +296,12 @@ module.exports = function (app) {
                         app.set('log').debug('channel list updated');
 
                         // Execute on other thread (double send bug)
-                        setTimeout(function () {
+                        setTimeout(function() {
                             app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
-                                token:app.set('serverToken'),
-                                action:'dis',
-                                users:[
-                                    { name:user.name }
+                                token : app.set('serverToken'),
+                                action: 'dis',
+                                users : [
+                                    { name: user.name }
                                 ]
                             });
 
@@ -320,7 +320,7 @@ module.exports = function (app) {
                         return app.set('events').emit('userConnect', user, message);
                     }
                 }
-            }, function (err) {
+            }, function(err) {
                 if (err) {
                     if (err.name && err.name === 'ValidationError') {
                         if (err.errors.text) {
@@ -336,7 +336,7 @@ module.exports = function (app) {
                 callback(message);
             });
         },
-        outgoing:function (message, callback) {
+        outgoing: function(message, callback) {
             if (message.channel.substr(1, 7) === 'channel' && message.data && message.data.text) {
                 if (message.token === app.set('serverToken') || message.data.token === app.set('serverToken')) {
                     message.data.text = aes.enc(message.data.text, app.set('serverKey'));

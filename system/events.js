@@ -3,7 +3,7 @@ var events  = require('events');
 var eventer = new events.EventEmitter();
 var path    = require('path');
 
-module.exports = function (app) {
+module.exports = function(app) {
     var eventFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/events'), path.normalize(__dirname + '/../plugins'), /(events\/|\/events.js)/);
     var events = [];
 
@@ -11,7 +11,7 @@ module.exports = function (app) {
         events.push(require(eventFiles[i])(app));
     }
 
-    eventer.on('userUnsubscribe', function (user, subscription) {
+    eventer.on('userUnsubscribe', function(user, subscription) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userUnsubscribe && typeof events[i].userUnsubscribe === 'function') {
                 events[i].userUnsubscribe(user, subscription);
@@ -19,7 +19,7 @@ module.exports = function (app) {
         }
     });
 
-    eventer.on('guestSubscribe', function (channel) {
+    eventer.on('guestSubscribe', function(channel) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].guestSubscribe && typeof events[i].guestSubscribe === 'function') {
                 events[i].guestSubscribe(channel);
@@ -27,7 +27,7 @@ module.exports = function (app) {
         }
     });
 
-    eventer.on('userSend', function (user, channel, text) {
+    eventer.on('userSend', function(user, channel, text) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userSend && typeof events[i].userSend === 'function') {
                 events[i].userSend(user, channel, text);
@@ -35,7 +35,7 @@ module.exports = function (app) {
         }
     });
 
-    eventer.on('userSubscribe', function (user, channel) {
+    eventer.on('userSubscribe', function(user, channel) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userSubscribe && typeof events[i].userSubscribe === 'function') {
                 events[i].userSubscribe(user, channel);
@@ -43,7 +43,7 @@ module.exports = function (app) {
         }
     });
 
-    eventer.on('userConnect', function (user, message) {
+    eventer.on('userConnect', function(user, message) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userConnect && typeof events[i].userConnect === 'function') {
                 events[i].userConnect(user, message);
@@ -51,7 +51,7 @@ module.exports = function (app) {
         }
     });
 
-    eventer.on('syncEvent', function (plugin, command) {
+    eventer.on('syncEvent', function(plugin, command) {
         var args = Array.prototype.slice.call(arguments);
         args.shift();
         args.shift();

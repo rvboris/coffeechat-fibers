@@ -1,7 +1,7 @@
 var sync = require('sync');
 
-module.exports = function (app) {
-    return function (req, res) {
+module.exports = function(app) {
+    return function(req, res) {
         if (!req.isXMLHttpRequest) return res.send(401);
 
         if (!req.params.channel) {
@@ -9,14 +9,14 @@ module.exports = function (app) {
             return res.send(404);
         }
 
-        sync(function () {
+        sync(function() {
             var subscriptions = app.Subscription.find.sync(app.Subscription, {
-                time:{ $lt:new Date(new Date().getTime() - ((app.set('faye').timeout) * 1000) * 2) }
+                time: { $lt: new Date(new Date().getTime() - ((app.set('faye').timeout) * 1000) * 2) }
             });
 
             for (var i = 0; i < subscriptions.length; i++) subscriptions[i].remove.sync(subscriptions[i]);
 
-            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId:req.params.channel });
+            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel });
             if (!subscriptions) return;
 
             var userList = [];
@@ -25,7 +25,7 @@ module.exports = function (app) {
             }
 
             return userList;
-        }, function (err, userList) {
+        }, function(err, userList) {
             if (err) {
                 app.set('log').error(err.stack);
                 return res.send(500);

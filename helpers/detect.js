@@ -1,5 +1,5 @@
-module.exports = function (host) {
-    return function (req, res, next) {
+module.exports = function(host) {
+    return function(req, res, next) {
         if (!req.headers['user-agent']) {
             req.mobile = false;
             return next();

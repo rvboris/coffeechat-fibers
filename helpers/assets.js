@@ -2,7 +2,7 @@ var ams    = require('ams');
 var stylus = require('stylus');
 var sync   = require('sync');
 
-module.exports = function (env, paths, options) {
+module.exports = function(env, paths, options) {
     function compileWebAssets() {
         // Javascripts
         ams.build
@@ -55,8 +55,8 @@ module.exports = function (env, paths, options) {
                 paths.js.jqueryPlugins + '/jquery.jgrowl.js',
                 paths.js.jqueryPlugins + '/jquery.emoticons.js',
                 paths.js.jqueryPlugins + '/jquery.serialize.js',
-                paths.js.library       + '/audio-fx.js',
-                paths.js.library       + '/faye.js'
+                paths.js.library + '/audio-fx.js',
+                paths.js.library + '/faye.js'
             ])
             .combine({ js: 'jquery.system.plugins.js' })
             .write(paths['public'] + '/javascripts/web')
@@ -73,8 +73,8 @@ module.exports = function (env, paths, options) {
                 paths.js.jqueryPlugins + '/jquery.scroller.js',
                 paths.js.jqueryPlugins + '/jquery.accordion.js',
                 paths.js.jqueryPlugins + '/jquery.resize.js',
-                paths.js.library       + '/gibberish-aes.js',
-                paths.js.library       + '/jstorage.js',
+                paths.js.library + '/gibberish-aes.js',
+                paths.js.library + '/jstorage.js',
                 paths.js.jqueryPlugins + '/jquery.uploadify.js',
                 paths.js.jqueryPlugins + '/jquery.qtip.js'
             ])
@@ -93,10 +93,10 @@ module.exports = function (env, paths, options) {
         ams.build
             .create(paths.css.root)
             .add([
-                paths.css.root + '/web/reset.css',
-                paths.css.root + '/web/jquery.qtip.css',
-                paths.css.root + '/web/jquery.jgrowl.css'
-            ])
+            paths.css.root + '/web/reset.css',
+            paths.css.root + '/web/jquery.qtip.css',
+            paths.css.root + '/web/jquery.jgrowl.css'
+        ])
             .process(options)
             .combine({ css: 'plugins.css' })
             .write(paths['public'] + '/stylesheets/web')

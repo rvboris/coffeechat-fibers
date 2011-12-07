@@ -1,6 +1,6 @@
 module.exports = {
-    name:'main',
-    channel:'Гостинная',
-    persistent:true,
-    history:true
+    name      : 'main',
+    channel   : 'Гостинная',
+    persistent: true,
+    history   : true
 };

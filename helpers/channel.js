@@ -1,15 +1,15 @@
 var sync = require('sync');
 
-module.exports = function (app) {
+module.exports = function(app) {
     return {
-        create: function (name, url, private) {
+        create           : function(name, url, private) {
             var channel = app.Channel.findOne.sync(app.Channel, { name: name, url: url });
 
             if (channel) {
                 app.set('log').debug('channel "' + name + '" loaded');
 
-                //var messages = app.Message.find.sync(app.Message, { channelId: channel.id });
-                //for (var i = 0; i < messages.length; i++) messages[i].remove.sync(messages[i]);
+                /* var messages = app.Message.find.sync(app.Message, { channelId: channel.id }); */
+                /* for (var i = 0; i < messages.length; i++) messages[i].remove.sync(messages[i]); */
 
                 return channel;
             }
@@ -20,7 +20,7 @@ module.exports = function (app) {
 
             return channel;
         }.async(),
-        subscribe: function (user, channelId) {
+        subscribe        : function(user, channelId) {
             var channel = app.Channel.findById.sync(app.Channel, channelId);
             var subscription = app.Subscription.findOne.sync(app.Subscription, { userId: user.id, channelId: channelId });
 
@@ -50,24 +50,24 @@ module.exports = function (app) {
             user.save.sync(user);
 
             app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
-                token: app.set('serverToken'),
+                token : app.set('serverToken'),
                 action: 'connect',
-                user: app.set('helpers').user.createPublic(user)
+                user  : app.set('helpers').user.createPublic(user)
             });
 
             return { channel: channel, subscription: newSubscription, update: false };
         }.async(),
-        getChannelObjects:function (channels) {
+        getChannelObjects: function(channels) {
             for (var i = 0, channelObjects = {}; i < channels.length; i++) {
                 channelObjects[channels[i].name] = app.Channel.findById.sync(app.Channel, channels[i].channelId);
                 channelObjects[channels[i].name].params = channels[i];
             }
             return channelObjects;
         }.async(),
-        getToken: function (message) {
+        getToken         : function(message) {
             return message.token ? message.token : message.data && message.data.token ? message.data.token : false;
         },
-        group: function (original) {
+        group            : function(original) {
             var grouped = [];
             var copy = original.slice(0);
 

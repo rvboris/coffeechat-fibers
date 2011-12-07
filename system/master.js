@@ -12,14 +12,14 @@ var app      = express.createServer();
 var aes      = require('../helpers/aes.js');
 var task     = require('./task.js');
 
-module.exports = function (argv) {
-    sync(function () {
-        var Loader = function () {
+module.exports = function(argv) {
+    sync(function() {
+        var Loader = function() {
             this.preInit();
             return this.init();
         };
 
-        Loader.prototype.preInit = function () {
+        Loader.prototype.preInit = function() {
             app.set('argv', argv);
             app.set('salt', bcrypt.gen_salt_sync(10));
             app.set('serverToken', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
@@ -28,10 +28,10 @@ module.exports = function (argv) {
 
             process.argv.NODE_ENV = app.set('argv').env;
 
-            nconf.use('file', { file:__dirname + '/../config/' + app.set('argv').env + '.json' });
+            nconf.use('file', { file: __dirname + '/../config/' + app.set('argv').env + '.json' });
         };
 
-        Loader.prototype.init = function () {
+        Loader.prototype.init = function() {
             switch (app.set('argv').env) {
                 case 'production':
                     app.set('log', require('../helpers/logger.js')(log.INFO));
@@ -48,15 +48,15 @@ module.exports = function (argv) {
             return this.plugins();
         };
 
-        Loader.prototype.exceptions = function () {
+        Loader.prototype.exceptions = function() {
             app.set('log').debug('handle exceptions');
-            app.use(express.errorHandler({ dumpExceptions:true }));
-            process.on('uncaughtException', function (err) {
+            app.use(express.errorHandler({ dumpExceptions: true }));
+            process.on('uncaughtException', function(err) {
                 app.set('log').error(err.stack);
             });
         };
 
-        Loader.prototype.mongo = function () {
+        Loader.prototype.mongo = function() {
             app.set('log').debug('setup mongo');
 
             mongoose.connect(nconf.get('mongodb'));
@@ -78,20 +78,21 @@ module.exports = function (argv) {
             app.Subscription.remove.sync(app.Subscription, {});
         };
 
-        Loader.prototype.helpers = function () {
+        Loader.prototype.helpers = function() {
             app.set('log').debug('setup helpers');
             app.set('helpers', {
-                channel:require('../helpers/channel.js')(app),
-                user:require('../helpers/user.js')(app),
-                lang:require('../helpers/lang.js'),
-                plugins:require('../helpers/plugins.js')
+                channel: require('../helpers/channel.js')(app),
+                user   : require('../helpers/user.js')(app),
+                lang   : require('../helpers/lang.js'),
+                plugins: require('../helpers/plugins.js')
             });
         };
 
-        Loader.prototype.plugins = function () {
+        Loader.prototype.plugins = function() {
             app.set('log').debug('setup plugins');
             var taskFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/tasks'), path.normalize(__dirname + '/../plugins'), /(tasks\/|\/tasks.js)/);
             var channelFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/channels'), path.normalize(__dirname + '/../plugins'), /(channels\/|\/channel.js)/);
+            var userFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/users'), path.normalize(__dirname + '/../plugins'), /(users\/|\/user.js)/);
 
             app.set('tasks', []);
 
@@ -109,44 +110,62 @@ module.exports = function (argv) {
 
             app.set('channels', app.set('helpers').channel.getChannelObjects.sync(app.set('helpers').channel, channels));
 
-            return channels;
+            var users = [];
+
+            for (i = 0; i < userFiles.length; i++) {
+                users.push(require(userFiles[i]));
+                users[i].userId = app.set('helpers').user.create.sync(app.set('helpers').user, users[i].name, users[i].password).id;
+            }
+
+            app.set('users', app.set('helpers').user.getUserObjects.sync(app.set('helpers').user, users));
+            app.set('systemUserIds', []);
+
+            for (var userName in app.set('users')) {
+                app.set('systemUserIds').push(app.set('users')[userName].id);
+            }
+
+            return { users: users, channels: channels };
         };
 
         return new Loader();
-    }, function (err, channels) {
+    }, function(err, plugins) {
         if (err) return console.log(err.stack);
 
         var clients = [];
 
         dnode(
-            function (client, conn) {
-                conn.on('ready', function () {
+            function(client, conn) {
+                conn.on('ready', function() {
                     clients[conn.id] = client;
                     app.set('log').debug('client connected');
                 });
 
-                conn.on('end', function () {
+                conn.on('end', function() {
                     delete clients[conn.id];
                     app.set('log').debug('client disconnected');
                 });
 
                 this.keys = {
-                    getServerToken:function (tKey, callback) {
+                    getServerToken: function(tKey, callback) {
                         callback(aes.enc(app.set('serverToken'), tKey));
                     },
-                    getServerKey:function (tKey, callback) {
+                    getServerKey  : function(tKey, callback) {
                         callback(aes.enc(app.set('serverKey'), tKey));
                     },
-                    getSessionKey:function (tKey, callback) {
+                    getSessionKey : function(tKey, callback) {
                         callback(aes.enc(app.set('sessionKey'), tKey));
                     }
                 };
 
-                this.getChannels = function (callback) {
-                    callback(channels);
+                this.getChannels = function(callback) {
+                    callback(plugins.channels);
                 };
 
-                this.task = function (plugin, command) {
+                this.getUsers = function(callback) {
+                    callback(plugins.users);
+                };
+
+                this.task = function(plugin, command) {
                     var args = Array.prototype.slice.call(arguments);
                     args.shift();
                     args.shift();
@@ -164,35 +183,35 @@ module.exports = function (argv) {
 
         app.set('log').info('master server start listening on port ' + app.set('argv').sync);
 
-        (function () {
+        (function() {
             app.set('log').debug('setup assets');
 
             var paths = {
-                assets:path.resolve(__dirname + '/../assets'),
-                public:path.resolve(__dirname + '/../public')
+                'assets': path.resolve(__dirname + '/../assets'),
+                'public': path.resolve(__dirname + '/../public')
             };
 
-            paths.js = { root:paths.assets + '/javascripts' };
+            paths.js = { root: paths.assets + '/javascripts' };
             paths.js.jqueryPlugins = paths.js.root + '/jquery.plugins';
             paths.js.library = paths.js.root + '/library';
 
             paths.css = {
-                root:paths.assets + '/stylesheets',
-                stylus:paths.assets + '/stylus'
+                root  : paths.assets + '/stylesheets',
+                stylus: paths.assets + '/stylus'
             };
 
             var options = {
-                uglifyjs:true,
-                cssvendor:false,
-                cssdataimg:false,
-                cssimport:false,
-                cssabspath:false,
-                csshost:false,
-                htmlabspath:false,
-                htmlhost:false,
-                cssmin:true,
-                jstransport:false,
-                texttransport:false
+                uglifyjs     : true,
+                cssvendor    : false,
+                cssdataimg   : false,
+                cssimport    : false,
+                cssabspath   : false,
+                csshost      : false,
+                htmlabspath  : false,
+                htmlhost     : false,
+                cssmin       : true,
+                jstransport  : false,
+                texttransport: false
             };
 
             require('../helpers/assets.js')(argv.env, paths, options)();
@@ -200,7 +219,7 @@ module.exports = function (argv) {
 
         for (var i = 0; i < argv.workers; i++) cluster.fork();
 
-        cluster.on('death', function (worker) {
+        cluster.on('death', function(worker) {
             app.set('log').debug('worker ' + worker.pid + ' died. restart...');
             cluster.fork();
         });

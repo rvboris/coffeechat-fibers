@@ -4,14 +4,14 @@ var path       = require('path');
 var sync       = require('sync');
 var aes        = require('../../helpers/aes.js');
 
-module.exports = function (app) {
+module.exports = function(app) {
     var uploadPath = path.normalize(__dirname + '/../../public/userpics');
 
     if (!path.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, 0x1ff);
     }
 
-    return function (req, res) {
+    return function(req, res) {
         var form = new formidable.IncomingForm();
         var userpic;
 
@@ -21,29 +21,29 @@ module.exports = function (app) {
         form.maxFieldsSize = 10240;
 
         // events
-        form.on('progress', function (bytesReceived, bytesExpected) {
+        form.on('progress', function(bytesReceived, bytesExpected) {
             app.set('log').debug('userpic upload progress: ' + (bytesReceived / 1024) + '/' + (bytesExpected / 1024));
         });
 
-        form.on('error', function (err) {
+        form.on('error', function(err) {
             app.set('log').debug(err);
             res.send(500);
         });
 
-        form.on('aborted', function () {
+        form.on('aborted', function() {
             app.set('log').debug('upload aborted');
             res.send(500);
         });
 
-        form.on('file', function (name, file) {
+        form.on('file', function(name, file) {
             app.set('log').debug('file ' + file.filename + ' recived');
             userpic = path.basename(file.path);
-            sync(function () {
+            sync(function() {
                 var user = app.User.findById.sync(app.User, aes.dec(req.params.key, app.set('serverKey')));
                 if (!user) throw new Error('user not found');
                 user.pic = userpic;
                 return user.save.sync(user);
-            }, function (err, user) {
+            }, function(err, user) {
                 if (err) {
                     app.set('log').error(err.stack);
                     return res.send(500);
@@ -56,12 +56,12 @@ module.exports = function (app) {
             });
         });
 
-        form.on('end', function () {
+        form.on('end', function() {
             if (userpic && userpic.length > 0) {
                 app.set('log').debug('userpic upload ok');
-                res.send({ pic:userpic });
+                res.send({ pic: userpic });
             } else {
-                res.send({ error:'Ошибка загрузки' });
+                res.send({ error: 'Ошибка загрузки' });
             }
         });
 
