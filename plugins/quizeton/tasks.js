@@ -22,7 +22,7 @@ module.exports = function(app) {
         recipient.publish('/channel/' + app.set('channels')[name].id, {
             text: text,
             name: '$',
-            to  : to
+            to  : to || []
         });
     });
 
@@ -33,7 +33,7 @@ module.exports = function(app) {
             });
 
             if (count === 0) {
-                eventer.emit('reply', 'Игра приостановлена из-за отсутствия игроков');
+                eventer.emit('reply', recipient, 'Игра приостановлена из-за отсутствия игроков');
                 return stop();
             }
 
