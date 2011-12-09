@@ -65,7 +65,7 @@ module.exports = function(app) {
                             return message.error = 'Комната не найдена';
                         }
 
-                        if (channel.private) {
+                        if (channel['private']) {
                             app.set('log').debug('guests have access only to the main chat');
                             return message.error = 'Гости имеют доступ только к публичным комнатам';
                         }
@@ -113,7 +113,7 @@ module.exports = function(app) {
                             switch (message.data.action) {
                                 case 'type':
                                     matches = message.channel.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/private)$/);
-                                    if (!channel.private || matches === null || matches.length < 2) {
+                                    if (!channel['private'] || matches === null || matches.length < 2) {
                                         app.set('log').debug('type action on public channel');
                                         return message.error = 'Ошибка отправки';
                                     }
@@ -171,7 +171,7 @@ module.exports = function(app) {
                             } else {
                                 msg.validate.sync(msg);
                             }
-                        } else if (!channel.private) {
+                        } else if (!channel['private']) {
                             msg.save.sync(msg);
                         } else {
                             msg.validate.sync(msg);
@@ -202,7 +202,7 @@ module.exports = function(app) {
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
                             if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
-                                if (!channel || !channel.private) {
+                                if (!channel || !channel['private']) {
                                     app.set('log').debug('try to subscribe to private sub channel of public or not exists channel');
                                     return message.error = 'Ошибка подписки';
                                 }
@@ -262,7 +262,7 @@ module.exports = function(app) {
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
                             if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
-                                if (!channel || !channel.private) {
+                                if (!channel || !channel['private']) {
                                     app.set('log').debug('try to unsubscribe from private sub channel of public or not exists channel');
                                     return message.error = 'Ошибка отписки';
                                 }

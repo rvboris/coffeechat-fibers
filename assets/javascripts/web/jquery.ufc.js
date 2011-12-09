@@ -1003,25 +1003,17 @@
 
         unreadCounter: function (button) {
             if ($(button).find('span.count').length > 0) {
-                var titleCounter = $(document).prop('title').match(/(?!\()\d+/);
-                var tabCounter = $(button).find('span.count').text().match(/(?!\()\d+(?!\()/);
+                var titleCounter = $(document).prop('title').match(/(?!\()\d+(?=\))/);
+                var tabCounter = $(button).find('span.count').text().match(/(?!\()\d+(?=\))/);
 
                 if (tabCounter != null) {
-                    try {
-                        tabCounter = parseInt(tabCounter[0]);
-                    } catch (e) {
-                        return;
-                    }
+                    tabCounter = parseInt(tabCounter[0]);
                     if (titleCounter != null) {
-                        try {
-                            titleCounter = parseInt(titleCounter[0]);
-                        } catch (e) {
-                            return;
-                        }
+                        titleCounter = parseInt(titleCounter[0]);
                         if (titleCounter - tabCounter <= 0) {
                             $(document).prop('title', $(document).prop('title').replace(/^\(\d+\)\s/, ''));
                         } else {
-                            $(document).prop('title', $(document).prop('title').replace(/(?!\()\d+/, titleCounter - tabCounter));
+                            $(document).prop('title', $(document).prop('title').replace(/(?!\()\d+(?=\))/, titleCounter - tabCounter));
                         }
                     }
 
