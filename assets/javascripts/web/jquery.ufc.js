@@ -133,7 +133,7 @@
             if (response) {
                 data = JSON.parse(data);
                 if (data.error) {
-                    $.jGrowl(data.error, { header: 'Ошибка' });
+                    $.fn.notifier(data.error);
                     $('#userpic').uploadifySettings('buttonText', 'Загрузить');
                 } else {
                     $('img.userpic').attr('src', '/userpics/' + data.pic);
@@ -146,25 +146,25 @@
             }
         },
         onUploadError: function () {
-            $.jGrowl('Неизвестная ошибка', { header: 'Ошибка' });
+            $.fn.notifier('Неизвестная ошибка');
             return false;
         },
         onSelect: function () {
             $('#userpic').uploadifySettings('uploader', '/user/' + encodeURIComponent(aes.enc($.fn.sys().options.currentUser.id, $.fn.sys().options.serverKey)) + '/pic');
         },
-        onSelectError: function (file, errorCode) {
+        onSelectError: function(file, errorCode) {
             switch (errorCode) {
                 case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
-                    $.jGrowl('Размер файла не должен превышать 10КБ (60х60)', { header: 'Ошибка' });
+                    $.fn.notifier('Размер файла не должен превышать 10КБ (60х60)');
                     break;
                 case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
-                    $.jGrowl('Файл пуст', { header: 'Ошибка' });
+                    $.fn.notifier('Файл пуст');
                     break;
                 case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
-                    $.jGrowl('Недопустимый формат файла', { header: 'Ошибка' });
+                    $.fn.notifier('Недопустимый формат файла');
                     break;
                 default:
-                    $.jGrowl('Неизвестная ошибка', { header: 'Ошибка' });
+                    $.fn.notifier('Неизвестная ошибка');
             }
             return false;
         }
@@ -305,9 +305,9 @@
             $('section.account').block(accountOverlay);
 
             $.post('/user/account', $('section.account form.account input').serialize()).success(function (data) {
-                if (data.error) return $.jGrowl(data.error, { header: 'Ошибка' });
+                if (data.error) return $.fn.notifier(data.error);
 
-                $.jGrowl('Сохранение завершено', { header: 'Уведомление' });
+                $.fn.notifier('Сохранение завершено');
 
                 privateMethods.layers.toogle('account', function() {
                     try {
@@ -317,7 +317,7 @@
                     } catch (e) {}
                 });
             }).error(function () {
-                $.jGrowl('Не удалось сохранить данные аккаунта', { header: 'Ошибка' });
+                $.fn.notifier('Не удалось сохранить данные аккаунта');
             }).complete(function () {
                 $('section.account').unblock();
             });
@@ -337,9 +337,9 @@
             }
 
             $.post('/user/settings', settings).success(function (data) {
-                if (data.error) return $.jGrowl(data.error, { header: 'Ошибка' });
+                if (data.error) return $.fn.notifier(data.error);
 
-                $.jGrowl('Сохранение завершено', { header: 'Уведомление' });
+                $.fn.notifier('Сохранение завершено');
                 $.fn.sys().options.updateUser($.extend({}, $.fn.sys().options.currentUser, { settings: data }));
 
                 privateMethods.layers.toogle('account', function() {
@@ -350,7 +350,7 @@
                     } catch (e) {}
                 });
             }).error(function () {
-                $.jGrowl('Не удалось сохранить настройки', { header: 'Ошибка' });
+                $.fn.notifier('Не удалось сохранить настройки');
             }).complete(function () {
                 $('section.account').unblock();
             });
@@ -367,10 +367,10 @@
 
             $.post('/user/forgot', $('section.forgot form.forgot input').serialize()).success(function (data) {
                 if (data.error) {
-                    return $.jGrowl(data.error, { header: 'Ошибка' });
+                    return $.fn.notifier(data.error);
                 }
 
-                $.jGrowl('На ваш email отправлены сведения для восстановления пароля', { header: 'Уведомление' });
+                $.fn.notifier('На ваш email отправлены сведения для восстановления пароля');
 
                 privateMethods.layers.toogle('forgot', function() {
                     try {
@@ -378,7 +378,7 @@
                     } catch (e) {}
                 });
             }).error(function () {
-                $.jGrowl('Не удалось отправить данные для восстановления пароля', { header: 'Ошибка' });
+                $.fn.notifier('Не удалось отправить данные для восстановления пароля');
             }).complete(function () {
                 $('section.forgot').unblock();
             });
@@ -946,7 +946,7 @@
                 if ($('#channel-' + channelId + '-content .sendto button.name').filter(filter).length > 0) return false;
 
                 if (namesCount === 3) {
-                    return $.jGrowl('Вы можете обращаться не более чем к 3 пользователям', { header: 'Ошибка' });
+                    return $.fn.notifier('Вы можете обращаться не более чем к 3 пользователям');
                 }
 
                 var html = (namesCount > 0 ? "<li style='display: none'>" : "<li>");

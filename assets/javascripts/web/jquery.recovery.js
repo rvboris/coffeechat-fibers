@@ -4,18 +4,18 @@
     var privateMethods = {};
     var instance;
 
-    function Recovery(options) {
+    function Recovery (options) {
         this.options = options;
         return privateMethods.init(this);
     }
 
     privateMethods.helpers = {
         browserCheck: function() {
-            return ($.browser.name == 'firefox' && $.browser.versionNumber >= 4)   ||
-                   ($.browser.name == 'msie' && $.browser.versionNumber    >= 9)   ||
-                   ($.browser.name == 'chrome' && $.browser.versionNumber  >= 10)  ||
-                   ($.browser.name == 'opera' && $.browser.versionNumber   >= 9.8) ||
-                   ($.browser.name == 'safari' && $.browser.versionNumber  >= 5);
+            return ($.browser.name == 'firefox' && $.browser.versionNumber >= 4) ||
+                ($.browser.name == 'msie' && $.browser.versionNumber >= 9) ||
+                ($.browser.name == 'chrome' && $.browser.versionNumber >= 10) ||
+                ($.browser.name == 'opera' && $.browser.versionNumber >= 9.8) ||
+                ($.browser.name == 'safari' && $.browser.versionNumber >= 5);
         }
     };
 
@@ -40,16 +40,16 @@
             $.post(window.location.href, $('section.recovery form input[type=password]').serialize())
                 .success(function(data) {
                     if (data.error) {
-                        $.jGrowl(data.error, { header: 'Ошибка' });
+                        $.fn.notifier(data.error);
                     } else {
-                        $.jGrowl(data + ' Через 5 секунд вы будете перенаправлены на главную страницу', { header: 'Уведомление' });
+                        $.fn.notifier('Через 5 секунд вы будете перенаправлены на главную страницу', data);
                         setTimeout(function() {
                             location.replace('http://' + window.location.host);
                         }, 5000);
                     }
                 })
                 .error(function() {
-                    $.jGrowl('Ошибка отправки', { header: 'Ошибка' });
+                    $.fn.notifier('Ошибка отправки');
                 })
                 .complete(function() {
                     $('section.recovery').unblock();

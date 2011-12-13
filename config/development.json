@@ -29,7 +29,7 @@
     },
     "session" : {
         "cookie": {
-            "maxAge": 43200000
+            "maxAge": 604800000
         }
     }
 }

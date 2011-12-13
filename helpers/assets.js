@@ -52,7 +52,7 @@ module.exports = function(env, paths, options) {
             .add([
                 paths.js.jqueryPlugins + '/jquery.browser.js',
                 paths.js.jqueryPlugins + '/jquery.activity.js',
-                paths.js.jqueryPlugins + '/jquery.jgrowl.js',
+                paths.js.jqueryPlugins + '/jquery.notifier.js',
                 paths.js.jqueryPlugins + '/jquery.emoticons.js',
                 paths.js.jqueryPlugins + '/jquery.serialize.js',
                 paths.js.library + '/audio-fx.js',
@@ -93,10 +93,9 @@ module.exports = function(env, paths, options) {
         ams.build
             .create(paths.css.root)
             .add([
-            paths.css.root + '/web/reset.css',
-            paths.css.root + '/web/jquery.qtip.css',
-            paths.css.root + '/web/jquery.jgrowl.css'
-        ])
+                paths.css.root + '/web/reset.css',
+                paths.css.root + '/web/jquery.qtip.css'
+            ])
             .process(options)
             .combine({ css: 'plugins.css' })
             .write(paths['public'] + '/stylesheets/web')
