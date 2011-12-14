@@ -1,8 +1,8 @@
 var sync = require('sync');
 var moment = require('moment');
 
-module.exports = function(app) {
-    return function(req, res) {
+module.exports = function (app) {
+    return function (req, res) {
         var channels;
         var channel;
         var date;
@@ -12,57 +12,54 @@ module.exports = function(app) {
 
         var channelsPerPage = 2;
 
-        sync(function() {
+        sync(function () {
             if (!req.params.channel) {
-                /* /archive */
-                channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
+                channels = app.Channel.find.sync(app.Channel, { 'private':false }, ['name', 'url'], { skip:0, limit:channelsPerPage });
             } else if (req.params.channel === 'p' && req.params.year) {
-                /* /archive/p/1 */
-                channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: req.params.year * channelsPerPage, limit: channelsPerPage });
+                channels = app.Channel.find.sync(app.Channel, { 'private':false }, ['name', 'url'], { skip:req.params.year * channelsPerPage, limit:channelsPerPage });
             }
 
             if (channels && channels.length > 0) {
                 if (channels.length > channelsPerPage) {
-                    pages = Math.round(app.Channel.count.sync(app.Channel, { 'private': false }) / channelsPerPage)
+                    pages = Math.round(app.Channel.count.sync(app.Channel, { 'private':false }) / channelsPerPage)
                 }
 
                 var countedChannels = [];
 
                 for (i = 0; i < channels.length; i++) {
                     countedChannels.push({
-                        count  : app.Message.count.sync(app.Message, { channelId: channels[i].id }),
-                        channel: channels[i]
-                    })
+                        count  :app.Message.count.sync(app.Message, { channelId:channels[i].id }),
+                        channel:channels[i]
+                    });
                 }
 
-                return { pages: pages || 0, channels: countedChannels };
+                return { pages:pages || 0, channels:countedChannels };
             }
 
-            channel = app.Channel.find.sync(app.Channel, { 'url': req.params.channel, 'private': false }, ['name', 'url']);
+            channel = app.Channel.findOne.sync(app.Channel, { 'url':req.params.channel, 'private':false }, ['name', 'url']);
             if (!channel) return;
 
             if (req.params.channel !== 'p' && !req.params.year) {
-                /* /archive/xxx */
+                function reduceYear(key, values) {
+                    var result = { count:0 };
 
-                function reduceYear (key, values) {
-                    var result = { count: 0 };
-
-                    values.forEach(function(value) {
+                    values.forEach(function (value) {
                         result.count += value.count;
                     });
 
                     return result;
                 }
 
-                function mapYear () {
-                    emit(new Date(this.time).getFullYear(), { count: 1 });
+                function mapYear() {
+                    emit(new Date(this.time).format('mm.yyyy'), { count:1 });
                 }
 
                 app.Message.db.db.executeDbCommand.sync(app.Message.db.db, {
-                    mapreduce: 'messages',
-                    map      : mapYear.toString(),
-                    reduce   : reduceYear.toString(),
-                    out      : 'archiveYear'
+                    mapreduce:'messages',
+                    map      :mapYear.toString(),
+                    reduce   :reduceYear.toString(),
+                    query    :{ channelId:channel._id },
+                    out      :{ replace:'' }
                 });
 
                 var collection = app.Message.db.db.collection.sync(app.Message.db.db, 'archiveYear');
@@ -75,24 +72,24 @@ module.exports = function(app) {
 
                 date = moment(req.params.year);
 
-                function reduceMonth (msg, out) {
+                function reduceMonth(msg, out) {
                     if (out.months.indexOf(msg.time.getMonth()) > -1) return;
                     out.months.push(msg.time.getMonth());
                 }
 
                 return app.Message.db.executeDbCommand.sync(app.Message.db, {
-                    'group': {
-                        'ns'     : 'message',
-                        'cond'   : {
-                            channelId: channel.id,
-                            time     : {
-                                $gte: date['native'](),
-                                $lt : date.add('years', 1)['native']()
+                    'group':{
+                        'ns'     :'message',
+                        'cond'   :{
+                            channelId:channel.id,
+                            time     :{
+                                $gte:date['native'](),
+                                $lt :date.add('years', 1)['native']()
                             }
                         },
-                        'initial': {'months': []},
-                        '$reduce': reduceMonth.toString(),
-                        'key'    : {'time': 1}
+                        'initial':{'months':[]},
+                        '$reduce':reduceMonth.toString(),
+                        'key'    :{'time':1}
                     }
                 });
             }
@@ -105,13 +102,13 @@ module.exports = function(app) {
                 page = req.params.page || 0;
                 date = moment(req.params.year, req.params.month);
                 return {
-                    messages: app.Message.find.sync(app.Message, {
-                        channelId: channel.id,
-                        time     : {
-                            $gte: date['native'](),
-                            $lt : date.add('months', 1)['native']()
+                    messages:app.Message.find.sync(app.Message, {
+                        channelId:channel.id,
+                        time     :{
+                            $gte:date['native'](),
+                            $lt :date.add('months', 1)['native']()
                         }
-                    }, ['time'], { skip: page * 100, limit: 100 })
+                    }, ['time'], { skip:page * 100, limit:100 })
                 };
             }
 
@@ -122,16 +119,16 @@ module.exports = function(app) {
                 page = req.params.page || 0;
                 date = moment(req.params.year, req.params.month, req.params.day);
                 return {
-                    messages: app.Message.find.sync(app.Message, {
-                        channelId: channel.id,
-                        time     : {
-                            $gte: date['native'](),
-                            $lt : date.add('days', 1)['native']()
+                    messages:app.Message.find.sync(app.Message, {
+                        channelId:channel.id,
+                        time     :{
+                            $gte:date['native'](),
+                            $lt :date.add('days', 1)['native']()
                         }
-                    }, ['time'], { skip: page * 100, limit: 100 })
+                    }, ['time'], { skip:page * 100, limit:100 })
                 };
             }
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
                 return res.send(500);
