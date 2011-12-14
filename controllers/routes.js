@@ -13,6 +13,9 @@ module.exports = function(app) {
     app.get('/c/:channel', app.set('helpers').user.session, require('./index/channel.js')(app));
     app.get('/recovery/:key', require('./index/recovery.js')(app));
     app.get('/ulogin', require('./index/ulogin.js')());
+    app.get('/about', require('./index/about.js')());
+    app.get('/contact', require('./index/contact.js')());
+    app.get('/archive/:channel?/:year?/:month?/:day?/:page?', require('./index/archive.js')(app));
 
     // Filter static content
     if (app.set('argv').env === 'production') {

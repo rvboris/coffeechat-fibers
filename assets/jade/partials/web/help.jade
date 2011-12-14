@@ -1,19 +1,21 @@
 h1 Часто задаваемые вопросы
-div.clearfix.expand
-  div.helpscroll
+.clearfix.expand
+  .helpscroll
     button.scrollingHotSpotUp ˄ ˄ ˄
-    div.scrollableArea
+    .scrollableArea
       ol
         li Как пригласить пользователя в приват?
         p Нажмите правой кнопкной мышки на нужного пользователя и нажмите "приват"
         li Как игнорировать пользователя?
         p Нажмите правой кнопкной мышки на нужного пользователя и нажмите "игнор"
+        li Как посмотреть историю сообщений?
+        p История сообщений сохраняется только в публичных комнатах, посмотреть ее можно в <a href="/archive" target="_blank">архиве</a> или нажав правой кнопкой мышки на вкладке комнаты и выбрать "история сообщений"
     button.scrollingHotSpotDown ˅ ˅ ˅
 h1 Правила чата
-div.clearfix
-  div.rulesscroll
+.clearfix
+  .rulesscroll
     button.scrollingHotSpotUp ˄ ˄ ˄
-    div.scrollableArea
+    .scrollableArea
       h2 Основные положения
       ol
         li Регистрация/ввод ника на сайте означает полное принятие пользователем/гостем данных правил.
@@ -33,3 +35,9 @@ div.clearfix
         li Вы обязуетесь соблюдать положения действующего законодательства РФ и настоящих правил.
     button.scrollingHotSpotDown ˅ ˅ ˅
 button.close X
+ul.menu
+  li
+    a(href='/about', target='_blank') О проекте
+  li
+    a(href='/contact', target='_blank') Контакты
+    span |

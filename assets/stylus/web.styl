@@ -266,7 +266,7 @@
     background-image: linear-gradient(top, #4D1A12, #451710);
   }
 
-  section.help button.close {
+  section.help button.close, section.help ul.menu {
     background-color: #48112F;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#48112F), to(#3D0E29));
     background-image: -webkit-linear-gradient(top, #48112F, #3D0E29);
@@ -849,7 +849,7 @@ section.recovery
         float right
   section.help
     width 600px
-    height 400px
+    height 430px
     margin-left -300px
     border 1px solid #953075
     border-top none
@@ -907,8 +907,14 @@ section.recovery
         color #D7BFD2
         display none
         padding 8px
+        text-shadow 1px 1px 1px #2B0E2C
         &.expand
           display block
+        a
+          color #D7BFD2
+          &:hover
+            color #F3CBE7
+            text-decoration none
       li
         background transparent
         float none
@@ -936,6 +942,28 @@ section.recovery
       &:hover
         color #F3CBE7
         border-color #92517D
+    ul.menu
+      border-radius 5px
+      position absolute
+      bottom 10px
+      left 10px
+      right 10px
+      list-style none
+      padding 5px 15px
+      font-size 0.9em
+      height 22px
+      line-height 20px
+      li
+        float right
+        a
+          font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+          color #ECAAD7
+          text-decoration none
+          &:hover
+            color #F3CBE7
+        span
+          margin 0 7px
+          color #F3CBE7
   section.forgot
     height 165px
     width 360px
