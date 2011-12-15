@@ -15,7 +15,7 @@ module.exports = function(app) {
     app.get('/ulogin', require('./index/ulogin.js')());
     app.get('/about', require('./index/about.js')());
     app.get('/contact', require('./index/contact.js')());
-    app.get('/archive/:channel?/:yearmonth?/:day?/:page?', require('./index/archive.js')(app));
+    app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
 
     // Filter static content
     if (app.set('argv').env === 'production') {

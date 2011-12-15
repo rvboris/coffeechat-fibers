@@ -130,7 +130,8 @@ module.exports = function(argv) {
                 channel: require('../helpers/channel.js')(app),
                 user   : require('../helpers/user.js')(app),
                 lang   : require('../helpers/lang.js'),
-                plugins: require('../helpers/plugins.js')
+                plugins: require('../helpers/plugins.js'),
+                utils  : require('../helpers/utils.js')
             });
         };
 
