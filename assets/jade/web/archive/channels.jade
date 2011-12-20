@@ -1,0 +1,8 @@
+ul#channels
+  each channel in data.channels
+    li
+      a(href='/archive/#{channel.channel.url}') #{channel.channel.name} (#{channel.count})
+if data.prev !== null
+  a(href='/archive/p/#{data.prev}').prev Предыдущая
+if data.next !== null
+  a(href='/archive/p/#{data.next}').next Следующая

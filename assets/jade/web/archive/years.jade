@@ -1,0 +1,4 @@
+ul#years
+  each monthyear in data.dates
+    li
+      a(href='/archive/#{data.channel.url}/#{monthyear._id}') #{monthyear._id} (#{monthyear.value.count})

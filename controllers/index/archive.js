@@ -2,6 +2,8 @@ var sync = require('sync');
 var moment = require('moment');
 
 module.exports = function(app) {
+    moment.lang('ru');
+
     return function(req, res) {
         var collection;
         var channels;
@@ -15,10 +17,11 @@ module.exports = function(app) {
         var month;
         var year;
         var match;
+        var title;
         var i;
 
-        var channelsPerPage = 2;
-        var messagesPerPage = 100;
+        var channelsPerPage = 10;
+        var messagesPerPage = 300;
 
         sync(function() {
             if (!req.params.channel) {
@@ -28,6 +31,8 @@ module.exports = function(app) {
             }
 
             if (channels && channels.length > 0) {
+                title = 'Архив';
+
                 if (channels.length > channelsPerPage) {
                     pages = Math.floor(app.Channel.count.sync(app.Channel, { 'private': false }) / channelsPerPage);
                 }
@@ -44,14 +49,19 @@ module.exports = function(app) {
                 page = req.params.monthyear || 0;
 
                 return {
-                    prev    : page - 1 < 0 ? null : page - 1,
-                    next    : page + 1 >= pages || 0 ? null : page + 1,
-                    channels: countedChannels
+                    type: 'channels',
+                    data: {
+                        prev    : (page - 1) < 0 ? null : (page - 1),
+                        next    : (page + 1) >= (pages || 0) ? null : (page + 1),
+                        channels: countedChannels
+                    }
                 };
             }
 
             channel = app.Channel.findOne.sync(app.Channel, { 'url': req.params.channel, 'private': false }, ['name', 'url']);
             if (!channel) return;
+
+            title = 'Архив / ' + channel.name;
 
             if (req.params.channel !== 'p' && !req.params.monthyear) {
                 function reduceMonthYear (key, values) {
@@ -79,7 +89,19 @@ module.exports = function(app) {
 
                 collection = app.Message.db.db.collection.sync(app.Message.db.db, 'archiveMonthYear');
                 docs = collection.find.sync(collection, {});
-                return docs.toArray.sync(docs);
+                docs = docs.toArray.sync(docs);
+
+                for (i = 0; i < docs.length;i++) {
+                    docs[i]._id = moment(docs[i]._id, 'MM-YY').format('MMMM YYYY');
+                }
+
+                return {
+                    type: 'years',
+                    data: {
+                        dates: docs,
+                        channel: channel
+                    }
+                };
             }
 
             if (req.params.channel !== 'p' && req.params.monthyear && !req.params.day) {
@@ -123,7 +145,11 @@ module.exports = function(app) {
 
                 collection = app.Message.db.db.collection.sync(app.Message.db.db, 'archiveMonthYearDay');
                 docs = collection.find.sync(collection, {});
-                return docs.toArray.sync(docs);
+
+                return {
+                    type: 'days',
+                    data: docs.toArray.sync(docs)
+                };
             }
 
             if (req.params.channel !== 'p' && req.params.monthyear && req.params.day) {
@@ -143,7 +169,7 @@ module.exports = function(app) {
                         $gte: startDate,
                         $lt : endDate
                     }
-                }) / messagesPerPage);
+                } || 0) / messagesPerPage);
 
                 var messages = app.Message.find.sync(app.Message, {
                     channelId: channel._id,
@@ -154,31 +180,26 @@ module.exports = function(app) {
                 }, ['time', 'text', 'userId'], { skip: page * messagesPerPage, limit: messagesPerPage });
 
                 var userIds = [];
+                var usersArray = [];
 
                 for (i = 0; i < messages.length; i++) {
                     userIds.push(messages[i].userId);
                 }
 
                 var users = app.User.find.sync(app.User, { _id: { $in: userIds } }, ['name']);
-                var result = [];
 
-                for (i = 0; i < messages.length; i++) {
-                    for (j = 0; j < users.length; j++) {
-                        if (messages[i].userId == users[j].id) {
-                            result.push({
-                                name: users[j].name,
-                                time: messages[i].time,
-                                text: messages[i].text
-                            });
-                            break;
-                        }
-                    }
+                for (i = 0; i < users.length; i++) {
+                    usersArray[users[i].id] = users[i].name;
                 }
 
                 return {
-                    prev    : page - 1 < 0 ? null : page - 1,
-                    next    : page + 1 >= pages ? null : page + 1,
-                    messages: result
+                    type: 'messages',
+                    data: {
+                        prev    : (page - 1) < 0 ? null : (page - 1),
+                        next    : (page + 1) >= pages ? null : (page + 1),
+                        messages: messages,
+                        users   : usersArray
+                    }
                 };
             }
 
@@ -187,10 +208,15 @@ module.exports = function(app) {
                 app.set('log').error(err.stack);
                 return res.send(500);
             }
-            if (result) {
-                console.log(result);
-            }
-            res.send(404);
+
+            if (!result) res.send(404);
+
+            console.log(result.data);
+
+            res.render(req.mobile ? 'mobile/archive/' + result.type : 'web/archive/' + result.type, {
+                title: title,
+                data : result.data
+            });
         });
     }
 };
