@@ -1,0 +1,4 @@
+ul#days
+  each date in data.dates
+    li
+      a(href='/archive/#{data.channel.url}/#{date._id}/#{date.day}') #{date.dayOfWeek} #{date.day} #{date.month} #{date.year}

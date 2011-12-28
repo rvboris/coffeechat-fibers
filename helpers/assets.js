@@ -113,8 +113,10 @@ module.exports = function(env, paths, options) {
             ams.build
                 .create(paths.css.stylus)
                 .add([
-                    paths.css.stylus + '/web.styl',
-                    paths.css.stylus + '/mobile.styl'
+                    paths.css.stylus + '/web/style.styl',
+                    paths.css.stylus + '/web/archive.styl',
+                    paths.css.stylus + '/mobile/style.styl',
+                    paths.css.stylus + '/mobile/archive.styl'
                 ])
                 .process(function(path, data) {
                     delete this.data[path];

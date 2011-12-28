@@ -1,0 +1,75 @@
+@css {
+  @font-face {
+    font-family: 'UniversCyrLight';
+    src: url('/fonts/uvyl_-webfont.eot');
+    src: url('/fonts/uvyl_-webfont.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/uvyl_-webfont.woff') format('woff'),
+    url('/fonts/uvyl_-webfont.ttf') format('truetype'),
+    url('/fonts/uvyl_-webfont.svg#UniversCyrLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  #top {
+    background-color: #0C2433;
+    background-image: -moz-linear-gradient(top, #0C2433, #0F2D40);
+    background-image: -o-linear-gradient(top, #0C2433, #0F2D40);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #0C2433),color-stop(1, #0F2D40));
+    background-image: -webkit-linear-gradient(#0C2433, #0F2D40);
+    background-image: linear-gradient(top, #0C2433, #0F2D40);
+  }
+
+  section#container { opacity:0.85 }
+}
+
+top_height = 50px
+bottom_height = 50px
+tab_height = 31px
+
+border-radius()
+  -moz-border-radius arguments
+  -webkit-border-radius arguments
+  border-radius arguments
+
+box-shadow()
+  -moz-box-shadow arguments
+  -webkit-box-shadow arguments
+  box-shadow arguments
+
+html
+body
+  height 100%
+  background #0F3044 url(/images/web/bg.png)
+  font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+  overflow hidden
+input, button
+  font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+
+#app
+  height auto !important
+  height 100%
+  min-height 100%
+  #top
+    height top_height - 2px
+    overflow hidden
+    border-bottom 1px solid #174969
+    outline 1px solid #061117
+    position relative
+    #logo
+      margin 8px 0 0 15px
+  section#container
+    padding 20px
+    margin 20px auto
+    position relative
+    border 1px solid #0C2534
+    background #143E56
+    width 400px
+    #breadcrumb
+      list-style none
+      li
+        float left
+        display block
+        margin-right 15px
+        a
+          color #fff
+          font-size 1em
