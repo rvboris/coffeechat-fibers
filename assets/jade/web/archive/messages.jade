@@ -1,0 +1,10 @@
+section#messages-container
+  if data.messages.length === 0
+    h4 Архив пуст
+  else
+    h4 История сообщения за #{data.date}
+    ul#years
+      each monthyear in data.dates
+        li
+          a(href='/archive/#{data.channel.url}/#{monthyear._id}') #{monthyear.month} #{monthyear.year}
+          |  (#{monthyear.value.count})

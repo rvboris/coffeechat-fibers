@@ -42,11 +42,11 @@ div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#081721', EndColorStr = '#0C2433');
 }
 
-#top #login button[type=submit] {
+#top #login button[type=submit], div.pagination a {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#3B6819', EndColorStr = '#2F5314');
 }
 
-#top #login button[type=submit]:hover {
+#top #login button[type=submit]:hover, div.pagination a {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#2F5314', EndColorStr = '#233E0F');
 }
 
@@ -131,7 +131,7 @@ aside.sidebar input.filter:focus {
     filter: alpha(opacity = 70)
 }
 
-#channels, #channels-content {
+#channels, #channels-content, section#container {
     filter: alpha(opacity = 85)
 }
 

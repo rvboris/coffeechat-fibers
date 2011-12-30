@@ -1,4 +1,10 @@
-ul#days
-  each date in data.dates
-    li
-      a(href='/archive/#{data.channel.url}/#{date._id}/#{date.day}') #{date.dayOfWeek} #{date.day} #{date.month} #{date.year}
+section#container
+  if data.dates.length === 0
+    h4 Архив пуст
+  else
+    h4 Выберите дату
+    ul#days
+      each date in data.dates
+        li
+          a(href='/archive/#{data.channel.url}/#{date._id}/#{date.day}') #{date.dayOfWeek} #{date.day} #{date.month} #{date.year}
+          |  (#{date.value.count})

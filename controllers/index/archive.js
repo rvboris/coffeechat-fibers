@@ -25,6 +25,7 @@ module.exports = function(app) {
         var userIds;
         var users;
         var usersArray;
+        var i;
 
         sync(function() {
             if (!req.params.channel) {
@@ -41,8 +42,10 @@ module.exports = function(app) {
                 }
 
                 for (i = 0; i < channels.length; i++) {
+                    messages = app.Message.count.sync(app.Message, { channelId: channels[i].id });
+                    if (messages === 0) continue;
                     countedChannels.push({
-                        count  : app.Message.count.sync(app.Message, { channelId: channels[i].id }),
+                        count  : messages,
                         channel: channels[i]
                     });
                 }
@@ -52,6 +55,7 @@ module.exports = function(app) {
                 return {
                     type: 'channels',
                     data: {
+                        page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
                         next    : (page + 1) >= (pages || 0) ? null : (page + 1),
                         channels: countedChannels
@@ -62,7 +66,7 @@ module.exports = function(app) {
             channel = app.Channel.findOne.sync(app.Channel, { 'url': req.params.channel, 'private': false }, ['name', 'url']);
             if (!channel) return;
 
-            title = 'Архив / ' + channel.name;
+            title = 'Архив - ' + channel.name;
 
             if (req.params.channel !== 'p' && !req.params.monthyear) {
                 function reduceMonthYear (key, values) {
@@ -217,6 +221,8 @@ module.exports = function(app) {
                 return {
                     type: 'messages',
                     data: {
+                        date    : startDate.format('dd.mm.yy'),
+                        page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
                         next    : (page + 1) >= pages ? null : (page + 1),
                         messages: messages,

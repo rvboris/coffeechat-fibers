@@ -17,8 +17,11 @@ html(lang='ru')
       link(rel='stylesheet', href='/stylesheets/web/archive.css')
     - else
       link(rel='stylesheet', href='/web/archive.css')
+
+    //if lt IE 9
+      link(rel='stylesheet', href='/stylesheets/web/ie9.css')
   body
     #app
       header#top
         img(src='/images/web/logo.png', width='176', height='36')#logo
-      section#container !{body}
+      !{body}
