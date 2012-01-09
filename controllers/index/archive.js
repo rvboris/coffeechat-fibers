@@ -98,6 +98,7 @@ module.exports = function(app) {
 
                 for (i = 0; i < docs.length; i++) {
                     formatDate = moment(docs[i]._id, 'MM-YYYY');
+                    docs[i]._id = formatDate.format('MM-YYYY');
                     docs[i].month = formatDate.format('MMMM');
                     docs[i].year = formatDate.format('YYYY');
                 }
@@ -116,7 +117,7 @@ module.exports = function(app) {
 
                 if (match === null) return;
 
-                month = parseInt(match[1]) - 1;
+                month = (parseInt(match[1]) - 1).toString();
                 year = match[2];
 
                 if (!month || !year) return;
@@ -180,7 +181,7 @@ module.exports = function(app) {
 
                 if (match === null) return;
 
-                month = parseInt(match[1]) - 1;
+                month = (parseInt(match[1]) - 1).toString();
                 year = match[2];
 
                 if (!month || !year) return;
@@ -221,7 +222,7 @@ module.exports = function(app) {
                 return {
                     type: 'messages',
                     data: {
-                        date    : startDate.format('dd.mm.yy'),
+                        date    : app.set('helpers').utils.getUTCDate(new Date(startDate)).format('dd.mm.yy'),
                         page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
                         next    : (page + 1) >= pages ? null : (page + 1),
