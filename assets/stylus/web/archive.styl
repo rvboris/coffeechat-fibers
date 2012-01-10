@@ -19,7 +19,7 @@
     background-image: linear-gradient(top, #0C2433, #0F2D40);
   }
 
-  section#container { opacity:0.85 }
+  section#container, section#messages-container { opacity:0.85 }
 
   div.pagination a {
     background-color: #3B6819;
@@ -75,7 +75,7 @@ input, button
     position relative
     #logo
       margin 8px 0 0 15px
-  section#container
+  section#container, section#messages-container
     padding 20px
     margin 20px auto
     position relative
@@ -130,3 +130,43 @@ input, button
         float left
       a.next
         float right
+   section#messages-container
+     width auto
+     margin 10px
+     #messages
+       margin 20px 0
+     div.message
+       &.ignore
+         display none
+       color #81CB67
+       line-height 18px
+       time
+         color #FFCC33
+         text-shadow 0 1px 1px #0F1619
+         font-size .9em
+         letter-spacing 1px
+       button
+         color #81CB67
+         text-shadow 1px 1px 1px #12250D
+         background none
+         border none
+         padding 0
+         font-size .9em
+         height 18px
+         line-height 18px
+       button.name
+         margin-left 5px
+       p
+         color #D7E9EA
+         margin-left 10px
+         font-size .9em
+         text-shadow 1px 1px 1px #142727
+         display inline
+         & button.name
+           margin 0
+         img
+           vertical-align text-bottom
+         a.userLink
+           color #AAD6DF
+           &:hover
+             color #D8E5AE

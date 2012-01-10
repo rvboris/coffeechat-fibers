@@ -5,8 +5,8 @@ module.exports = function(app) {
     moment.lang('ru');
 
     return function(req, res) {
-        var channelsPerPage = 10;
-        var messagesPerPage = 300;
+        var channelsPerPage = 1;
+        var messagesPerPage = 5;
         var channels;
         var countedChannels = [];
         var channel;
@@ -57,7 +57,7 @@ module.exports = function(app) {
                     data: {
                         page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
-                        next    : (page + 1) >= (pages || 0) ? null : (page + 1),
+                        next    : (page + 1) > (pages || 0) ? null : (page + 1),
                         channels: countedChannels
                     }
                 };
@@ -211,6 +211,7 @@ module.exports = function(app) {
 
                 for (i = 0; i < messages.length; i++) {
                     userIds.push(messages[i].userId);
+                    messages[i].timeString = moment(new Date(messages[i].time)).format('HH:mm:ss');
                 }
 
                 users = app.User.find.sync(app.User, { _id: { $in: userIds } }, ['name']);
@@ -222,12 +223,14 @@ module.exports = function(app) {
                 return {
                     type: 'messages',
                     data: {
-                        date    : app.set('helpers').utils.getUTCDate(new Date(startDate)).format('dd.mm.yy'),
+                        date    : moment(startDate).format('DD.MM.YYYY'),
+                        dateUrl : moment(startDate).format('MM-YYYY/DD'),
                         page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
-                        next    : (page + 1) >= pages ? null : (page + 1),
+                        next    : (page + 1) > pages ? null : (page + 1),
                         messages: messages,
-                        users   : usersArray
+                        users   : usersArray,
+                        channel : channel
                     }
                 };
             }

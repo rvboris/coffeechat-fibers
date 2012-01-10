@@ -2,9 +2,17 @@ section#messages-container
   if data.messages.length === 0
     h4 Архив пуст
   else
-    h4 История сообщения за #{data.date}
-    ul#years
-      each monthyear in data.dates
-        li
-          a(href='/archive/#{data.channel.url}/#{monthyear._id}') #{monthyear.month} #{monthyear.year}
-          |  (#{monthyear.value.count})
+    h4 #{data.channel.name} (#{data.date})
+    #messages
+      each message in data.messages
+        .message.clearfix
+          time [#{message.timeString}]
+          button.name #{data.users[message.userId]}
+          | :
+          p #{message.text}
+    if data.prev !== null || data.next !== null
+      div.pagination
+        if data.prev !== null
+          a(href='/archive/#{data.channel.url}/#{data.dateUrl}/#{data.prev}').prev < Предыдущая
+        if data.next !== null
+          a(href='/archive/#{data.channel.url}/#{data.dateUrl}/#{data.next}').next Следующая >
