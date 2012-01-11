@@ -2,6 +2,7 @@ section#container
   if data.dates.length === 0
     h4 Архив пуст
   else
+    a(href='/archive/#{data.channel.url}').back Вернуться к выбору месяца
     h4 Выберите дату
     ul#days
       each date in data.dates

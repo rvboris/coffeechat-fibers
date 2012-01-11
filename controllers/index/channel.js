@@ -24,11 +24,13 @@ module.exports = function(app) {
                 channels : {
                     main: {
                         id  : app.set('channels').main.id,
-                        name: app.set('channels').main.name
+                        name: app.set('channels').main.name,
+                        url : app.set('channels').main.url
                     },
                     req : {
                         id  : channel.id,
-                        name: channel.name
+                        name: channel.name,
+                        url : channel.url
                     }
                 },
                 serverKey: app.set('serverKey'),

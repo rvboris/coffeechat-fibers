@@ -14,7 +14,8 @@ module.exports = function(app) {
                 channels : {
                     main: {
                         id  : app.set('channels').main.id,
-                        name: app.set('channels').main.name
+                        name: app.set('channels').main.name,
+                        url : app.set('channels').main.url
                     }
                 },
                 serverKey: app.set('serverKey'),

@@ -5,8 +5,8 @@ module.exports = function(app) {
     moment.lang('ru');
 
     return function(req, res) {
-        var channelsPerPage = 1;
-        var messagesPerPage = 5;
+        var channelsPerPage = 30;
+        var messagesPerPage = 300;
         var channels;
         var countedChannels = [];
         var channel;
@@ -30,14 +30,14 @@ module.exports = function(app) {
         sync(function() {
             if (!req.params.channel) {
                 channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
-            } else if (req.params.channel === 'p' && req.params.monthyear && app.set('helpers').utils.isInt(req.params.monthyear)) {
+            } else if (req.params.channel === 'p' && req.params.monthyear && app.set('helpers').utils.isInt(parseInt(req.params.monthyear))) {
                 channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: req.params.monthyear * channelsPerPage, limit: channelsPerPage });
             }
 
             if (channels && channels.length > 0) {
                 title = 'Архив';
 
-                if (channels.length > channelsPerPage) {
+                if (channels.length >= channelsPerPage) {
                     pages = Math.floor(app.Channel.count.sync(app.Channel, { 'private': false }) / channelsPerPage);
                 }
 
@@ -224,7 +224,8 @@ module.exports = function(app) {
                     type: 'messages',
                     data: {
                         date    : moment(startDate).format('DD.MM.YYYY'),
-                        dateUrl : moment(startDate).format('MM-YYYY/DD'),
+                        dateUrl1: moment(startDate).format('MM-YYYY'),
+                        dateUrl2: moment(startDate).format('DD'),
                         page    : page,
                         prev    : (page - 1) < 0 ? null : (page - 1),
                         next    : (page + 1) > pages ? null : (page + 1),

@@ -766,6 +766,7 @@
                                     content += '<li><span class="param">Сообщения:</span> <span class="value">' + data.messages + '</span></li>';
                                     content += '<li><span class="param">Дата создания:</span> <span class="value">' + $.fn.sys().time.date($.fn.sys().time.parse(data.date)) + '</span></li>';
                                     content += '</ul>';
+                                    content += '<a href="/archive/' + $('#channels li button#channel-' + channel).data('url') + '" target="_blank">История сообщений</a>';
                                     this.set('content.text', content);
                                 }
                             }
@@ -900,6 +901,7 @@
                 "</section>");
 
             $('#channels li button#channel-' + channelId).data('private', params['private']);
+            $('#channels li button#channel-' + channelId).data('name', channelName);
 
             $().scroller({
                 scrollableArea: $('#channel-' + channelId + '-content .scrollableArea'),

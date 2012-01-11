@@ -2,6 +2,7 @@ section#messages-container
   if data.messages.length === 0
     h4 Архив пуст
   else
+    a(href='/archive/#{data.channel.url}/#{data.dateUrl1}').back Вернуться к датам
     h4 #{data.channel.name} (#{data.date})
     #messages
       each message in data.messages
@@ -9,10 +10,10 @@ section#messages-container
           time [#{message.timeString}]
           button.name #{data.users[message.userId]}
           | :
-          p #{message.text}
+          p !{message.text}
     if data.prev !== null || data.next !== null
       div.pagination
         if data.prev !== null
-          a(href='/archive/#{data.channel.url}/#{data.dateUrl}/#{data.prev}').prev < Предыдущая
+          a(href='/archive/#{data.channel.url}/#{data.dateUrl1}/#{data.dateUrl2}/#{data.prev}').prev < Предыдущая
         if data.next !== null
-          a(href='/archive/#{data.channel.url}/#{data.dateUrl}/#{data.next}').next Следующая >
+          a(href='/archive/#{data.channel.url}/#{data.dateUrl1}/#{data.dateUrl2}/#{data.next}').next Следующая >

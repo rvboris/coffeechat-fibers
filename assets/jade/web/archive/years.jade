@@ -2,6 +2,7 @@ section#container
   if data.dates.length === 0
     h4 Архив пуст
   else
+    a(href='/archive').back Вернуться к выбору комнаты
     h4 Выберите год и месяц
     ul#years
       each monthyear in data.dates
