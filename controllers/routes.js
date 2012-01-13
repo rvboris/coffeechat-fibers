@@ -16,6 +16,7 @@ module.exports = function(app) {
     app.get('/about', require('./index/about.js')());
     app.get('/contact', require('./index/contact.js')());
     app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
+    app.get('/message/:message', require('./index/message.js')(app));
 
     // Filter static content
     if (app.set('argv').env === 'production') {

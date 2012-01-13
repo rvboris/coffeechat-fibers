@@ -766,7 +766,13 @@
                                     content += '<li><span class="param">Сообщения:</span> <span class="value">' + data.messages + '</span></li>';
                                     content += '<li><span class="param">Дата создания:</span> <span class="value">' + $.fn.sys().time.date($.fn.sys().time.parse(data.date)) + '</span></li>';
                                     content += '</ul>';
-                                    content += '<a href="/archive/' + $('#channels li button#channel-' + channel).data('url') + '" target="_blank">История сообщений</a>';
+
+                                    if (data.messages > 0) {
+                                        content += '<div class="actions clearfix">';
+                                        content += '<a href="/archive/' + $('#channels li button#channel-' + channel).data('url') + '" target="_blank">История сообщений</a>';
+                                        content += '</div>';
+                                    }
+
                                     this.set('content.text', content);
                                 }
                             }
@@ -900,8 +906,9 @@
                     "<ul class='sendto'><span>→</span></ul>" +
                 "</section>");
 
-            $('#channels li button#channel-' + channelId).data('private', params['private']);
-            $('#channels li button#channel-' + channelId).data('name', channelName);
+            for (var key in params) {
+                $('#channels li button#channel-' + channelId).data(key, params[key]);
+            }
 
             $().scroller({
                 scrollableArea: $('#channel-' + channelId + '-content .scrollableArea'),

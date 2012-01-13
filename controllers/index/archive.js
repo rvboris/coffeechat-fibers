@@ -244,11 +244,11 @@ module.exports = function(app) {
             if (!result) res.send(404);
 
             try {
-                res.render(req.mobile ? 'mobile/archive/' + result.type : 'web/archive/' + result.type, {
+                res.render((req.mobile ? 'mobile' : 'web') + '/archive/' + result.type, {
                     title : title,
                     data  : result.data,
                     env   : app.set('env'),
-                    layout: 'web/archive/layout'
+                    layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
                 });
             } catch (e) {
                 app.set('log').error(err.stack);
