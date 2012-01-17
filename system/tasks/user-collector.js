@@ -17,7 +17,7 @@ module.exports = function(app) {
                 var usersToRemove = app.User.find.sync(app.User, {
                     '_id'             : { $nin: app.set('systemUserIds') },
                     'stats.lastaccess': { $lte: new Date(new Date().getTime() - interval * 21 * 1000) }
-                });
+                }, ['name', 'email']);
 
                 app.set('log').debug(usersToRemove.length + ' innactive users to remove');
 
@@ -50,7 +50,7 @@ module.exports = function(app) {
                         $lt: new Date(new Date().getTime() - interval * 14 * 1000)
                     },
                     'email'           : { $exists: true }
-                });
+                }, ['email']);
 
                 app.set('log').debug(usersToNotify.length + ' innactive users to notify');
 

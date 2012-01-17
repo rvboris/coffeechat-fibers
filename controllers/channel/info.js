@@ -10,20 +10,20 @@ module.exports = function(app) {
         }
 
         sync(function() {
-            var subsription = app.Subscription.findOne.sync(app.Subscription, {
+            var subsription = app.Subscription.count.sync(app.Subscription, {
                 userId   : req.session.user.id,
                 channelId: req.params.channel
             });
 
-            if (!subsription) throw new Error('subscription not found');
+            if (subsription === 0) throw new Error('subscription not found');
 
-            var channel = app.Channel.findById.sync(app.Channel, req.params.channel);
+            var channel = app.Channel.findById.sync(app.Channel, req.params.channel, ['private', 'date']);
             if (!channel) throw new Error('channel "' + req.params.channel + '" not found');
             if (channel['private']) throw new Error('access denied');
 
             return {
-                users   : app.Subscription.count.sync(app.Subscription, { channelId: req.params.channel }),
-                messages: app.Message.count.sync(app.Message, { channelId: req.params.channel }),
+                users   : app.Subscription.count.sync(app.Subscription, { channelId: channel.id }),
+                messages: app.Message.count.sync(app.Message, { channelId: channel.id }),
                 date    : channel.date
             };
         }, function(err, channelInfo) {

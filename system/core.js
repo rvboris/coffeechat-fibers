@@ -95,14 +95,14 @@ module.exports = function(app) {
                         }
 
                         channelId = matches[1];
-                        subscription = app.Subscription.findOne.sync(app.Subscription, { userId: token, channelId: channelId });
+                        subscription = app.Subscription.count.sync(app.Subscription, { userId: token, channelId: channelId });
 
-                        if (!subscription) {
+                        if (subscription === 0) {
                             app.set('log').debug('not subscribe on this channel');
                             return message.error = 'Доступ запрещен';
                         }
 
-                        channel = app.Channel.findById.sync(app.Channel, channelId);
+                        channel = app.Channel.findById.sync(app.Channel, channelId, ['url', 'private']);
 
                         if (!channel) {
                             app.set('log').debug('channel not found');
@@ -134,7 +134,7 @@ module.exports = function(app) {
                             return message.error = 'Ошибка декодирования сообщения';
                         }
 
-                        var query = app.Message.find({ userId: user.id }).limit(1).sort('time', -1);
+                        var query = app.Message.findOne({ userId: user.id }, ['time']).sort('time', -1);
                         var lastMessage = query.execFind.sync(query);
 
                         if (lastMessage.length > 0 && new Date().getTime() - lastMessage[0].time.getTime() <= 3000) {
@@ -157,7 +157,7 @@ module.exports = function(app) {
 
                             msg.to = msg.formatTo(message.data.to);
 
-                            var users = app.User.find.sync(app.User, { name: { $in: message.data.to } });
+                            var users = app.User.find.sync(app.User, { name: { $in: message.data.to } }, []);
 
                             if (users.length !== message.data.to.length) {
                                 app.set('log').debug('users in the message is not found');

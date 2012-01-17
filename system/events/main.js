@@ -18,7 +18,7 @@ module.exports = function(app) {
 
                 subscription.remove.sync(subscription);
 
-                if (app.Subscription.find.sync(app.Subscription, { userId: user.id }).length === 0 && user.status !== 'F') {
+                if (app.Subscription.count.sync(app.Subscription, { userId: user.id }) === 0 && user.status !== 'F') {
                     user.status = 'F';
                     user.save.sync(user);
                 }
@@ -36,7 +36,7 @@ module.exports = function(app) {
 
                 if (persistent) return;
 
-                var channel = app.Channel.findById.sync(app.Channel, channelId);
+                var channel = app.Channel.findById.sync(app.Channel, channelId, ['private', 'name']);
 
                 if (channel && channel['private']) {
                     app.set('log').debug('remove channel "' + channel.name + '"');

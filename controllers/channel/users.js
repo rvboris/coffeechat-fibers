@@ -16,12 +16,12 @@ module.exports = function(app) {
 
             for (var i = 0; i < subscriptions.length; i++) subscriptions[i].remove.sync(subscriptions[i]);
 
-            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel });
+            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel }, ['userId']);
             if (!subscriptions) return;
 
             var userList = [];
             for (i = 0; i < subscriptions.length; i++) {
-                userList.push(app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscriptions[i].userId.toHexString())));
+                userList.push(app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscriptions[i].userId.toHexString(), ['name', 'gender', 'status'])));
             }
 
             return userList;

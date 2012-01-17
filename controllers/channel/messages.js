@@ -10,17 +10,18 @@ module.exports = function(app) {
         }
 
         sync(function() {
-            var query = app.Message.find({ channelId: req.params.channel }).limit(15).sort('time', -1);
+            var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(15).sort('time', -1);
             var messages = query.execFind.sync(query);
             if (!messages) return;
 
             for (var i = 0, messageList = []; i < messages.length; i++) {
-                var user = app.User.findById.sync(app.User, messages[i].userId.toHexString());
+                var user = app.User.findById.sync(app.User, messages[i].userId.toHexString(), ['name']);
                 var archive = typeof app.set('users')[user.name] !== 'undefined';
                 messageList.push({
                     name   : archive ? '$ Архив' : user.name,
                     time   : messages[i].time,
                     text   : messages[i].text,
+                    id     : messages[i].id,
                     archive: archive
                 });
             }

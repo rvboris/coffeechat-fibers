@@ -5,7 +5,7 @@ module.exports = function(app) {
         if (!req.isXMLHttpRequest) return res.send(401);
 
         sync(function() {
-            var channels = app.Channel.find.sync(app.Channel, { private: false });
+            var channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url']);
             if (!channels) throw new Error('channels not found');
 
             for (var i = 0, channelList = []; i < channels.length; i++) {

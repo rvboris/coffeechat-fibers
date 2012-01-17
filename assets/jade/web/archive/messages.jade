@@ -7,7 +7,8 @@ section#messages-container
     #messages
       each message in data.messages
         .message.clearfix
-          time [#{message.timeString}]
+          a(href='/message/#{message._id}', target='_blank')
+            time [#{message.timeString}]
           button.name #{data.users[message.userId]}
           | :
           p !{message.text}

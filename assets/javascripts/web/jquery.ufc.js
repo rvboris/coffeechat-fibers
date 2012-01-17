@@ -1251,7 +1251,7 @@
     UInterface.prototype.message = {
         format: function (message) {
             return "<div class='message cleafix'>" +
-                       "<time>[" + $.fn.sys().time.format($.fn.sys().time.parse(message.time)) + ']</time>' +
+                       (message.id ? "<a href='/message/" + message.id + "' title='Открыть в новом окне' target='_blank'>" : "") + "<time>[" + $.fn.sys().time.format($.fn.sys().time.parse(message.time)) + ']</time>' + (message.id ? "</a>" : "") +
                        '<button class="name' + (message.name === $.fn.sys().options.currentUser.name ? ' me' : '') + '">' + message.name + '</button>:' +
                        '<p>' + ((message.to && message.to.length > 0) ? privateMethods.message.formatSendTo(message.to) : '') + $().emoticon(message.text) + '</p>' +
                    '</div>';

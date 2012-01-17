@@ -11,13 +11,13 @@ module.exports = function(app) {
             var user = req.session.user.id !== '0' ? app.User.findById.sync(app.User, req.session.user.id) : req.session.user;
             if (!user) throw new Error('user not found');
 
-            var channel = app.Channel.findOne.sync(app.Channel, { url: req.params.channel });
+            var channel = app.Channel.findOne.sync(app.Channel, { url: req.params.channel }, ['name', 'url', 'private']);
             if (!channel) {
                 app.set('log').debug('channel not found');
                 return res.send(404);
             }
 
-            if (channel.private) return res.send(401);
+            if (channel['private']) return res.send(401);
 
             res.render(req.mobile ? 'mobile' : 'web', {
                 user     : app.set('helpers').user.createPrivate(user),

@@ -24,7 +24,7 @@ module.exports = function(app) {
         session       : function(req, res, next) {
             if (req.session.user && req.session.user.id !== '0') {
                 sync(function() {
-                    var user = app.User.findById.sync(app.User, req.session.user.id);
+                    var user = app.User.findById.sync(app.User, req.session.user.id, []);
                     return user ? user.id : '0';
                 }, function(err, id) {
                     if (err) {
