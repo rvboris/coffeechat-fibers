@@ -10,14 +10,14 @@ module.exports = function(app) {
         }
 
         sync(function() {
-            var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } });
-            var fromUser = app.User.findById.sync(app.User, req.session.user.id);
+            var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } }, ['name']);
+            var fromUser = app.User.findById.sync(app.User, req.session.user.id, ['name']);
 
             switch (req.body.action) {
                 case 'request':
-                    var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: fromUser.id });
+                    var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: fromUser.id }, ['channelId']);
                     for (var i = 0; i < subscriptions.length; i++) {
-                        var channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId);
+                        var channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId, ['name', 'url', 'private']);
                         if (!channel || !channel['private']) continue;
                         if (app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: toUser.id }) === 0) continue;
 
@@ -42,7 +42,7 @@ module.exports = function(app) {
                     });
                     break;
                 case 'yes':
-                    var query = app.Channel.findOne({ 'private': true }).sort('_id', -1);
+                    var query = app.Channel.findOne({ 'private': true }, ['name', 'url']).sort('_id', -1);
                     channel = query.execFind.sync(query);
 
                     var num = channel.length > 0 ? (parseInt(channel[0].url.match(/\d+$/)[0]) + 1) : 1;
