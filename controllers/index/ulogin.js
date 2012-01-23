@@ -1,5 +1,9 @@
-module.exports = function() {
+module.exports = function(app) {
     return function(req, res) {
-        res.render(req.mobile ? 'partials/mobile/ulogin' : 'partials/web/ulogin');
+        try {
+            res.render(req.mobile ? 'partials/mobile/ulogin' : 'partials/web/ulogin');
+        } catch (e) {
+            app.set('log').error(e.stack);
+        }
     };
 };

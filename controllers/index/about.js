@@ -1,5 +1,9 @@
 module.exports = function() {
     return function(req, res) {
-        res.render(req.mobile ? 'mobile/about' : 'web/about');
+        try {
+            res.render(req.mobile ? 'mobile/about' : 'web/about');
+        } catch (e) {
+            app.set('log').error(e.stack);
+        }
     };
 };

@@ -11,12 +11,14 @@ html(lang='ru')
 
     link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     link(rel='icon', type='image/x-icon', href='/favicon.ico')
-    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css', media='all')
 
     - if (env == 'production')
-      link(rel='stylesheet', href='/stylesheets/web/style.css')
+      link(rel='stylesheet', href='/stylesheets/web/style.css', media='all')
+      link(rel='stylesheet', href='/stylesheets/web/print.css', media='print')
     - else
-      link(rel='stylesheet', href='/web/style.css')
+      link(rel='stylesheet', href='/web/style.css', media='all')
+      link(rel='stylesheet', href='/web/print.css', media='print')
 
     script(src='/javascripts/web/loader.js')
     script

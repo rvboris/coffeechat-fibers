@@ -115,6 +115,7 @@ module.exports = function(env, paths, options) {
                 .add([
                     paths.css.stylus + '/web/style.styl',
                     paths.css.stylus + '/web/archive.styl',
+                    paths.css.stylus + '/web/print.styl',
                     paths.css.stylus + '/mobile/style.styl',
                     paths.css.stylus + '/mobile/archive.styl'
                 ])

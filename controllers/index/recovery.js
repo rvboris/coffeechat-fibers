@@ -57,13 +57,17 @@ module.exports = function(app) {
             }
 
             if (result instanceof app.User) {
-                return res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
-                    user     : app.set('helpers').user.createPrivate(result),
-                    serverKey: app.set('serverKey'),
-                    session  : app.session,
-                    title    : 'Восстановление пароля',
-                    env      : app.set('argv').env
-                });
+                try {
+                    return res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
+                        user     : app.set('helpers').user.createPrivate(result),
+                        serverKey: app.set('serverKey'),
+                        session  : app.session,
+                        title    : 'Восстановление пароля',
+                        env      : app.set('argv').env
+                    });
+                } catch (e) {
+                    app.set('log').error(e.stack);
+                }
             }
 
             if (result.error) return res.send(result);

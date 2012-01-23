@@ -11,15 +11,17 @@ html(lang='ru')
     link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
-    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css', media='all')
 
     - if (env == 'production')
-      link(rel='stylesheet', href='/stylesheets/web/archive.css')
+      link(rel='stylesheet', href='/stylesheets/web/archive.css', media='all')
+      link(rel='stylesheet', href='/stylesheets/web/print.css', media='print')
     - else
-      link(rel='stylesheet', href='/web/archive.css')
+      link(rel='stylesheet', href='/web/archive.css', media='all')
+      link(rel='stylesheet', href='/web/print.css', media='print')
 
     //if lt IE 9
-      link(rel='stylesheet', href='/stylesheets/web/ie9.css')
+      link(rel='stylesheet', href='/stylesheets/web/ie9.css', media='all')
   body
     #app
       header#top
