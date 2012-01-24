@@ -31,5 +31,8 @@
         "cookie": {
             "maxAge": 604800000
         }
+    },
+    "messages": {
+        "historyPreload": 30
     }
 }

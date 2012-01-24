@@ -1,12 +1,12 @@
 {
     "sitename": "CoffeeChat",
     "hostname": "coffeechat.ru",
-    "mongodb" : "mongodb://super:k25HVj1EfpCLF5@127.0.0.1/coffeechat_production",
+    "mongodb" : "mongodb://developer:TjxchShDB34HWP@127.0.0.1/coffeechat_development",
     "redis"   : {
         "host": "127.0.0.1",
         "port": 6379,
         "pass": "jJbwJc9Cv8NvWWYUGL77NAsdp",
-        "db"  : 1
+        "db"  : 2
     },
     "smtp"    : {
         "host"              : "smtp.gmail.com",
@@ -23,7 +23,7 @@
             "timeout": 10,
             "store"  : {
                 "namespace": "/faye",
-                "database" : 0
+                "database" : 1
             }
         }
     },
@@ -31,5 +31,8 @@
         "cookie": {
             "maxAge": 604800000
         }
+    },
+    "messages": {
+        "historyPreload": 15
     }
 }

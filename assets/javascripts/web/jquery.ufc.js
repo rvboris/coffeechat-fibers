@@ -488,6 +488,10 @@
 
             privateMethods.tab.switching = true;
 
+            if ($(button).data('private') === true) {
+                tabContent.find('.scrollableArea .notifications .type').hide();
+            }
+
             $('#channels-content section').fadeOut('fast');
 
             tabContent.fadeIn('fast', function() {

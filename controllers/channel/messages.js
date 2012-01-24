@@ -1,6 +1,9 @@
-var sync = require('sync');
+var sync  = require('sync');
+var nconf = require('nconf');
 
 module.exports = function(app) {
+    nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
+
     return function(req, res) {
         if (!req.isXMLHttpRequest) return res.send(401);
 
@@ -10,7 +13,7 @@ module.exports = function(app) {
         }
 
         sync(function() {
-            var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(15).sort('time', -1);
+            var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(nconf.get('messages').historyPreload).sort('time', -1);
             var messages = query.execFind.sync(query);
             if (!messages) return;
 

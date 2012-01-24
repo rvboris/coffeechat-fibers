@@ -4,6 +4,8 @@
   color #000 !important
   text-shadow none !important
   font-family Arial, "Helvetica Neue", Helvetica, sans-serif !important
+html, body
+  overflow visible !important
 a
   color #000 !important
   text-decoration none !important
@@ -32,6 +34,7 @@ section.archive
 #channels-content, menu#channels
   left 0 !important
   border none !important
+  position static !important
 #channels-content
   top 50px !important
   height auto !important
@@ -43,14 +46,16 @@ section.archive
   & > section
     height auto !important
     width 100% !important
-    position static
+    position static !important
     div.chat
       & > button
         display none !important
         visibility hidden !important
+      position static !important
       height auto !important
       width 100% !important
       div.scrollableArea
+        position static !important
         height auto !important
         overflow visible !important
         width 100% !important
@@ -72,3 +77,6 @@ menu#channels li
     padding 0 !important
   &.current
     display block !important
+.qtip, #notifer
+  display none !important
+  visibility hidden !important
