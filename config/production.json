@@ -1,12 +1,12 @@
 {
     "sitename": "CoffeeChat",
     "hostname": "coffeechat.ru",
-    "mongodb" : "mongodb://developer:TjxchShDB34HWP@127.0.0.1/coffeechat_development",
+    "mongodb" : "mongodb://super:k25HVj1EfpCLF5@127.0.0.1/coffeechat_production",
     "redis"   : {
         "host": "127.0.0.1",
         "port": 6379,
         "pass": "jJbwJc9Cv8NvWWYUGL77NAsdp",
-        "db"  : 2
+        "db"  : 1
     },
     "smtp"    : {
         "host"              : "smtp.gmail.com",
