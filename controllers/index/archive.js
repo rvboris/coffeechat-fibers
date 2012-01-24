@@ -247,7 +247,7 @@ module.exports = function(app) {
                 res.render((req.mobile ? 'mobile' : 'web') + '/archive/' + result.type, {
                     title : title,
                     data  : result.data,
-                    env   : app.set('env'),
+                    env   : app.set('argv').env,
                     layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
                 });
             } catch (e) {

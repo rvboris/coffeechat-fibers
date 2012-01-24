@@ -36,7 +36,7 @@ module.exports = function(app) {
                 res.render((req.mobile ? 'mobile' : 'web') + '/message', {
                     title : 'Сообщение ID ' + result.message.id,
                     data  : result,
-                    env   : app.set('env'),
+                    env   : app.set('argv').env,
                     layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
                 });
             } catch (e) {
