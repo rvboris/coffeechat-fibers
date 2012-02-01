@@ -1,5 +1,5 @@
 var fs   = require('fs');
-var sys  = require('sys');
+var sys  = require('util');
 var sync = require('sync');
 
 module.exports = function(filename, bufferSize) {

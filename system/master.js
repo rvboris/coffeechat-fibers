@@ -21,10 +21,10 @@ module.exports = function(argv) {
 
         Loader.prototype.preInit = function() {
             app.set('argv', argv);
-            app.set('salt', bcrypt.gen_salt_sync(10));
-            app.set('serverToken', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
-            app.set('serverKey', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
-            app.set('sessionKey', bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('salt', bcrypt.genSaltSync(10));
+            app.set('serverToken', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('serverKey', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('sessionKey', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
 
             process.argv.NODE_ENV = app.set('argv').env;
 

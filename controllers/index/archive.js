@@ -122,8 +122,8 @@ module.exports = function(app) {
 
                 if (!month || !year) return;
 
-                startDate = app.set('helpers').utils.getUTCDate(moment(new Date(year, month, 1, 0, 0, 0))['native']());
-                endDate = app.set('helpers').utils.getUTCDate(moment(new Date(year, month, 1, 0, 0, 0)).add('months', 1)['native']());
+                startDate = moment(new Date(year, month, 1, 0, 0, 0))['native']();
+                endDate = moment(new Date(year, month, 1, 0, 0, 0)).add('months', 1)['native']();
 
                 function reduceMonthYearDay (key, values) {
                     var result = { count: 0 };
@@ -186,8 +186,8 @@ module.exports = function(app) {
 
                 if (!month || !year) return;
 
-                startDate = app.set('helpers').utils.getUTCDate(moment(new Date(year, month, req.params.day, 0, 0, 0))['native']());
-                endDate = app.set('helpers').utils.getUTCDate(moment(new Date(year, month, req.params.day, 0, 0, 0)).add('days', 1)['native']());
+                startDate = moment(new Date(year, month, req.params.day, 0, 0, 0))['native']();
+                endDate = moment(new Date(year, month, req.params.day, 0, 0, 0)).add('days', 1)['native']();
 
                 page = req.params.page || 0;
                 pages = Math.floor(app.Message.count.sync(app.Message, {

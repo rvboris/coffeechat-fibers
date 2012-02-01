@@ -1,8 +1,9 @@
 var ams    = require('ams');
 var stylus = require('stylus');
 var sync   = require('sync');
+var fs     = require('fs');
 
-module.exports = function(env, paths, options) {
+module.exports = function (env, paths, options) {
     function compileWebAssets() {
         // Javascripts
         ams.build
@@ -119,7 +120,7 @@ module.exports = function(env, paths, options) {
                     paths.css.stylus + '/mobile/style.styl',
                     paths.css.stylus + '/mobile/archive.styl'
                 ])
-                .process(function(path, data) {
+                .process(function (path, data) {
                     delete this.data[path];
                     var css = stylus(data).set('filename', path).set('compress', true);
                     this.data[path.replace(/\.[styl]+$/, '.css')] = css.render.sync(css)[0];
@@ -148,11 +149,42 @@ module.exports = function(env, paths, options) {
             .end();
     }
 
-    return function() {
-        sync(function() {
-            compileWebAssets();
-            compileMobileAssets();
-        }, function(err) {
+    return function () {
+        sync(function () {
+            function cleanUp(path, callback) {
+                try {
+                    var files = fs.readdir.sync(fs, path);
+                } catch (e) {
+                    if (e.code === 'ENOENT') {
+                        callback();
+                        return;
+                    }
+                    app.set('log').error(e.stack);
+                }
+
+                if (files.length === 0) {
+                    fs.rmdir.sync(fs, path);
+                } else {
+                    for (var i = 0; i < files.length; i++) {
+                        var filePath = path + '/' + files[i];
+                        var stats = fs.stat.sync(fs, filePath);
+                        if (stats.isFile()) fs.unlink.sync(fs, filePath);
+                        if (stats.isDirectory()) cleanUp.sync(null, filePath, callback);
+                    }
+                }
+
+                callback();
+            }
+
+            cleanUp(paths['public'] + '/javascripts', function () {
+                cleanUp(paths['public'] + '/stylesheets', function () {
+                    compileWebAssets();
+                    compileMobileAssets();
+                });
+            });
+
+
+        }, function (err) {
             if (err) console.log(err.stack);
         });
     }
