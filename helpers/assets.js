@@ -16,7 +16,11 @@ module.exports = function (env, paths, options) {
         var webSystem = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.sys.js');
-        if (env == 'production') webSystem.process(options);
+
+        if (env === 'production') {
+            webSystem.process(options);
+        }
+
         webSystem.combine({ js: 'jquery.system.js' })
             .write(paths['public'] + '/javascripts/web')
             .end();
@@ -24,7 +28,11 @@ module.exports = function (env, paths, options) {
         var webInterface = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.ufc.js');
-        if (env == 'production') webInterface.process(options);
+
+        if (env === 'production') {
+            webInterface.process(options);
+        }
+
         webInterface.combine({ js: 'jquery.interface.js' })
             .write(paths['public'] + '/javascripts/web')
             .end();
@@ -32,7 +40,11 @@ module.exports = function (env, paths, options) {
         var webRecovery = ams.build
             .create(paths.js.root)
             .add(paths.js.root + '/web/jquery.recovery.js');
-        if (env == 'production') webRecovery.process(options);
+
+        if (env === 'production') {
+            webRecovery.process(options);
+        }
+
         webRecovery.process(options)
             .combine({ js: 'jquery.recovery.js' })
             .write(paths['public'] + '/javascripts/web')
@@ -123,7 +135,7 @@ module.exports = function (env, paths, options) {
                 .process(function (path, data) {
                     delete this.data[path];
                     var css = stylus(data).set('filename', path).set('compress', true);
-                    this.data[path.replace(/\.[styl]+$/, '.css')] = css.render.sync(css)[0];
+                    this.data[path.replace(/\.[styl]+$/, '.css')] = css.render.sync(css);
                 })
                 .write(paths['public'] + '/stylesheets')
                 .end();
@@ -158,7 +170,7 @@ module.exports = function (env, paths, options) {
                 .end();
 
             compileWebAssets();
-            compileMobileAssets();
+            //compileMobileAssets();
 
         }, function (err) {
             if (err) console.log(err.stack);
