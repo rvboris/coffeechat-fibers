@@ -151,38 +151,14 @@ module.exports = function (env, paths, options) {
 
     return function () {
         sync(function () {
-            function cleanUp(path, callback) {
-                try {
-                    var files = fs.readdir.sync(fs, path);
-                } catch (e) {
-                    if (e.code === 'ENOENT') {
-                        callback();
-                        return;
-                    }
-                    app.set('log').error(e.stack);
-                }
+            ams.build
+                .create(paths['public'])
+                .cleanup(paths['public'] + '/javascripts')
+                .cleanup(paths['public'] + '/stylesheets')
+                .end();
 
-                if (files.length === 0) {
-                    fs.rmdir.sync(fs, path);
-                } else {
-                    for (var i = 0; i < files.length; i++) {
-                        var filePath = path + '/' + files[i];
-                        var stats = fs.stat.sync(fs, filePath);
-                        if (stats.isFile()) fs.unlink.sync(fs, filePath);
-                        if (stats.isDirectory()) cleanUp.sync(null, filePath, callback);
-                    }
-                }
-
-                callback();
-            }
-
-            cleanUp(paths['public'] + '/javascripts', function () {
-                cleanUp(paths['public'] + '/stylesheets', function () {
-                    compileWebAssets();
-                    compileMobileAssets();
-                });
-            });
-
+            compileWebAssets();
+            compileMobileAssets();
 
         }, function (err) {
             if (err) console.log(err.stack);

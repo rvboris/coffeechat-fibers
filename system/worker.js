@@ -249,7 +249,7 @@ module.exports = function(argv) {
                 app.set('syncServer', syncServer);
                 app.set('faye').bayeux.attach(app);
 
-                if (app.set('argv').env == 'production') {
+                if (app.set('argv').env === 'production') {
                     app.listen(app.set('argv').port, '127.0.0.1');
                 } else {
                     app.listen(app.set('argv').port);
