@@ -1,11 +1,7 @@
-var Validator = require('validator').Validator;
+var Validator  = require('validator').Validator;
 var nodemailer = require('nodemailer');
 
-
 module.exports = function (app) {
-    nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
-    nodemailer.SMTP = nconf.get('smtp');
-
     var vdr = new Validator();
 
     return function (req, res) {
@@ -35,7 +31,7 @@ module.exports = function (app) {
             if (nodemailer.send_mail.sync(nodemailer, {
                 sender: req.body.contact.email,
                 to: 'rv.boris@gmail.com',
-                subject: 'Новое сообщение от ' + req.body.contact.name + ' // ' + nconf.get('sitename'),
+                subject: 'Новое сообщение от ' + req.body.contact.name + ' // ' + app.set('config').get('sitename'),
                 html: req.body.contact.text
             })) {
                 return res.send({ result: 'Сообщение успешно отправлено' });
@@ -45,8 +41,7 @@ module.exports = function (app) {
         } else {
             try {
                 res.render((req.mobile ? 'mobile' : 'web') + '/contact', {
-                    title: title,
-                    data: result.data,
+                    title: 'Контакты',
                     env: app.set('argv').env,
                     layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
                 });
