@@ -29,22 +29,27 @@ html(lang='ru')
         },
         { load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.interface.plugins.js'] },
         {
-          load: '/javascripts/web/jquery.recovery.js',
+          load: '/javascripts/web/jquery.contact.js',
           complete: function () {
-            if (!$.fn.recovery) return alert('Ошибка загрузки')
-            $.fn.recovery(!{JSON.stringify(user)}, '!{serverKey}', '!{env}');
+            if (!$.fn.contact) return alert('Ошибка загрузки')
+            $.fn.contact('!{env}');
           }
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
       ]);
   body
-    section.recovery
-      h1 Изменение пароля
-      form(method='POST')
+    section.contact
+      h1 Контакты
+      form#contact.clearfix
         div.clearfix
-          label(for='password') Новый пароль
-          input(type='password', name='user[password1]', maxlength='30')
+          label(for='name') Имя
+          input(type='text', name='contact[name]', maxlength='30')#name
         div.clearfix
-          label(for='password') Повторите пароль
-          input(type='password', name='user[password2]', maxlength='30')
-        input(type='submit', value='Изменить пароль')
+          label(for='email') Email
+          input(type='email', name='contact[email]', maxlength='30')#email
+        div.clearfix.message
+          label(for='message') Сообщение
+          textarea(name='contact[message]')#message
+        div.clearfix
+          button(type='submit') Отправить сообщение
+          div.clearfix.result

@@ -50,6 +50,19 @@ module.exports = function (env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        var webContact = ams.build
+            .create(paths.js.root)
+            .add(paths.js.root + '/web/jquery.contact.js');
+
+        if (env === 'production') {
+            webContact.process(options);
+        }
+
+        webContact.process(options)
+            .combine({ js: 'jquery.contact.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         ams.build
             .create(paths.js.root)
             .add([

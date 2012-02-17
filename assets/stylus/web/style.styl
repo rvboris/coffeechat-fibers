@@ -230,7 +230,7 @@
   section.account input::-webkit-input-placeholder { color: #B06E5F; }
   section.account input:-moz-placeholder { color: #B06E5F; }
 
-  section.account input, section.forgot input, section.recovery input {
+  section.account input, section.forgot input {
     background-color: #38130D;
     background-image: -moz-linear-gradient(top, #38130D, #4D1A12);
     background-image: -o-linear-gradient(top, #38130D, #4D1A12);
@@ -239,7 +239,7 @@
     background-image: linear-gradient(top, #38130D, #4D1A12);
   }
 
-  section.account input:focus, section.forgot input:focus, section.recovery input:focus {
+  section.account input:focus, section.forgot input:focus {
     background-color: #230C08;
     background-image: -moz-linear-gradient(top, #230C08, #38130D);
     background-image: -o-linear-gradient(top, #230C08, #38130D);
@@ -248,7 +248,7 @@
     background-image: linear-gradient(top, #230C08, #38130D);
   }
 
-  section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button, section.recovery input[type=submit] {
+  section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button {
     background-color: #38130D;
     background-image: -moz-linear-gradient(top, #38130D, #30100B);
     background-image: -o-linear-gradient(top, #38130D, #30100B);
@@ -257,7 +257,7 @@
     background-image: linear-gradient(top, #38130D, #30100B);
   }
 
-  section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover, section.recovery input[type=submit]:hover {
+  section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover {
     background-color: #4D1A12;
     background-image: -moz-linear-gradient(top, #4D1A12, #451710);
     background-image: -o-linear-gradient(top, #4D1A12, #451710);
@@ -286,7 +286,7 @@
     background-image: linear-gradient(top, #581539, #4C1132);
   }
 
-  section.account, section.forgot, section.recovery {
+  section.account, section.forgot {
     background-color: #622117;
     background-image: -moz-linear-gradient(top, #622117, #4D1A12);
     background-image: -o-linear-gradient(top, #622117, #4D1A12);
@@ -378,66 +378,6 @@ body
   overflow hidden
 input, button
   font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
-section.recovery
-  position absolute
-  width 335px
-  height 160px
-  left 50%
-  top 100px
-  margin-left -150px
-  border 1px solid #963B31
-  box-shadow 1px 1px 0 #37140D
-  border-radius 5px
-  text-align center
-  padding 10px 20px 10px 10px
-  h1
-    font-size 1.1em
-    margin-bottom 10px
-    font-weight normal
-    color #D5AD8C
-    text-shadow 1px 1px 1px #2B110E
-    padding-bottom 10px
-  form
-    text-align left
-    margin 10px
-    margin-bottom 10px
-    label
-      float left
-      font-size 0.9em
-      color #D5AD8C
-      text-shadow 1px 1px 1px #2B110E
-      width 150px
-      line-height 31px
-    input, span, button
-      float right
-    input, button
-      border 1px solid #2B110E
-      box-shadow 1px 1px 0 #963B31
-      padding 2px 5px
-      margin-top 4px
-      margin-bottom 3px
-      border-radius 3px
-      height 16px
-      width 150px
-      color #B06E5F
-      font-size 0.8em
-    input:focus
-      color #D1B9A3
-    input[type=radio]
-      width 20px
-      display none
-    input[type=submit]
-      width 120px
-      height 25px
-      margin-top 10px
-      border 1px solid #83332B
-      color #CEA079
-      box-shadow 1px 1px 0 #2B110E
-      text-shadow 1px 1px 1px #2B110E
-      cursor pointer
-      &:hover
-        color #D5AD8C
-        border-color #963A31
 #app
   height auto !important
   height 100%
@@ -800,8 +740,8 @@ section.recovery
         width 100%
         height 31px
         line-height 31px
-      &.expand
-        display block
+        &.expand
+          display block
     form.account
       label
         width 150px

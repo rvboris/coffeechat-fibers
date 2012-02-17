@@ -76,11 +76,11 @@ input, select {
     vertical-align: middle
 }
 
-button::-moz-focus-inner, input[type=submit]::-moz-focus-inner, input[type=button]::-moz-focus-inner {
+button::-moz-focus-inner, input[type=submit]::-moz-focus-inner, input[type=button]::-moz-focus-inner, textarea::-moz-focus-inner {
     border: 0
 }
 
-a, button, input[type=submit]:focus, input[type=button]:focus, input:focus {
+a, button, input[type=submit]:focus, input[type=button]:focus, input:focus, textarea {
     outline: none;
     outline-offset: -2px;
 }

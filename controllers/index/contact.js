@@ -42,8 +42,7 @@ module.exports = function (app) {
             try {
                 res.render((req.mobile ? 'mobile' : 'web') + '/contact', {
                     title: 'Контакты',
-                    env: app.set('argv').env,
-                    layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
+                    env: app.set('argv').env
                 });
             } catch (e) {
                 app.set('log').error(err.stack);

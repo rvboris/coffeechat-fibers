@@ -69,7 +69,7 @@
         privateMethods.form();
     };
 
-    $.fn.recovery = function(user, serverKey, env) {
+    $.fn.contact = function(user, serverKey, env) {
         return instance ? instance : instance = new Recovery({
             currentUser: user,
             serverKey  : serverKey,
