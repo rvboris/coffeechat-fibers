@@ -48,4 +48,5 @@ module.exports = function(app) {
     app.post('/user/forgot', require('./user/forgot.js')(app));
     app.post('/user/:key/pic', require('./user/pic.js')(app));
     app.post('/recovery/:key', require('./index/recovery.js')(app));
+    app.post('/contact', require('./index/contact.js')(app));
 };

@@ -13,7 +13,7 @@ html(lang='ru')
 
     link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css', media='all')
 
-    - if (env == 'production')
+    - if (env === 'production')
       link(rel='stylesheet', href='/stylesheets/web/page.css', media='all')
       link(rel='stylesheet', href='/stylesheets/web/print.css', media='print')
     - else
