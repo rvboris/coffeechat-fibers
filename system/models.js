@@ -8,12 +8,12 @@ exports.define = function(app, mongoose, callback) {
     var vdr = new Validator();
 
     var regexp = {
-        url     : /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+)/,
+        url: /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+)/,
         alphabet: /^[А-Яа-яЁёA-Za-z0-9\s]+$/
     };
 
     var validators = {
-        isValidName    : function(name) {
+        isValidName: function(name) {
             try {
                 vdr.check(name).len(3, 15).regex(regexp.alphabet);
             } catch (e) {
@@ -29,7 +29,7 @@ exports.define = function(app, mongoose, callback) {
             }
             return true;
         },
-        isValidEmail   : function(email) {
+        isValidEmail: function(email) {
             try {
                 vdr.check(email).len(6, 64).isEmail();
             } catch (e) {
@@ -37,7 +37,7 @@ exports.define = function(app, mongoose, callback) {
             }
             return true;
         },
-        isValidMessage : function(message) {
+        isValidMessage: function(message) {
             try {
                 vdr.check(message).notEmpty();
             } catch (e) {
@@ -54,7 +54,7 @@ exports.define = function(app, mongoose, callback) {
         stringSetter: function(value) {
             return filter(filter(value).trim()).xss();
         },
-        md5Setter   : function(value) {
+        md5Setter: function(value) {
             return crypto.createHash('md5').update(value).digest('hex');
         }
     };
@@ -136,6 +136,7 @@ exports.define = function(app, mongoose, callback) {
             'name'   : { 'type': String, 'required': true, 'unique': true },
             'url'    : { 'type': String, 'required': true, 'unique': true },
             'private': { 'type': Boolean, 'default': false },
+            'owner'  : { 'type': objectId, 'required': true },
             'date'   : { 'type': Date, 'default': new Date() }
         });
 
@@ -148,6 +149,19 @@ exports.define = function(app, mongoose, callback) {
         app.set('log').debug('channel model is loaded');
 
         return channel;
+    };
+
+    var defineChannelBanModel = function() {
+        var channelBan = new schema({
+            'userId'   : { 'type': objectId, 'required': true },
+            'userIp'   : { 'type': String, required: false },
+            'channelId': { 'type': objectId, 'required': true },
+            'date'     : { 'type': Date, 'default': new Date() }
+        });
+
+        app.set('log').debug('channel ban model is loaded');
+
+        return channelBan;
     };
 
     var defineMessageModel = function() {

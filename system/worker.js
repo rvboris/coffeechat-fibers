@@ -30,7 +30,7 @@ module.exports = function(argv) {
             app.set('argv', argv);
             process.argv.NODE_ENV = app.set('argv').env;
             nconf.use('file', { file: __dirname + '/../config/' + app.set('argv').env + '.json' });
-            app.set('host', app.set('argv').env == 'production' ? nconf.get('hostname') : (nconf.get('hostname') + ':' + app.set('argv').port));
+            app.set('host', app.set('argv').env === 'production' ? nconf.get('hostname') : (nconf.get('hostname') + ':' + app.set('argv').port));
         };
 
         Loader.prototype.init = function() {
@@ -64,8 +64,8 @@ module.exports = function(argv) {
             app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }));
             app.use(express['static'](__dirname + '/../public/stylesheets'));
             app.use(stylus.middleware({
-                src    : __dirname + '/../assets/stylus',
-                dest   : __dirname + '/../public/stylesheets',
+                src: __dirname + '/../assets/stylus',
+                dest: __dirname + '/../public/stylesheets',
                 compile: function(str, path) {
                     return stylus(str).set('filename', path).set('compress', true);
                 }
@@ -128,10 +128,10 @@ module.exports = function(argv) {
             app.set('log').debug('setup helpers');
             app.set('helpers', {
                 channel: require('../helpers/channel.js')(app),
-                user   : require('../helpers/user.js')(app),
-                lang   : require('../helpers/lang.js'),
+                user: require('../helpers/user.js')(app),
+                lang: require('../helpers/lang.js'),
                 plugins: require('../helpers/plugins.js'),
-                utils  : require('../helpers/utils.js')
+                utils: require('../helpers/utils.js')
             });
         };
 
@@ -139,16 +139,16 @@ module.exports = function(argv) {
             app.set('log').debug('setup faye');
             app.set('faye', {
                 timeout: nconf.get('faye').timeout,
-                bayeux : new faye.NodeAdapter({
-                    mount  : nconf.get('faye').bayeux.mount,
+                bayeux: new faye.NodeAdapter({
+                    mount: nconf.get('faye').bayeux.mount,
                     timeout: nconf.get('faye').bayeux.timeout,
-                    engine : {
-                        type     : 'redis',
-                        host     : nconf.get('redis').host,
-                        port     : nconf.get('redis').port,
-                        password : nconf.get('redis').pass,
+                    engine: {
+                        type: 'redis',
+                        host: nconf.get('redis').host,
+                        port: nconf.get('redis').port,
+                        password: nconf.get('redis').pass,
                         namespace: nconf.get('faye').bayeux.store.namespace,
-                        database : nconf.get('faye').bayeux.store.database
+                        database: nconf.get('faye').bayeux.store.database
                     }
                 })
             });
@@ -191,7 +191,7 @@ module.exports = function(argv) {
                 app.set('log').debug('session key received successful');
                 app.set('sessionKey', aes.dec(key, tKey));
                 app.use(express.session({
-                    store : new redisStore(nconf.get('redis')),
+                    store: new redisStore(nconf.get('redis')),
                     secret: app.set('sessionKey'),
                     cookie: nconf.get('session').cookie
                 }));
@@ -267,16 +267,16 @@ module.exports = function(argv) {
                     data.token = app.set('serverToken');
                     app.set('faye').bayeux.getClient().publish(channel, data);
                 },
-                event  : function(plugin, command) {
+                event: function(plugin, command) {
                     var args = Array.prototype.slice.call(arguments);
                     args.unshift('syncEvent');
                     app.set('events').emit.apply(app.set('events'), args);
                 }
             }).connect(app.set('argv').sync, '127.0.0.1', function(syncServer) {
-                    syncServer.keys.getServerToken(tKey, function(key) {
-                        starter.emit('serverToken', key, syncServer);
-                    });
+                syncServer.keys.getServerToken(tKey, function(key) {
+                    starter.emit('serverToken', key, syncServer);
                 });
+            });
         };
 
         return new Loader();

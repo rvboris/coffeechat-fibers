@@ -3,7 +3,7 @@ module.exports = function(app, task) {
     var cycle;
 
     return {
-        task : task,
+        task: task,
         start: function(recipient) {
             if (run) return;
             run = true;

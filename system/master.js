@@ -82,8 +82,8 @@ module.exports = function(argv) {
             app.set('log').debug('setup helpers');
             app.set('helpers', {
                 channel: require('../helpers/channel.js')(app),
-                user   : require('../helpers/user.js')(app),
-                lang   : require('../helpers/lang.js'),
+                user: require('../helpers/user.js')(app),
+                lang: require('../helpers/lang.js'),
                 plugins: require('../helpers/plugins.js')
             });
         };
@@ -149,10 +149,10 @@ module.exports = function(argv) {
                     getServerToken: function(tKey, callback) {
                         callback(aes.enc(app.set('serverToken'), tKey));
                     },
-                    getServerKey  : function(tKey, callback) {
+                    getServerKey: function(tKey, callback) {
                         callback(aes.enc(app.set('serverKey'), tKey));
                     },
-                    getSessionKey : function(tKey, callback) {
+                    getSessionKey: function(tKey, callback) {
                         callback(aes.enc(app.set('sessionKey'), tKey));
                     }
                 };
@@ -196,21 +196,21 @@ module.exports = function(argv) {
             paths.js.library = paths.js.root + '/library';
 
             paths.css = {
-                root  : paths.assets + '/stylesheets',
+                root: paths.assets + '/stylesheets',
                 stylus: paths.assets + '/stylus'
             };
 
             var options = {
-                uglifyjs     : true,
-                cssvendor    : false,
-                cssdataimg   : false,
-                cssimport    : false,
-                cssabspath   : false,
-                csshost      : false,
-                htmlabspath  : false,
-                htmlhost     : false,
-                cssmin       : true,
-                jstransport  : false,
+                uglifyjs: true,
+                cssvendor: false,
+                cssdataimg: false,
+                cssimport: false,
+                cssabspath: false,
+                csshost: false,
+                htmlabspath: false,
+                htmlhost: false,
+                cssmin: true,
+                jstransport: false,
                 texttransport: false
             };
 
