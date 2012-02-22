@@ -22,7 +22,7 @@ module.exports = function(app) {
 
         // events
         form.on('progress', function(bytesReceived, bytesExpected) {
-            app.set('log').debug('userpic upload progress: ' + (bytesReceived / 1024) + '/' + (bytesExpected / 1024));
+            app.set('log').debug('userpic upload progress: %d/%d', bytesReceived / 1024, bytesExpected / 1024);
         });
 
         form.on('error', function(err) {
@@ -36,7 +36,7 @@ module.exports = function(app) {
         });
 
         form.on('file', function(name, file) {
-            app.set('log').debug('file ' + file.filename + ' recived');
+            app.set('log').debug('file %s received', file.filename);
             userpic = path.basename(file.path);
             sync(function() {
                 var user = app.User.findById.sync(app.User, aes.dec(req.params.key, app.set('serverKey')));
@@ -52,7 +52,7 @@ module.exports = function(app) {
                     app.set('log').error(new Error('user not found'));
                     return res.send(500);
                 }
-                app.set('log').debug('userpic path saved "' + user.pic + '"');
+                app.set('log').debug('userpic path saved "%s"', user.pic);
             });
         });
 

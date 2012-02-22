@@ -45,7 +45,7 @@ module.exports = function(app) {
                     messages = app.Message.count.sync(app.Message, { channelId: channels[i].id });
                     if (messages === 0) continue;
                     countedChannels.push({
-                        count  : messages,
+                        count: messages,
                         channel: channels[i]
                     });
                 }
@@ -55,9 +55,9 @@ module.exports = function(app) {
                 return {
                     type: 'channels',
                     data: {
-                        page    : page,
-                        prev    : (page - 1) < 0 ? null : (page - 1),
-                        next    : (page + 1) > (pages || 0) ? null : (page + 1),
+                        page: page,
+                        prev: (page - 1) < 0 ? null : (page - 1),
+                        next: (page + 1) > (pages || 0) ? null : (page + 1),
                         channels: countedChannels
                     }
                 };
@@ -86,10 +86,10 @@ module.exports = function(app) {
 
                 app.Message.db.db.executeDbCommand.sync(app.Message.db.db, {
                     mapreduce: 'messages',
-                    map      : mapMonthYear.toString(),
-                    reduce   : reduceMonthYear.toString(),
-                    query    : { channelId: channel._id },
-                    out      : 'archiveMonthYear'
+                    map: mapMonthYear.toString(),
+                    reduce: reduceMonthYear.toString(),
+                    query: { channelId: channel._id },
+                    out: 'archiveMonthYear'
                 });
 
                 collection = app.Message.db.db.collection.sync(app.Message.db.db, 'archiveMonthYear');
@@ -106,7 +106,7 @@ module.exports = function(app) {
                 return {
                     type: 'years',
                     data: {
-                        dates  : docs,
+                        dates: docs,
                         channel: channel
                     }
                 };
@@ -142,16 +142,16 @@ module.exports = function(app) {
 
                 app.Message.db.db.executeDbCommand.sync(app.Message.db.db, {
                     mapreduce: 'messages',
-                    map      : mapMonthYearDay.toString(),
-                    reduce   : reduceMonthYearDay.toString(),
-                    query    : {
+                    map: mapMonthYearDay.toString(),
+                    reduce: reduceMonthYearDay.toString(),
+                    query: {
                         channelId: channel._id,
-                        time     : {
+                        time: {
                             $gte: startDate,
-                            $lt : endDate
+                            $lt: endDate
                         }
                     },
-                    out      : { replace: 'archiveMonthYearDay' }
+                    out: { replace: 'archiveMonthYearDay' }
                 });
 
                 collection = app.Message.db.db.collection.sync(app.Message.db.db, 'archiveMonthYearDay');
@@ -170,7 +170,7 @@ module.exports = function(app) {
                 return {
                     type: 'days',
                     data: {
-                        dates  : docs,
+                        dates: docs,
                         channel: channel
                     }
                 };
@@ -192,17 +192,17 @@ module.exports = function(app) {
                 page = req.params.page || 0;
                 pages = Math.floor(app.Message.count.sync(app.Message, {
                     channelId: channel.id,
-                    time     : {
+                    time: {
                         $gte: startDate,
-                        $lt : endDate
+                        $lt: endDate
                     }
                 } || 0) / messagesPerPage);
 
                 messages = app.Message.find.sync(app.Message, {
                     channelId: channel._id,
-                    time     : {
+                    time: {
                         $gte: startDate,
-                        $lt : endDate
+                        $lt: endDate
                     }
                 }, ['time', 'text', 'userId'], { skip: page * messagesPerPage, limit: messagesPerPage });
 
@@ -223,15 +223,15 @@ module.exports = function(app) {
                 return {
                     type: 'messages',
                     data: {
-                        date    : moment(startDate).format('DD.MM.YYYY'),
+                        date: moment(startDate).format('DD.MM.YYYY'),
                         dateUrl1: moment(startDate).format('MM-YYYY'),
                         dateUrl2: moment(startDate).format('DD'),
-                        page    : page,
-                        prev    : (page - 1) < 0 ? null : (page - 1),
-                        next    : (page + 1) > pages ? null : (page + 1),
+                        page: page,
+                        prev: (page - 1) < 0 ? null : (page - 1),
+                        next: (page + 1) > pages ? null : (page + 1),
                         messages: messages,
-                        users   : usersArray,
-                        channel : channel
+                        users: usersArray,
+                        channel: channel
                     }
                 };
             }
@@ -245,9 +245,9 @@ module.exports = function(app) {
 
             try {
                 res.render((req.mobile ? 'mobile' : 'web') + '/archive/' + result.type, {
-                    title : title,
-                    data  : result.data,
-                    env   : app.set('argv').env,
+                    title: title,
+                    data: result.data,
+                    env: app.set('argv').env,
                     layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
                 });
             } catch (e) {

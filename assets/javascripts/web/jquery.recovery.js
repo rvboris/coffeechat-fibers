@@ -11,28 +11,28 @@
 
     privateMethods.helpers = {
         browserCheck: function() {
-            return ($.browser.name == 'firefox' && $.browser.versionNumber >= 4) ||
-                ($.browser.name == 'msie' && $.browser.versionNumber >= 9) ||
-                ($.browser.name == 'chrome' && $.browser.versionNumber >= 10) ||
-                ($.browser.name == 'opera' && $.browser.versionNumber >= 9.8) ||
-                ($.browser.name == 'safari' && $.browser.versionNumber >= 5);
+            return ($.browser.name == 'firefox' && $.browser.versionNumber >= 4)   ||
+                   ($.browser.name == 'msie'    && $.browser.versionNumber >= 9)   ||
+                   ($.browser.name == 'chrome'  && $.browser.versionNumber >= 10)  ||
+                   ($.browser.name == 'opera'   && $.browser.versionNumber >= 9.8) ||
+                   ($.browser.name == 'safari'  && $.browser.versionNumber >= 5);
         }
     };
 
     privateMethods.form = function() {
         $('section.recovery form').submit(function() {
             $('section.recovery').block({
-                message   : 'Сохранение...',
-                css       : {
-                    'border'     : 'none',
-                    'background' : 'transparent',
-                    'height'     : '25px',
+                message: 'Сохранение...',
+                css: {
+                    'border': 'none',
+                    'background': 'transparent',
+                    'height': '25px',
                     'line-height': '25px',
-                    'color'      : '#C4B1C4',
-                    'font-size'  : '1.1em'
+                    'color': '#C4B1C4',
+                    'font-size': '1.1em'
                 },
                 overlayCSS: {
-                    opacity        : 0.6,
+                    opacity: 0.6,
                     backgroundColor: '#4A324A'
                 }
             });
@@ -69,11 +69,12 @@
         privateMethods.form();
     };
 
-    $.fn.contact = function(user, serverKey, env) {
+    $.fn.contact = function(user, serverKey, env, csrf) {
         return instance ? instance : instance = new Recovery({
             currentUser: user,
-            serverKey  : serverKey,
-            env        : env
+            serverKey: serverKey,
+            env: env,
+            csrf: csrf
         });
     };
 })(jQuery, window);

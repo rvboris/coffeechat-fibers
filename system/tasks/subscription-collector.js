@@ -4,9 +4,9 @@ module.exports = function(app) {
     var name = 'collector';
 
     return {
-        name      : name,
-        interval  : 10, // 10 seconds
-        callback  : function(recipient, stop, interval) {
+        name: name,
+        interval: 10, // 10 seconds
+        callback: function(recipient, stop, interval) {
             app.set('log').debug('find outdated subscriptions');
 
             sync(function() {
@@ -18,7 +18,7 @@ module.exports = function(app) {
 
                 if (!subscriptions || subscriptions.length === 0) return;
 
-                app.set('log').debug(subscriptions.length + ' results found outdated subscriptions');
+                app.set('log').debug('%d results found outdated subscriptions', subscriptions.length);
 
                 var subscriptionsChannels = [];
                 var subscriptionsCount = [];
@@ -48,25 +48,25 @@ module.exports = function(app) {
                         setTimeout(function() {
                             recipient.publish('/channel/' + subscriptionsChannels[i].id + '/users', {
                                 action: 'dis',
-                                users : usersChannels[subscriptionsChannels[i].id]
+                                users: usersChannels[subscriptionsChannels[i].id]
                             });
 
-                            app.set('log').debug(usersChannels[subscriptionsChannels[i].id].length + ' users in list updated');
+                            app.set('log').debug('%d users in list updated', usersChannels[subscriptionsChannels[i].id].length);
                         }, 100 + (50 * i));
                     })(i);
 
                     subscriptionsChannels[i].diff *= -1;
                     subscriptionsChannels[i].count = subscriptionsCount[subscriptionsChannels[i].id] + subscriptionsChannels[i].diff;
 
-                    app.set('log').debug(usersChannels[subscriptionsChannels[i].id].length + ' users unsubscribed');
+                    app.set('log').debug('%d users unsubscribed', usersChannels[subscriptionsChannels[i].id].length);
                 }
 
                 recipient.publish('/channel-list', {
-                    action  : 'upd',
+                    action: 'upd',
                     channels: subscriptionsChannels
                 });
 
-                app.set('log').debug(subscriptionsChannels.length + ' channel in list updated');
+                app.set('log').debug('%d channels in list updated', subscriptionsChannels.length);
             }, function(err) {
                 if (err) {
                     app.set('log').error(err.stack);

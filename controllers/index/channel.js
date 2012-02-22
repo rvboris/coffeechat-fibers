@@ -20,23 +20,24 @@ module.exports = function(app) {
             if (channel['private']) return res.send(401);
 
             res.render(req.mobile ? 'mobile' : 'web', {
-                user     : app.set('helpers').user.createPrivate(user),
-                channels : {
+                user: app.set('helpers').user.createPrivate(user),
+                channels: {
                     main: {
-                        id  : app.set('channels').main.id,
+                        id: app.set('channels').main.id,
                         name: app.set('channels').main.name,
-                        url : app.set('channels').main.url
+                        url: app.set('channels').main.url
                     },
-                    req : {
-                        id  : channel.id,
+                    req: {
+                        id: channel.id,
                         name: channel.name,
-                        url : channel.url
+                        url: channel.url
                     }
                 },
                 serverKey: app.set('serverKey'),
-                title    : channel.name,
-                env      : app.set('argv').env,
-                errors   : null
+                title: channel.name,
+                env: app.set('argv').env,
+                csrf: req.session._csrf,
+                errors: null
             });
         }, function(err) {
             if (err) {

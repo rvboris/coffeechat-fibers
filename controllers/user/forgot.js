@@ -44,10 +44,10 @@ module.exports = function(app) {
             var link = 'http://' + app.set('host') + '/recovery/' + encodeURIComponent(key);
 
             if (nodemailer.send_mail.sync(nodemailer, {
-                sender : 'no-reply@' + app.set('host'),
-                to     : req.body.user.email,
+                sender: 'no-reply@' + app.set('host'),
+                to: req.body.user.email,
                 subject: nconf.get('sitename') + ' // Восстановление пароля',
-                html   : '<noindex>Для изменения пароля перейдите по этой ссылке: <a href="' + link + '" rel="nofollow">' + link + '</a>.<br /><br />Ссылка действительна в течении двух часов (до ' + moment().add('hours', 2).format('DD.MM.YY HH:mm') + ').</noindex>'
+                html: '<noindex>Для изменения пароля перейдите по этой ссылке: <a href="' + link + '" rel="nofollow">' + link + '</a>.<br /><br />Ссылка действительна в течении двух часов (до ' + moment().add('hours', 2).format('DD.MM.YY HH:mm') + ').</noindex>'
             })) {
                 var recovery = new app.PasswordRecovery({ userId: user.id, key: key });
                 recovery.save.sync(recovery);

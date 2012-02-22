@@ -3,7 +3,7 @@ module.exports = function(app) {
         try {
             res.render((req.mobile ? 'mobile' : 'web') + '/about', {
                 title: 'О проекте',
-                env  : app.set('argv').env
+                env: app.set('argv').env
             });
         } catch (e) {
             app.set('log').error(e.stack);

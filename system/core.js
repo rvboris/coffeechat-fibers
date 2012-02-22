@@ -76,7 +76,7 @@ module.exports = function(app) {
                     var user = app.User.findById.sync(app.User, token);
 
                     if (!user) {
-                        app.set('log').debug('invalid user token "' + token + '"');
+                        app.set('log').debug('invalid user token "%s"', token);
                         return message.error = 'Ключ не верный';
                     }
 
@@ -142,10 +142,10 @@ module.exports = function(app) {
                         }
 
                         var msg = new app.Message({
-                            userId   : user.id,
+                            userId: user.id,
                             channelId: channelId,
-                            time     : currentTime,
-                            txt      : decodedText
+                            time: currentTime,
+                            txt: decodedText
                         });
 
                         msg.parsed = msg.parseText(decodedText);
@@ -219,8 +219,8 @@ module.exports = function(app) {
                             // Execute on other thread (double send bug)
                             setTimeout(function() {
                                 app.set('faye').bayeux.getClient().publish('/channel-list', {
-                                    token   : app.set('serverToken'),
-                                    action  : 'upd',
+                                    token: app.set('serverToken'),
+                                    action: 'upd',
                                     channels: [
                                         { id: matches[1], diff: 1, count: subscriptionsCount }
                                     ]
@@ -229,9 +229,9 @@ module.exports = function(app) {
                                 app.set('log').debug('channel list updated');
 
                                 app.set('faye').bayeux.getClient().publish('/channel/' + matches[1] + '/users', {
-                                    token : app.set('serverToken'),
+                                    token: app.set('serverToken'),
                                     action: 'con',
-                                    users : [
+                                    users: [
                                         { name: user.name, gender: user.gender, status: user.status }
                                     ]
                                 });
@@ -282,12 +282,12 @@ module.exports = function(app) {
                         app.set('events').emit('userUnsubscribe', user, subscription);
 
                         app.set('faye').bayeux.getClient().publish('/channel-list', {
-                            token   : app.set('serverToken'),
-                            action  : 'upd',
+                            token: app.set('serverToken'),
+                            action: 'upd',
                             channels: [
                                 {
-                                    id   : subscription.channelId.toHexString(),
-                                    diff : -1,
+                                    id: subscription.channelId.toHexString(),
+                                    diff: -1,
                                     count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId })
                                 }
                             ]
@@ -298,9 +298,9 @@ module.exports = function(app) {
                         // Execute on other thread (double send bug)
                         setTimeout(function() {
                             app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
-                                token : app.set('serverToken'),
+                                token: app.set('serverToken'),
                                 action: 'dis',
-                                users : [
+                                users: [
                                     { name: user.name }
                                 ]
                             });
@@ -311,7 +311,7 @@ module.exports = function(app) {
 
                     // Connecting
                     if (message.channel === '/meta/connect') {
-                        app.set('log').debug('user ' + user.name + ' is connected');
+                        app.set('log').debug('user "%s" is connected', user.name);
 
                         if (!message.activeChannels || message.activeChannels.length === 0) return;
 

@@ -196,6 +196,8 @@ module.exports = function(argv) {
                     cookie: nconf.get('session').cookie
                 }));
 
+                app.use(express.csrf());
+
                 require('../controllers/routes.js')(app);
                 app.set('log').debug('routes loaded');
 
@@ -255,7 +257,7 @@ module.exports = function(argv) {
                     app.listen(app.set('argv').port);
                 }
 
-                app.set('log').info('worker pid ' + process.env.NODE_WORKER_ID + ' started on port ' + app.set('argv').port);
+                app.set('log').info('worker pid %s started on port %s', process.env.NODE_WORKER_ID, app.set('argv').port);
             });
 
             return starter;

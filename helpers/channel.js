@@ -2,11 +2,11 @@ var sync = require('sync');
 
 module.exports = function(app) {
     return {
-        create           : function(name, url, private) {
-            var channel = app.Channel.findOne.sync(app.Channel, { name: name, url: url });
+        create: function(params) {
+            var channel = app.Channel.findOne.sync(app.Channel, params);
 
             if (channel) {
-                app.set('log').debug('channel "' + name + '" loaded');
+                app.set('log').debug('channel "%s" loaded', params.name);
 
                 /* var messages = app.Message.find.sync(app.Message, { channelId: channel.id }); */
                 /* for (var i = 0; i < messages.length; i++) messages[i].remove.sync(messages[i]); */
@@ -14,13 +14,13 @@ module.exports = function(app) {
                 return channel;
             }
 
-            channel = new app.Channel({ name: name, url: url, private: private });
+            channel = new app.Channel(params);
             channel.save.sync(channel);
-            app.set('log').debug('channel "' + name + '" created');
+            app.set('log').debug('channel "%s" created', params.name);
 
             return channel;
         }.async(),
-        subscribe        : function(user, channelId) {
+        subscribe: function(user, channelId) {
             var channel = app.Channel.findById.sync(app.Channel, channelId);
             var subscription = app.Subscription.findOne.sync(app.Subscription, { userId: user.id, channelId: channelId });
 
@@ -50,9 +50,9 @@ module.exports = function(app) {
             user.save.sync(user);
 
             app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
-                token : app.set('serverToken'),
+                token: app.set('serverToken'),
                 action: 'connect',
-                user  : app.set('helpers').user.createPublic(user)
+                user: app.set('helpers').user.createPublic(user)
             });
 
             return { channel: channel, subscription: newSubscription, update: false };
@@ -64,17 +64,17 @@ module.exports = function(app) {
             }
             return channelObjects;
         }.async(),
-        getToken         : function(message) {
+        getToken: function(message) {
             return message.token ? message.token : message.data && message.data.token ? message.data.token : false;
         },
-        group            : function(original) {
+        group: function(original) {
             var grouped = [];
             var copy = original.slice(0);
 
             for (var i = 0; i < original.length; i++) {
                 var myCount = 0;
                 for (var w = 0; w < copy.length; w++) {
-                    if (original[i] == copy[w]) {
+                    if (original[i] === copy[w]) {
                         myCount++;
                         delete copy[w];
                     }

@@ -1,4 +1,5 @@
 form(method='POST').account.clearfix.expand
+  input(type='hidden', name='_csrf', value='#{csrf}')
   div.clearfix.pic
     img(src='/images/web/userpic2.png', width='60', height='60').userpic
     input(type='file', name='userpic')#userpic

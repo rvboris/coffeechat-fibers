@@ -1,4 +1,4 @@
 module.exports = {
-    name    : 'deleted',
+    name: 'deleted',
     password: 'm,OBciUxhyR4^C@?^L.}wxaH'
 };

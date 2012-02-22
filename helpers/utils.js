@@ -4,5 +4,5 @@ module.exports.getUTCDate = function(date) {
 };
 
 module.exports.isInt = function(n) {
-    return typeof n == 'number' && n % 1 == 0;
+    return typeof n === 'number' && n % 1 === 0;
 };

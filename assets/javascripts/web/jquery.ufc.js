@@ -4,7 +4,8 @@
     var privateMethods = {};
     var instance;
 
-    function UInterface() {
+    function UInterface(options) {
+        this.options = options;
         return privateMethods.init(this);
     }
 
@@ -335,6 +336,8 @@
                 settings = $('section.account form.interface-settings input[type=checkbox]').serializeObject();
                 settings.section = 'interface';
             }
+
+            settings._csrf = privateMethods.options.csrf;
 
             $.post('/user/settings', settings).success(function (data) {
                 if (data.error) return $.fn.notifier(data.error);
@@ -1445,7 +1448,7 @@
         privateMethods.statuses();
     };
 
-    $.fn.ufc = function() {
-        return instance ? instance : instance = new UInterface();
+    $.fn.ufc = function(csrf) {
+        return instance ? instance : instance = new UInterface({ csrf: csrf });
     };
 })(jQuery, window, document, GibberishAES);

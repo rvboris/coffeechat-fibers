@@ -3,18 +3,18 @@ var sync   = require('sync');
 
 module.exports = function(app) {
     return {
-        name           : 'system',
-        userSubscribe  : function(user) {
-            app.set('log').debug('user "' + user.name + '" subscribe');
+        name: 'system',
+        userSubscribe: function(user) {
+            app.set('log').debug('user "%s" subscribe', user.name);
         },
-        guestSubscribe : function() {
+        guestSubscribe: function() {
             app.set('log').debug('guest subscribe');
         },
         userUnsubscribe: function(user, subscription) {
             sync(function() {
                 var channelId = subscription.channelId.toHexString();
 
-                app.set('log').debug('subscription to remove - time: ' + moment(subscription.time).format('mm:ss') + ', current: ' + moment().format('mm:ss') + ', diff: ' + ((new Date() - subscription.time) / 1000) + 's.');
+                app.set('log').debug('subscription to remove - time: %s, current: %s, diff: %d s.', moment(subscription.time).format('mm:ss'), moment().format('mm:ss'), ((new Date() - subscription.time) / 1000));
 
                 subscription.remove.sync(subscription);
 
@@ -39,17 +39,17 @@ module.exports = function(app) {
                 var channel = app.Channel.findById.sync(app.Channel, channelId, ['private', 'name']);
 
                 if (channel && channel['private']) {
-                    app.set('log').debug('remove channel "' + channel.name + '"');
+                    app.set('log').debug('remove channel "%s"', channel.name);
                     channel.remove.sync(channel);
                 }
             }, function(err) {
                 if (err) app.set('log').error(err.stack);
             });
         },
-        userConnect    : function(user, message) {
+        userConnect: function(user, message) {
             sync(function() {
                 var subscriptions = app.Subscription.find.sync(app.Subscription, {
-                    userId   : user.id,
+                    userId: user.id,
                     channelId: {
                         $in: message.activeChannels
                     }
@@ -65,11 +65,11 @@ module.exports = function(app) {
                 user.save.sync(user);
             }, function(err) {
                 if (err) return app.set('log').error(err.stack);
-                app.set('log').debug('"' + user.name + '" user subscriptions updated');
+                app.set('log').debug('"%s" user subscriptions updated', user.name);
             });
         },
-        userSend       : function(user) {
-            app.set('log').debug('user "' + user.name + '" send message');
+        userSend: function(user) {
+            app.set('log').debug('user "%s" send message', user.name);
 
             sync(function() {
                 user.stats.messages++;
@@ -78,7 +78,7 @@ module.exports = function(app) {
                 if (err) app.set('log').error(err.stack);
             });
         },
-        syncObject     : {
+        syncObject: {
             userUnsubscribe: function(userId, subscriptionId) {
                 sync(function() {
                     return sync.Parallel(function(callback) {

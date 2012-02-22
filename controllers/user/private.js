@@ -22,23 +22,23 @@ module.exports = function(app) {
                         if (app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: toUser.id }) === 0) continue;
 
                         app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
-                            token         : app.set('serverToken'),
-                            action        : 'private.reopen',
-                            fromUser      : { name: fromUser.name },
-                            toUser        : { name: toUser.name },
+                            token: app.set('serverToken'),
+                            action: 'private.reopen',
+                            fromUser: { name: fromUser.name },
+                            toUser: { name: toUser.name },
                             privateChannel: {
-                                id  : channel.id,
+                                id: channel.id,
                                 name: channel.name,
-                                url : channel.url
+                                url: channel.url
                             }
                         });
                         return { data: { id: channel.id, name: channel.name, url: channel.url }};
                     }
                     app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
-                        token   : app.set('serverToken'),
-                        action  : 'private.request',
+                        token: app.set('serverToken'),
+                        action: 'private.request',
                         fromUser: { name: fromUser.name },
-                        toUser  : { name: toUser.name }
+                        toUser: { name: toUser.name }
                     });
                     break;
                 case 'yes':
@@ -46,26 +46,31 @@ module.exports = function(app) {
                     channel = query.execFind.sync(query);
 
                     var num = channel.length > 0 ? (parseInt(channel[0].url.match(/\d+$/)[0]) + 1) : 1;
-                    channel = app.set('helpers').channel.create.sync(app.set('helpers').channel, 'Приват #' + num, 'prv' + num, true);
+                    channel = app.set('helpers').channel.create.sync(app.set('helpers').channel, {
+                        'name': 'Приват #' + num,
+                        'url': 'prv' + num,
+                        'private': true,
+                        'owner': toUser.id
+                    });
 
                     app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
-                        token         : app.set('serverToken'),
-                        action        : 'private.yes',
-                        fromUser      : { name: fromUser.name },
-                        toUser        : { name: toUser.name },
+                        token: app.set('serverToken'),
+                        action: 'private.yes',
+                        fromUser: { name: fromUser.name },
+                        toUser: { name: toUser.name },
                         privateChannel: {
-                            id  : channel.id,
+                            id: channel.id,
                             name: channel.name,
-                            url : channel.url
+                            url: channel.url
                         }
                     });
                     return { data: { id: channel.id, name: channel.name, url: channel.url }};
                 case 'no':
                     return app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
-                        token   : app.set('serverToken'),
-                        action  : 'private.no',
+                        token: app.set('serverToken'),
+                        action: 'private.no',
                         fromUser: { name: fromUser.name },
-                        toUser  : { name: toUser.name }
+                        toUser: { name: toUser.name }
                     });
             }
         }, function(err, result) {

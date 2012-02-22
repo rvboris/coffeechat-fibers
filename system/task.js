@@ -8,7 +8,7 @@ module.exports = function(app, task) {
             if (run) return;
             run = true;
 
-            app.set('log').debug('process "' + this.task.name + '" start');
+            app.set('log').debug('process "%s" start', this.task.name);
 
             var args = Array.prototype.slice.call(arguments);
 
@@ -16,7 +16,7 @@ module.exports = function(app, task) {
                 return function() {
                     clearInterval(cycle);
                     run = false;
-                    app.set('log').debug('process "' + self.task.name + '" stop');
+                    app.set('log').debug('process "%s" stop', self.task.name);
                 };
             })(this), this.task.interval);
 

@@ -70,7 +70,7 @@ module.exports = function(argv) {
             app.Message = mongoose.model('Message');
             app.PasswordRecovery = mongoose.model('PasswordRecovery');
 
-            if (app.set('argv').env == 'development') {
+            if (app.set('argv').env === 'development') {
                 app.set('models').removeCollections.sync(app.set('models'), mongoose);
                 app.set('log').debug('collections removed');
             }
@@ -101,15 +101,6 @@ module.exports = function(argv) {
                 app.set('tasks')[taskObject.task.name] = taskObject;
             }
 
-            var channels = [];
-
-            for (i = 0; i < channelFiles.length; i++) {
-                channels.push(require(channelFiles[i]));
-                channels[i].channelId = app.set('helpers').channel.create.sync(app.set('helpers').channel, channels[i].channel, channels[i].name).id;
-            }
-
-            app.set('channels', app.set('helpers').channel.getChannelObjects.sync(app.set('helpers').channel, channels));
-
             var users = [];
 
             for (i = 0; i < userFiles.length; i++) {
@@ -124,6 +115,20 @@ module.exports = function(argv) {
                 app.set('systemUserIds').push(app.set('users')[userName].id);
             }
 
+            var channels = [];
+
+            for (i = 0; i < channelFiles.length; i++) {
+                channels.push(require(channelFiles[i]));
+                channels[i].channelId = app.set('helpers').channel.create.sync(app.set('helpers').channel, {
+                    'name': channels[i].channel,
+                    'url': channels[i].name,
+                    'private': false,
+                    'owner': app.set('users').root.id
+                }).id;
+            }
+
+            app.set('channels', app.set('helpers').channel.getChannelObjects.sync(app.set('helpers').channel, channels));
+
             return { users: users, channels: channels };
         };
 
@@ -133,55 +138,54 @@ module.exports = function(argv) {
 
         var clients = [];
 
-        dnode(
-            function(client, conn) {
-                conn.on('ready', function() {
-                    clients[conn.id] = client;
-                    app.set('log').debug('client connected');
-                });
+        dnode(function(client, conn) {
+            conn.on('ready', function() {
+                clients[conn.id] = client;
+                app.set('log').debug('client connected');
+            });
 
-                conn.on('end', function() {
-                    delete clients[conn.id];
-                    app.set('log').debug('client disconnected');
-                });
+            conn.on('end', function() {
+                delete clients[conn.id];
+                app.set('log').debug('client disconnected');
+            });
 
-                this.keys = {
-                    getServerToken: function(tKey, callback) {
-                        callback(aes.enc(app.set('serverToken'), tKey));
-                    },
-                    getServerKey: function(tKey, callback) {
-                        callback(aes.enc(app.set('serverKey'), tKey));
-                    },
-                    getSessionKey: function(tKey, callback) {
-                        callback(aes.enc(app.set('sessionKey'), tKey));
+            this.keys = {
+                getServerToken: function(tKey, callback) {
+                    callback(aes.enc(app.set('serverToken'), tKey));
+                },
+                getServerKey: function(tKey, callback) {
+                    callback(aes.enc(app.set('serverKey'), tKey));
+                },
+                getSessionKey: function(tKey, callback) {
+                    callback(aes.enc(app.set('sessionKey'), tKey));
+                }
+            };
+
+            this.getChannels = function(callback) {
+                callback(plugins.channels);
+            };
+
+            this.getUsers = function(callback) {
+                callback(plugins.users);
+            };
+
+            this.task = function(plugin, command) {
+                var args = Array.prototype.slice.call(arguments);
+                args.shift();
+                args.shift();
+                args.unshift(clients[conn.id]);
+
+                if (app.set('tasks')[plugin] && app.set('tasks')[plugin].task.syncObject && typeof app.set('tasks')[plugin].task.syncObject[command] === 'function') {
+                    if (typeof args[args.length - 1] === 'function') {
+                        args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
+                    } else {
+                        app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
                     }
-                };
+                }
+            };
+        }).listen(app.set('argv').sync, '127.0.0.1');
 
-                this.getChannels = function(callback) {
-                    callback(plugins.channels);
-                };
-
-                this.getUsers = function(callback) {
-                    callback(plugins.users);
-                };
-
-                this.task = function(plugin, command) {
-                    var args = Array.prototype.slice.call(arguments);
-                    args.shift();
-                    args.shift();
-                    args.unshift(clients[conn.id]);
-
-                    if (app.set('tasks')[plugin] && app.set('tasks')[plugin].task.syncObject && typeof app.set('tasks')[plugin].task.syncObject[command] === 'function') {
-                        if (typeof args[args.length - 1] === 'function') {
-                            args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
-                        } else {
-                            app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
-                        }
-                    }
-                };
-            }).listen(app.set('argv').sync, '127.0.0.1');
-
-        app.set('log').info('master server start listening on port ' + app.set('argv').sync);
+        app.set('log').info('master server start listening on port %s', app.set('argv').sync);
 
         (function() {
             app.set('log').debug('setup assets');
@@ -220,7 +224,7 @@ module.exports = function(argv) {
         for (var i = 0; i < argv.workers; i++) cluster.fork();
 
         cluster.on('death', function(worker) {
-            app.set('log').debug('worker ' + worker.pid + ' died. restart...');
+            app.set('log').debug('worker %s died. restart...', worker.pid);
             cluster.fork();
         });
     });

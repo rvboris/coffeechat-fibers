@@ -1,11 +1,10 @@
 var fs   = require('fs');
-var sys  = require('util');
 var sync = require('sync');
 
 module.exports = function(filename, bufferSize) {
     if (!bufferSize) bufferSize = 1024;
 
-    function random(from, to) {
+    function random (from, to) {
         return Math.floor(Math.random() * (to - from + 1) + from);
     }
 
@@ -29,7 +28,7 @@ module.exports = function(filename, bufferSize) {
             var splitter = line.lastIndexOf('|');
             return {
                 question: line.substr(0, splitter),
-                answer  : line.substr(splitter + 1, line.length)
+                answer: line.substr(splitter + 1, line.length)
             };
         }.async()
     };

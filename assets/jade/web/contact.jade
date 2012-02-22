@@ -31,7 +31,7 @@ html(lang='ru')
           load: '/javascripts/web/jquery.contact.js',
           complete: function () {
             if (!$.fn.contact) return alert('Ошибка загрузки')
-            $.fn.contact('!{env}');
+            $.fn.contact('!{env}', '!{csrf}');
           }
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
@@ -55,4 +55,3 @@ html(lang='ru')
             textarea(name='contact[message]')#message
           div.clearfix
             button(type='submit') Отправить сообщение
-            div.clearfix.result

@@ -24,9 +24,9 @@ module.exports = function(app) {
 
             for (var i = 0; i < subscriptions.length; i++) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {
-                    token : app.set('serverToken'),
+                    token: app.set('serverToken'),
                     action: 'update',
-                    user  : { name: user.name, status: user.status }
+                    user: { name: user.name, status: user.status }
                 });
             }
 

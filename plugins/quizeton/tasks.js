@@ -13,7 +13,7 @@ module.exports = function(app) {
     var eventer = new events.EventEmitter();
 
     var settings = {
-        waitTime    : 20,
+        waitTime: 20,
         hintInterval: 15,
         quizInterval: 10
     };
@@ -22,7 +22,7 @@ module.exports = function(app) {
         recipient.publish('/channel/' + app.set('channels')[name].id, {
             text: text,
             name: '$',
-            to  : to || []
+            to: to || []
         });
     });
 
@@ -65,9 +65,9 @@ module.exports = function(app) {
     });
 
     return {
-        name      : name,
-        interval  : 1,
-        callback  : function(recipient, stop) {
+        name: name,
+        interval: 1,
+        callback: function(recipient, stop) {
             eventer.on('error', function(recipient, err) {
                 app.set('log').error(err.stack);
                 eventer.emit('reply', recipient, 'Произошла ошибка, игра будет остановлена');
@@ -93,7 +93,7 @@ module.exports = function(app) {
             timer--;
         },
         syncObject: {
-            start    : function(recipient) {
+            start: function(recipient) {
                 if (status === 'start' || status === 'pause') return;
 
                 app.set('log').debug('start quizeton');
@@ -109,7 +109,7 @@ module.exports = function(app) {
                     if (err) eventer.emit('error', recipient, err);
                 });
             },
-            newQuiz  : function(recipient, userId) {
+            newQuiz: function(recipient, userId) {
                 app.set('log').debug('obtained the correct answer, a new quiz');
 
                 var points = hintAnswer.length === 0 ? quiz.answer.length + 5 : quiz.answer.length - hintAnswer.length;

@@ -21,10 +21,10 @@ module.exports = function(app) {
                 var user = app.User.findById.sync(app.User, messages[i].userId.toHexString(), ['name']);
                 var archive = typeof app.set('users')[user.name] !== 'undefined';
                 messageList.push({
-                    name   : archive ? '$ Архив' : user.name,
-                    time   : messages[i].time,
-                    text   : messages[i].text,
-                    id     : messages[i].id,
+                    name: archive ? '$ Архив' : user.name,
+                    time: messages[i].time,
+                    text: messages[i].text,
+                    id: messages[i].id,
                     archive: archive
                 });
             }

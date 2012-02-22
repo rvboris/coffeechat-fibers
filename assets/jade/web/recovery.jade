@@ -32,7 +32,7 @@ html(lang='ru')
           load: '/javascripts/web/jquery.recovery.js',
           complete: function () {
             if (!$.fn.recovery) return alert('Ошибка загрузки')
-            $.fn.recovery(!{JSON.stringify(user)}, '!{serverKey}', '!{env}');
+            $.fn.recovery(!{JSON.stringify(user)}, '!{serverKey}', '!{env}', '!{csrf}');
           }
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },

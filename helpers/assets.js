@@ -3,8 +3,8 @@ var stylus = require('stylus');
 var sync   = require('sync');
 var fs     = require('fs');
 
-module.exports = function (env, paths, options) {
-    function compileWebAssets() {
+module.exports = function(env, paths, options) {
+    function compileWebAssets () {
         // Javascripts
         ams.build
             .create(paths.js.root)
@@ -145,7 +145,7 @@ module.exports = function (env, paths, options) {
                     paths.css.stylus + '/mobile/style.styl',
                     paths.css.stylus + '/mobile/archive.styl'
                 ])
-                .process(function (path, data) {
+                .process(function(path, data) {
                     delete this.data[path];
                     var css = stylus(data).set('filename', path).set('compress', true);
                     this.data[path.replace(/\.[styl]+$/, '.css')] = css.render.sync(css);
@@ -155,7 +155,7 @@ module.exports = function (env, paths, options) {
         }
     }
 
-    function compileMobileAssets() {
+    function compileMobileAssets () {
         // Javascripts
         ams.build
             .create(paths.js.root)
@@ -174,8 +174,8 @@ module.exports = function (env, paths, options) {
             .end();
     }
 
-    return function () {
-        sync(function () {
+    return function() {
+        sync(function() {
             ams.build
                 .create(paths['public'])
                 .cleanup(paths['public'] + '/javascripts')
@@ -185,7 +185,7 @@ module.exports = function (env, paths, options) {
             compileWebAssets();
             //compileMobileAssets();
 
-        }, function (err) {
+        }, function(err) {
             if (err) console.log(err.stack);
         });
     }

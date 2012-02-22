@@ -22,26 +22,29 @@
     privateMethods.form = function() {
         $('section.contact form').submit(function() {
             $('section.contact').block({
-                message   : 'Отправка...',
-                css       : {
-                    'border'     : 'none',
-                    'background' : 'transparent',
-                    'height'     : '25px',
+                message: 'Отправка...',
+                css: {
+                    'border': 'none',
+                    'background': 'transparent',
+                    'height': '25px',
                     'line-height': '25px',
-                    'color'      : '#C4B1C4',
-                    'font-size'  : '1.1em'
+                    'color': '#C4B1C4',
+                    'font-size': '1.1em'
                 },
                 overlayCSS: {
-                    opacity        : 0.6,
+                    opacity: 0.6,
                     backgroundColor: '#4A324A'
                 }
             });
 
-            $.post(window.location.href, { contact: {
-                name   : $('#contact #name').val(),
-                email  : $('#contact #email').val(),
-                message: $('#contact #message').val()
-            }}).success(function(data) {
+            $.post(window.location.href, {
+                _csrf: privateMethods.options.csrf,
+                contact: {
+                    name: $('#contact #name').val(),
+                    email: $('#contact #email').val(),
+                    message: $('#contact #message').val()
+                }
+            }).success(function(data) {
                 if (data.error) {
                     $.fn.notifier(data.error);
                 } else {
@@ -70,7 +73,7 @@
         privateMethods.form();
     };
 
-    $.fn.contact = function(env) {
-        return instance ? instance : instance = new Contact({ env: env });
+    $.fn.contact = function(env, csrf) {
+        return instance ? instance : instance = new Contact({ env: env, csrf: csrf });
     };
 })(jQuery, window);

@@ -20,7 +20,7 @@ module.exports = function(app) {
                 user = app.User.findById.sync(app.User, req.session.user.id);
                 if (user) {
                     app.set('faye').bayeux.getClient().publish('/user/' + user.id, {
-                        token : app.set('serverToken'),
+                        token: app.set('serverToken'),
                         action: 're-entry'
                     });
                     return {
@@ -54,8 +54,8 @@ module.exports = function(app) {
                 if (result.error) return result;
                 if (!result.update) {
                     newSubscriptions.push({
-                        id   : channels[i],
-                        diff : 1,
+                        id: channels[i],
+                        diff: 1,
                         count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
                     });
                     if (!userChannels[channels[i]]) {
@@ -89,8 +89,8 @@ module.exports = function(app) {
             if (result.newSubscriptions.length) {
                 setTimeout(function() {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
-                        token   : app.set('serverToken'),
-                        action  : 'upd',
+                        token: app.set('serverToken'),
+                        action: 'upd',
                         channels: result.newSubscriptions
                     });
                 }, 100);
@@ -99,9 +99,9 @@ module.exports = function(app) {
                     (function(i) {
                         setTimeout(function() {
                             app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
-                                token : app.set('serverToken'),
+                                token: app.set('serverToken'),
                                 action: 'con',
-                                users : result.userChannels[result.newSubscriptions[i].id]
+                                users: result.userChannels[result.newSubscriptions[i].id]
                             });
                         }, 100 + (10 * i));
                     })(i);

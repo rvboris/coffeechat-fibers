@@ -3,7 +3,7 @@ var sync = require('sync');
 var path = require('path');
 var file = require('file');
 
-function flatten(array) {
+function flatten (array) {
     var flat = [];
     for (var i = 0, l = array.length; i < l; i++) {
         var type = Object.prototype.toString.call(array[i]).split(' ').pop().split(']').shift().toLowerCase();

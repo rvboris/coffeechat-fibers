@@ -11,7 +11,7 @@ module.exports = function(app) {
 
         sync(function() {
             var subsription = app.Subscription.count.sync(app.Subscription, {
-                userId   : req.session.user.id,
+                userId: req.session.user.id,
                 channelId: req.params.channel
             });
 
@@ -22,9 +22,9 @@ module.exports = function(app) {
             if (channel['private']) throw new Error('access denied');
 
             return {
-                users   : app.Subscription.count.sync(app.Subscription, { channelId: channel.id }),
+                users: app.Subscription.count.sync(app.Subscription, { channelId: channel.id }),
                 messages: app.Message.count.sync(app.Message, { channelId: channel.id }),
-                date    : channel.date
+                date: channel.date
             };
         }, function(err, channelInfo) {
             if (err) {

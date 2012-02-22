@@ -24,7 +24,7 @@ module.exports = function(app) {
                     return { error: 'Первое поле не заполнено' };
                 if (!req.body.user.password2)
                     return { error: 'Второе поле не заполнено' };
-                if (req.body.user.password1 != req.body.user.password2)
+                if (req.body.user.password1 !== req.body.user.password2)
                     return { error: 'Пароли не совпадают' };
 
                 try {
@@ -40,10 +40,10 @@ module.exports = function(app) {
                 recovery.remove.sync(recovery);
 
                 if (nodemailer.send_mail.sync(nodemailer, {
-                    sender : 'no-reply@' + app.set('host'),
-                    to     : user.email,
+                    sender: 'no-reply@' + app.set('host'),
+                    to: user.email,
                     subject: nconf.get('sitename') + ' // Изменение пароля',
-                    html   : 'Пароль был изменен, ваш новый пароль: <b>' + req.body.user.password1 + '</b>'
+                    html: 'Пароль был изменен, ваш новый пароль: <b>' + req.body.user.password1 + '</b>'
                 })) {
                     return { msg: 'Пароль изменен' };
                 }
@@ -59,14 +59,15 @@ module.exports = function(app) {
             if (result instanceof app.User) {
                 try {
                     return res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
-                        user     : app.set('helpers').user.createPrivate(result),
+                        user: app.set('helpers').user.createPrivate(result),
                         serverKey: app.set('serverKey'),
-                        session  : app.session,
-                        title    : 'Восстановление пароля',
-                        env      : app.set('argv').env
+                        session: app.session,
+                        title: 'Восстановление пароля',
+                        env: app.set('argv').env,
+                        csrf: req.session._csrf
                     });
-                } catch (e) {
-                    app.set('log').error(e.stack);
+                } catch (err) {
+                    app.set('log').error(err.stack);
                 }
             }
 

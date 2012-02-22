@@ -4,14 +4,14 @@ var rbytes = require('rbytes');
 var get    = require('get');
 
 module.exports = function(app) {
-    function successLogin(channels, user) {
+    function successLogin (channels, user) {
         for (var i = 0, newSubscriptions = [], userChannels = [], result; i < channels.length; i++) {
             result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
             if (result.error) return result;
             if (!result.update) {
                 newSubscriptions.push({
-                    id   : channels[i],
-                    diff : 1,
+                    id: channels[i],
+                    diff: 1,
                     count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
                 });
                 if (!userChannels[channels[i]]) {
@@ -67,7 +67,7 @@ module.exports = function(app) {
             newUser.name = userName;
             newUser.secret = userPassword;
             if (userData.email) newUser.email = userData.email;
-            if (userData.sex) newUser.gender = (userData.sex == 1) ? 'W' : 'M';
+            if (userData.sex) newUser.gender = (parseInt(userData.sex) === 1) ? 'W' : 'M';
             newUser.oauth.identity = userData.identity;
             newUser.oauth.provider = userData.network;
 
@@ -101,8 +101,8 @@ module.exports = function(app) {
             if (result.newSubscriptions.length) {
                 setTimeout(function() {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
-                        token   : app.set('serverToken'),
-                        action  : 'upd',
+                        token: app.set('serverToken'),
+                        action: 'upd',
                         channels: result.newSubscriptions
                     });
                 }, 100);
@@ -111,9 +111,9 @@ module.exports = function(app) {
                     (function(i) {
                         setTimeout(function() {
                             app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
-                                token : app.set('serverToken'),
+                                token: app.set('serverToken'),
                                 action: 'con',
-                                users : result.userChannels[result.newSubscriptions[i].id]
+                                users: result.userChannels[result.newSubscriptions[i].id]
                             });
                         }, 100 + (10 * i));
                     })(i);

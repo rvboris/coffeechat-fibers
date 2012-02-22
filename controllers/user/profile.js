@@ -2,7 +2,7 @@ var sync = require('sync');
 
 module.exports = function(app) {
     return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id == '0') return res.send(401);
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
 
         if (!req.params.name) {
             app.set('log').debug('user name param not found');
@@ -19,12 +19,12 @@ module.exports = function(app) {
             }
 
             res.send({
-                name    : profileUser.name,
-                pic     : profileUser.pic,
-                status  : profileUser.status,
-                gender  : profileUser.gender,
+                name: profileUser.name,
+                pic: profileUser.pic,
+                status: profileUser.status,
+                gender: profileUser.gender,
                 messages: profileUser.stats.messages,
-                points  : profileUser.points,
+                points: profileUser.points,
                 isIgnore: me.ignore.indexOf(profileUser.name) > -1
             });
         }, function(err) {

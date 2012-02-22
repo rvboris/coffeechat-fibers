@@ -29,7 +29,7 @@ html(lang='ru')
           load: '/javascripts/web/jquery.interface.js',
           complete: function () {
             if (!$.fn.ufc) return alert('Ошибка загрузки jquery.interface');
-            $.fn.ufc();
+            $.fn.ufc('!{csrf}');
           }
         },
         { load: ['//ulogin.ru/js/widget.js', '/javascripts/web/jquery.system.plugins.js'] },
@@ -37,7 +37,7 @@ html(lang='ru')
           load: '/javascripts/web/jquery.system.js',
           complete: function() {
             if (!$.fn.sys) return alert('Ошибка загрузки jquery.system');
-            $.fn.sys(!{JSON.stringify(user)}, !{JSON.stringify(channels)}, '!{serverKey}', '!{env}', !{JSON.stringify(errors)});
+            $.fn.sys(!{JSON.stringify(user)}, !{JSON.stringify(channels)}, '!{serverKey}', '!{env}', '!{csrf}', !{JSON.stringify(errors)});
           }
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
@@ -103,7 +103,7 @@ html(lang='ru')
             != partial('partials/web/smiles')
       section.account.clearfix
         h1 Управление аккаунтом
-        != partial('forms/web/account')
+        != partial('forms/web/account', { csrf: csrf })
         h1 Настройки звука
         != partial('forms/web/audio-settings')
         h1 Настройки интерфейса
@@ -111,7 +111,7 @@ html(lang='ru')
       section.help.clearfix
         != partial('partials/web/help')
       section.forgot.clearfix
-        != partial('forms/web/forgot')
+        != partial('forms/web/forgot', { csrf: csrf })
       footer#bottom
         div
           form(method='POST')

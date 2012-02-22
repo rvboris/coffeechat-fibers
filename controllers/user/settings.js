@@ -2,7 +2,7 @@ var sync = require('sync');
 
 module.exports = function(app) {
     return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id == '0') return res.send(401);
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
 
         sync(function() {
             var user = app.User.findById.sync(app.User, req.session.user.id);

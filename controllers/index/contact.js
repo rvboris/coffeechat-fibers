@@ -34,10 +34,10 @@ module.exports = function(app) {
 
             sync(function() {
                 return nodemailer.send_mail.sync(nodemailer, {
-                    sender : req.body.contact.email,
-                    to     : 'rv.boris@gmail.com',
+                    sender: req.body.contact.email,
+                    to: 'rv.boris@gmail.com',
                     subject: 'Новое сообщение от ' + req.body.contact.name + ' (' + req.body.contact.email + ') // ' + nconf.get('sitename'),
-                    html   : req.body.contact.message
+                    html: req.body.contact.message
                 });
             }, function(err, result) {
                 if (err) {
@@ -54,8 +54,9 @@ module.exports = function(app) {
         } else {
             try {
                 res.render((req.mobile ? 'mobile' : 'web') + '/contact', {
+                    csrf: req.session._csrf,
                     title: 'Контакты',
-                    env  : app.set('argv').env
+                    env: app.set('argv').env
                 });
             } catch (e) {
                 app.set('log').error(e.stack);

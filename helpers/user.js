@@ -2,11 +2,11 @@ var sync = require('sync');
 
 module.exports = function(app) {
     return {
-        create        : function(name, password) {
+        create: function(name, password) {
             var user = app.User.findOne.sync(app.User, { name: name });
 
             if (user) {
-                app.set('log').debug('user "' + name + '" loaded');
+                app.set('log').debug('user "%s" loaded', name);
                 return user;
             }
 
@@ -21,7 +21,7 @@ module.exports = function(app) {
             }
             return userObjects;
         }.async(),
-        session       : function(req, res, next) {
+        session: function(req, res, next) {
             if (req.session.user && req.session.user.id !== '0') {
                 sync(function() {
                     var user = app.User.findById.sync(app.User, req.session.user.id, []);
@@ -41,22 +41,22 @@ module.exports = function(app) {
                 next();
             }
         },
-        createPublic  : function(user) {
+        createPublic: function(user) {
             return {
-                name  : user.name,
+                name: user.name,
                 gender: user.gender,
                 status: user.status
             };
         },
-        createPrivate : function(user) {
+        createPrivate: function(user) {
             return {
-                id      : user.id,
-                pic     : user.pic,
-                name    : user.name,
-                email   : user.email,
-                gender  : user.gender,
-                status  : user.status,
-                ignore  : user.ignore,
+                id: user.id,
+                pic: user.pic,
+                name: user.name,
+                email: user.email,
+                gender: user.gender,
+                status: user.status,
+                ignore: user.ignore,
                 settings: user.settings
             };
         }

@@ -4,9 +4,9 @@ module.exports = function(app) {
     var name = 'recovery';
 
     return {
-        name      : name,
-        interval  : 7200, // 2 hours
-        callback  : function(recipient, stop, interval) {
+        name: name,
+        interval: 7200, // 2 hours
+        callback: function(recipient, stop, interval) {
             sync(function() {
                 if (app.PasswordRecovery.count.sync(app.PasswordRecovery, {}) === 0) return stop();
                 app.PasswordRecovery.remove.sync(app.PasswordRecovery, { time: { $lt: new Date(new Date().getTime() - interval * 1000) } });
