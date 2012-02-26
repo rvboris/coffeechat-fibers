@@ -14,7 +14,7 @@ module.exports = function(app) {
             sync(function() {
                 var channelId = subscription.channelId.toHexString();
 
-                app.set('log').debug('subscription to remove - time: %s, current: %s, diff: %d s.', moment(subscription.time).format('mm:ss'), moment().format('mm:ss'), ((new Date() - subscription.time) / 1000));
+                app.set('log').debug('subscription to remove - time: %s, current: %s, diff: %s s.', moment(subscription.time).format('mm:ss'), moment().format('mm:ss'), ((new Date() - subscription.time) / 1000));
 
                 subscription.remove.sync(subscription);
 
@@ -81,13 +81,9 @@ module.exports = function(app) {
         syncObject: {
             userUnsubscribe: function(userId, subscriptionId) {
                 sync(function() {
-                    return sync.Parallel(function(callback) {
-                        app.User.findById(userId, callback('user'));
-                        app.Subscription.findById(subscriptionId, callback('subscription'));
-                    });
-                }, function(err, result) {
+                    app.set('events').emit('userUnsubscribe', app.User.findById.future(app.User, userId).result, app.Subscription.findById.future(app.Subscription, subscriptionId).result);
+                }, function(err) {
                     if (err) return app.set('log').error(err.stack);
-                    app.set('events').emit('userUnsubscribe', result.user, result.subscription);
                 });
             }
         }

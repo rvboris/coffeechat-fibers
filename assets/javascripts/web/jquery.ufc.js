@@ -600,7 +600,7 @@
         separatorWidth: 11,
 
         hide: function (channelName, remember, callback) {
-            if (typeof remember === 'undefined') remember = true;
+            if (typeof remember == 'undefined') remember = true;
 
             $(channelName + ' .sidebar').fadeOut('fast', function () {
                 $(channelName + ' .chat').animate({
@@ -615,7 +615,7 @@
         },
 
         show: function (channelName, remember, callback) {
-            if (typeof remember === 'undefined') remember = true;
+            if (typeof remember == 'undefined') remember = true;
 
             if ($(channelName + ' .sidebar').is('visible')) {
                 if (typeof callback === 'function') callback();
@@ -781,7 +781,8 @@
                                     }
 
                                     this.set('content.text', content);
-                                }
+                                },
+                                data: { _csrf: privateMethods.options.csrf }
                             }
                         },
                         position: { viewport: $(window) },
@@ -812,7 +813,8 @@
                                     content += '</div>';
 
                                     this.set('content.text', content);
-                                }
+                                },
+                                data: { _csrf: privateMethods.options.csrf }
                             }
                         },
                         position: { viewport: $('#channel-' + channel + '-content .scrollableArea') },

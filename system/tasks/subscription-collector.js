@@ -18,7 +18,7 @@ module.exports = function(app) {
 
                 if (!subscriptions || subscriptions.length === 0) return;
 
-                app.set('log').debug('%d results found outdated subscriptions', subscriptions.length);
+                app.set('log').debug('%s results found outdated subscriptions', subscriptions.length);
 
                 var subscriptionsChannels = [];
                 var subscriptionsCount = [];
@@ -51,14 +51,14 @@ module.exports = function(app) {
                                 users: usersChannels[subscriptionsChannels[i].id]
                             });
 
-                            app.set('log').debug('%d users in list updated', usersChannels[subscriptionsChannels[i].id].length);
+                            app.set('log').debug('%s users in list updated', usersChannels[subscriptionsChannels[i].id].length);
                         }, 100 + (50 * i));
                     })(i);
 
                     subscriptionsChannels[i].diff *= -1;
                     subscriptionsChannels[i].count = subscriptionsCount[subscriptionsChannels[i].id] + subscriptionsChannels[i].diff;
 
-                    app.set('log').debug('%d users unsubscribed', usersChannels[subscriptionsChannels[i].id].length);
+                    app.set('log').debug('%s users unsubscribed', usersChannels[subscriptionsChannels[i].id].length);
                 }
 
                 recipient.publish('/channel-list', {
@@ -66,7 +66,7 @@ module.exports = function(app) {
                     channels: subscriptionsChannels
                 });
 
-                app.set('log').debug('%d channels in list updated', subscriptionsChannels.length);
+                app.set('log').debug('%s channels in list updated', subscriptionsChannels.length);
             }, function(err) {
                 if (err) {
                     app.set('log').error(err.stack);

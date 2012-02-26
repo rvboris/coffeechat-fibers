@@ -32,16 +32,23 @@ html(lang='ru')
             $.fn.ufc('!{csrf}');
           }
         },
-        { load: ['//ulogin.ru/js/widget.js', '/javascripts/web/jquery.system.plugins.js'] },
         {
-          load: '/javascripts/web/jquery.system.js',
+          load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.system.js'],
           complete: function() {
             if (!$.fn.sys) return alert('Ошибка загрузки jquery.system');
             $.fn.sys(!{JSON.stringify(user)}, !{JSON.stringify(channels)}, '!{serverKey}', '!{env}', '!{csrf}', !{JSON.stringify(errors)});
           }
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
-        { test: Modernizr.input.placeholder, nope: '/javascripts/web/jquery.placeholder.js' }
+        { test: Modernizr.input.placeholder, nope: '/javascripts/web/jquery.placeholder.js' },
+        {
+          load: 'timeout=2500!//ulogin.ru/js/widget.js',
+          complete: function() {
+            try {
+              $.fn.sys.uLogin.init(typeof uLogin == 'undefined' ? null : uLogin);
+            } catch (e) {}
+          }
+        }
       ]);
   body
     #app

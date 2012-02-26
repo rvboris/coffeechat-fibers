@@ -1,1 +1,1 @@
-(function(a){a.fn.accordion=function(b){var c={items:null,speed:"slow"};b&&a.extend(c,b),a(this).live("click",function(){var b=a(this).next();b.is(":visible")||(a(c.items).not(b).slideUp(c.speed),b.stop(!1,!0).slideToggle(c.speed))})}})(jQuery);
+(function(a){a.fn.accordion=function(b){var c={items:null,speed:"slow"};b&&a.extend(c,b),a(this).on("click",function(){var b=a(this).next();b.is(":visible")||(a(c.items).not(b).slideUp(c.speed),b.stop(!1,!0).slideToggle(c.speed))})}})(jQuery);

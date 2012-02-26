@@ -11,6 +11,8 @@ module.exports = function(app) {
         events.push(require(eventFiles[i])(app));
     }
 
+    eventer.setMaxListeners(6);
+
     eventer.on('userUnsubscribe', function(user, subscription) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userUnsubscribe && typeof events[i].userUnsubscribe === 'function') {

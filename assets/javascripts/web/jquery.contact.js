@@ -20,6 +20,20 @@
     };
 
     privateMethods.form = function() {
+        var textAreaHeight;
+
+        $('section.contact textarea#message').autoResize({
+            maxHeight: 500,
+            minHeight: 100,
+            animate: false,
+            onBeforeResize: function() {
+                textAreaHeight = $(this).height();
+            },
+            onAfterResize: function() {
+                $(this).parent().css('height', ($(this).parent().height() - (textAreaHeight - $(this).height())) + 'px');
+            }
+        });
+
         $('section.contact form').submit(function() {
             $('section.contact').block({
                 message: 'Отправка...',

@@ -74,7 +74,7 @@ module.exports = function(app) {
             for (var i = 0; i < original.length; i++) {
                 var myCount = 0;
                 for (var w = 0; w < copy.length; w++) {
-                    if (original[i] === copy[w]) {
+                    if (original[i] == copy[w]) {
                         myCount++;
                         delete copy[w];
                     }

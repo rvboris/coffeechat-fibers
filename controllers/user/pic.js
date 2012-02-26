@@ -22,7 +22,7 @@ module.exports = function(app) {
 
         // events
         form.on('progress', function(bytesReceived, bytesExpected) {
-            app.set('log').debug('userpic upload progress: %d/%d', bytesReceived / 1024, bytesExpected / 1024);
+            app.set('log').debug('userpic upload progress: %s/%s', bytesReceived / 1024, bytesExpected / 1024);
         });
 
         form.on('error', function(err) {

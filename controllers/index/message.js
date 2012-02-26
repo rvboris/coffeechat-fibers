@@ -21,7 +21,7 @@ module.exports = function(app) {
                 return app.set('log').debug('user not found');
             }
 
-            message.timeString = moment(new Date(message.time)).format('DD.MM.YY HH:mm:ss');
+            message.timeString = moment(new Date(message.time)).format('DD.MM.YY H:mm:ss'); // TODO: 24h time format (moment.js bug?)
 
             return { message: message, user: user };
         }, function(err, result) {

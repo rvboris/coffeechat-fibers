@@ -16,12 +16,12 @@ module.exports = function(app) {
             sync(function() {
                 var usersToRemove = app.User.find.sync(app.User, { '_id': { $nin: app.set('systemUserIds') }, 'stats.lastaccess': { $lte: new Date(new Date().getTime() - interval * 21 * 1000) } }, ['name', 'email']);
 
-                app.set('log').debug('%d innactive users to remove', usersToRemove.length);
+                app.set('log').debug('%s innactive users to remove', usersToRemove.length);
 
                 for (var i = 0; i < usersToRemove.length; i++) {
                     var messages = app.Message.find.sync(app.Message, { userId: usersToRemove[i].id });
 
-                    app.set('log').debug('%d messages from "%s" to archive', messages.length, usersToRemove[i].name);
+                    app.set('log').debug('%s messages from "%s" to archive', messages.length, usersToRemove[i].name);
 
                     for (var j = 0; j < messages.length; j++) {
                         messages[j].userId = app.set('users')['deleted'].id;
@@ -43,7 +43,7 @@ module.exports = function(app) {
 
                 var usersToNotify = app.User.find.sync(app.User, { '_id': { $nin: app.set('systemUserIds') }, 'stats.lastaccess': { $lt: new Date(new Date().getTime() - interval * 14 * 1000) }, 'email': { $exists: true } }, ['email']);
 
-                app.set('log').debug('%d innactive users to notify', usersToNotify.length);
+                app.set('log').debug('%s innactive users to notify', usersToNotify.length);
 
                 for (i = 0; i < usersToNotify.length; i++) {
                     nodemailer.send_mail.sync(nodemailer, {

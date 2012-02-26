@@ -74,19 +74,19 @@ div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#595676', EndColorStr = '#4E4B67');
 }
 
-section.account input, section.forgot input, section.recovery input {
+section.account input, section.forgot input, section.recovery input, section.contact input, section.contact textarea {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#38130D', EndColorStr = '#4D1A12');
 }
 
-section.account input:focus, section.forgot input:focus, section.recovery input:focus {
+section.account input:focus, section.forgot input:focus, section.recovery input:focus, section.contact input:focus, section.contact textarea:focus {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#230C08', EndColorStr = '#38130D');
 }
 
-section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button, section.recovery input[type=submit] {
+section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button, section.recovery input[type=submit], section.contact input[type=submit], section.contact button {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#38130D', EndColorStr = '#30100B');
 }
 
-section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover, section.recovery input[type=submit]:hover {
+section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover, section.recovery input[type=submit]:hover, section.contact input[type=submit]:hover, section.account button:hover {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#4D1A12', EndColorStr = '#451710');
 }
 
@@ -99,7 +99,7 @@ section.help button.close:hover {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#581539', EndColorStr = '#4C1132');
 }
 
-section.account, section.forgot, section.recovery, section.help {
+section.account, section.forgot, section.recovery, section.help, section.contact, section.about {
     filter: alpha(opacity = 90)
 }
 

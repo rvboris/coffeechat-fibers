@@ -6,17 +6,19 @@ var path   = require('path');
 module.exports = function(app) {
     var name = path.basename(__dirname);
     var status = 'stop';
+    var eventer = new events.EventEmitter();
     var timer;
     var quiz;
     var hintTime;
     var hintAnswer;
-    var eventer = new events.EventEmitter();
 
     var settings = {
         waitTime: 20,
         hintInterval: 15,
         quizInterval: 10
     };
+
+    eventer.setMaxListeners(4);
 
     eventer.on('reply', function(recipient, text, to) {
         recipient.publish('/channel/' + app.set('channels')[name].id, {
@@ -64,16 +66,17 @@ module.exports = function(app) {
         }
     });
 
+    eventer.on('error', function(recipient, err) {
+        app.set('log').error(err.stack);
+        eventer.emit('reply', recipient, 'Произошла ошибка, игра будет остановлена');
+        stop();
+    });
+
+
     return {
         name: name,
         interval: 1,
         callback: function(recipient, stop) {
-            eventer.on('error', function(recipient, err) {
-                app.set('log').error(err.stack);
-                eventer.emit('reply', recipient, 'Произошла ошибка, игра будет остановлена');
-                stop();
-            });
-
             switch (status) {
                 case 'pause':
                     return;
@@ -119,7 +122,7 @@ module.exports = function(app) {
                     user.points += points;
                     return user.save.sync(user);
                 }, function(err, user) {
-                    if (err) return eventer.emit(recipient, 'error');
+                    if (err) return eventer.emit('error', recipient);
                     eventer.emit('reply', recipient, 'Поздравляю это правильный ответ! +' + points + ' (' + user.points + ').', [user.name]);
                 });
 
