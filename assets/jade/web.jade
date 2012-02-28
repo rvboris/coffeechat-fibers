@@ -127,4 +127,8 @@ html(lang='ru')
             button(type='submit')#send >>>
           button#help ?
           button#smile =)
-    != partial('partials/web/metrika', { user: user, channels: channels})
+    != partial('mustache/web/ui-channel')
+    != partial('mustache/web/ui-message')
+    != partial('mustache/web/ui-user')
+    != partial('mustache/web/ui-login')
+    != partial('partials/web/metrika', { user: user, channels: channels })

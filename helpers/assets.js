@@ -100,10 +100,11 @@ module.exports = function(env, paths, options) {
                 paths.js.jqueryPlugins + '/jquery.scroller.js',
                 paths.js.jqueryPlugins + '/jquery.accordion.js',
                 paths.js.jqueryPlugins + '/jquery.resize.js',
+                paths.js.jqueryPlugins + '/jquery.uploadify.js',
+                paths.js.jqueryPlugins + '/jquery.qtip.js',
                 paths.js.library + '/gibberish-aes.js',
                 paths.js.library + '/jstorage.js',
-                paths.js.jqueryPlugins + '/jquery.uploadify.js',
-                paths.js.jqueryPlugins + '/jquery.qtip.js'
+                paths.js.library + '/mote.js'
             ])
             .combine({ js: 'jquery.interface.plugins.js' })
             .write(paths['public'] + '/javascripts/web')

@@ -29,6 +29,9 @@ module.exports = function(app) {
                 return callback(message);
             }
 
+            if (message.token) delete message.token;
+            if (message.data && message.data.token) delete message.data.token;
+
             sync(function() {
                 var matches;
                 var channel;
@@ -179,6 +182,7 @@ module.exports = function(app) {
 
                         message.data.text = aes.enc(msg.parsed, app.set('serverKey'));
                         message.data.name = user.name;
+                        message.data.time = currentTime;
 
                         return app.set('events').emit('userSend', user, channel, decodedText);
                     }
@@ -335,18 +339,6 @@ module.exports = function(app) {
                 }
                 callback(message);
             });
-        },
-        outgoing: function(message, callback) {
-            if (message.channel.substr(1, 7) === 'channel' && message.data && message.data.text) {
-                if (message.token === app.set('serverToken') || message.data.token === app.set('serverToken')) {
-                    message.data.text = aes.enc(message.data.text, app.set('serverKey'));
-                }
-                if (!message.data.time) message.data.time = new Date();
-                if (message.token) delete message.token;
-                if (message.data.token) delete message.data.token;
-            }
-
-            callback(message);
         }
     }
 };

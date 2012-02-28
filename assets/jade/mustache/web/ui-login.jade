@@ -1,0 +1,21 @@
+script(type='text/html')#mu-ui-login
+  div(style='display:none')#user
+    | Добро пожаловать
+    div.status.closed
+      span.name {{name}}
+      span.icon.online
+      button.switch ►
+      div.statuses
+        button#online
+          span.icon
+          span.status На месте
+        button#away
+          span.icon
+          span.status Отошел
+        button#unavailable
+          span.icon
+          span.status Недоступен
+    |  /
+    button#account Аккаунт
+    |  /
+    button#logout Выйти

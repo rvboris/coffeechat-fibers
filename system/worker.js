@@ -2,6 +2,7 @@ var express      = require('express');
 var connect      = require('connect');
 var jade         = require('jade');
 var faye         = require('faye');
+var fayeRedis    = require('faye-redis');
 var stylus       = require('stylus');
 var mongoose     = require('mongoose');
 var redisStore   = require('connect-redis')(express);
@@ -143,7 +144,7 @@ module.exports = function(argv) {
                     mount: nconf.get('faye').bayeux.mount,
                     timeout: nconf.get('faye').bayeux.timeout,
                     engine: {
-                        type: 'redis',
+                        type: fayeRedis,
                         host: nconf.get('redis').host,
                         port: nconf.get('redis').port,
                         password: nconf.get('redis').pass,

@@ -1,0 +1,11 @@
+script(type='text/html')#mu-ui-channel-format
+  li
+    button(data-id='{{channel.id}}, data-url='{{channel.url}}')
+      span.name {{channel.name}} (
+      span.count {{channel.count}})
+
+script(type='text/html')#mu-ui-channel-qtips
+  | Пользователь "{{name}}" хочет пригласить вас в приват, вы согласны?
+  div.actions.yesno.clearfix
+    button(data-name='{{name}}', onclick='$.fn.sys().actions.private.yes("{{name}}")').yes Да
+    button(data-name='{{name}}', onclick='$.fn.sys().actions.private.no("{{name}}")').no Нет

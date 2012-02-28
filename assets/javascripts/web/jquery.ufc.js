@@ -1,4 +1,4 @@
-(function($, window, document, aes) {
+(function($, window, document, aes, mote) {
     'use strict';
 
     var privateMethods = {};
@@ -664,10 +664,26 @@
     };
 
     privateMethods.message = {
-        formatSendTo: function (names) {
-            var html = '→ (';
-            for (var idx in names) html += "<button class='name" + (names[idx] === $.fn.sys().options.currentUser.name ? ' me' : '') + "'>" + names[idx] + ((idx == names.length - 1) ? '</button>' : '</button>, ');
-            return html += ') ';
+        formatSendTo: function(names) {
+            return mote.compile('→ ({getNames})')({
+                getNames: function() {
+                    var resultString = '';
+
+                    for (var idx in names) {
+                        resultString += mote.compile('<button class="name{{isMe}}">{{name}}</button>{{comma}}')({
+                            name: names[idx],
+                            isMe: function() {
+                                return names[idx] === $.fn.sys().options.currentUser.name ? ' me' : false;
+                            },
+                            comma: function() {
+                                return idx === (names.length - 1) ? false : ', '
+                            }
+                        });
+                    }
+
+                    return resultString;
+                }
+            });
         }
     };
 
@@ -967,12 +983,12 @@
                     return $.fn.notifier('Вы можете обращаться не более чем к 3 пользователям');
                 }
 
-                var html = (namesCount > 0 ? "<li style='display: none'>" : "<li>");
-                html += "<button class='name'>" + name + "</button>";
-                html += "<button class='close'>x</button>";
-                html += "</li>";
-
-                $('#channel-' + channelId + '-content .sendto').append(html);
+                $('#channel-' + channelId + '-content .sendto').append(mote.compile($('#mu-ui-tab-sendto'))({
+                    isHidden: function() {
+                        return namesCount > 0 ? 'display: none' : '';
+                    },
+                    name: name
+                }));
 
                 if (namesCount === 0) {
                     $('#channel-' + channelId + '-content .sendto').show('slide', { direction: 'left' }, 'fast');
@@ -1111,34 +1127,9 @@
     };
 
     UInterface.prototype.login = {
-        hide: function () {
-            $('#login').hide('slide', { direction: 'up' }, 'fast', function () {
-                $('#top').append(
-                    "<div id='user' style='display: none'>" +
-                        "Добро пожаловать " +
-                        "<div class='status closed'>" +
-                            "<span class='name'>" + $.fn.sys().options.currentUser.name + "</span>" +
-                            "<span class='icon online'> </span>" +
-                            "<button class='switch'>►</button>" +
-                            "<div class='statuses'>" +
-                                "<button id='online'>" +
-                                    "<span class='icon'> </span>" +
-                                    "<span class='status'>На месте</span>" +
-                                "</button>" +
-                                "<button id='away'>" +
-                                    "<span class='icon'> </span>" +
-                                    "<span class='status'>Отошел</span>" +
-                                "</button>" +
-                                "<button id='unavailable'>" +
-                                    "<span class='icon'> </span>" +
-                                    "<span class='status'>Недоступен</span>" +
-                                "</button>" +
-                            "</div>" +
-                        "</div> / " +
-                        "<button id='account'>Аккаунт</button> / " +
-                        "<button id='logout'>Выйти</button>" +
-                    "</div>");
-
+        hide: function() {
+            $('#login').hide('slide', { direction: 'up' }, 'fast', function() {
+                $('#top').append(mote.compile($('#mu-ui-login').html())({ name: $.fn.sys().options.currentUser.name }));
                 $('#top #user').show('slide', { direction: 'down' }, 'fast');
             });
         }
@@ -1151,7 +1142,7 @@
                 $('#channel-' + channelId + '-content .sidebar header span').text(parseInt($('#channel-' + channelId + '-content .sidebar header span').text()) + 1);
                 if ($.fn.sys().options.currentUser.id != '0' && $.fn.sys().options.currentUser.ignore.indexOf(user.name) > -1) return;
                 $('#channel-' + channelId + '-content .sidebar li:last-child').effect('pulsate', { times: 2 }, 1000, function() {
-                    $.fn.sys().channel.notify(channelId, user, 'В комнату вошел пользователь <button class="name">' + user.name + '</button>');
+                    $.fn.sys().channel.notify(channelId, user, mote.compile($('#mu-ui-user-enter-notfication').html())({ name: user.name }));
                 });
             }
         },
@@ -1176,7 +1167,7 @@
                 }
             }
 
-            $.fn.sys().channel.notify(channelId, user, 'Пользователь <button class="name">' + user.name + '</button> вышел из комнаты');
+            $.fn.sys().channel.notify(channelId, user, mote.compile($('#mu-ui-user-exit-notfication').html())({ name: user.name }));
         },
 
         updateGender: function (channelId, user) {
@@ -1205,7 +1196,7 @@
                 }
             }
 
-            $.fn.sys().channel.notify(channelId, user, 'Пользователь <button class="name">' + user.name + '</button> сменил пол');
+            $.fn.sys().channel.notify(channelId, user, mote.compile($('#mu-ui-user-gender-notfication').html())({ name: user.name }));
         },
 
         updateStatus: function (channelId, user) {
@@ -1233,12 +1224,22 @@
 
             $.fn.sys().channel.notify(channelId, user, 'Пользователь <button class="name">' + user.name + '</button> сменил статус');
         },
-        format: function (user) {
-            return '<li' + ($.fn.sys().options.currentUser.id != '0' && $.fn.sys().options.currentUser.ignore.indexOf(user.name) > -1 ? ' class="ignore"' : '') + '>' +
-                        '<span class="status ' + (user.status === 'F' ? 'online' : $.fn.sys().status.toString(user.status)) + '"> </span>' +
-                        '<button class=\'name' + ((user.name === $.fn.sys().options.currentUser.name) ? ' me' : '') + '\'>' + user.name + '</button>' +
-                        ((user.gender != 'N') ? privateMethods.user.formatGender(user) : '') +
-                    '</li>';
+        format: function(user) {
+            return mote.compile($('#mu-ui-user-format').html())({
+                isMe: function() {
+                    return user.name === $.fn.sys().options.currentUser.name ? ' me' : false;
+                },
+                isIgnore: function() {
+                    return $.fn.sys().options.currentUser.id != '0' && $.fn.sys().options.currentUser.ignore.indexOf(user.name) > -1 ? ' class="ignore"' : false;
+                },
+                getStatus: function() {
+                    return user.status === 'F' ? 'online' : $.fn.sys().status.toString(user.status);
+                },
+                getGender: function() {
+                    return user.gender !== 'N' ? privateMethods.user.formatGender(user) : '';
+                },
+                name: user.name
+            });
         },
         highlightMe: function () {
             $('.message button.name, .sidebar button.name').filter(function () { return this.innerHTML === $.fn.sys().options.currentUser.name }).addClass('me');
@@ -1258,12 +1259,32 @@
     };
 
     UInterface.prototype.message = {
-        format: function (message) {
-            return "<div class='message cleafix'>" +
-                       (message.id ? "<a href='/message/" + message.id + "' title='Открыть в новом окне' target='_blank'>" : "") + "<time>[" + $.fn.sys().time.format($.fn.sys().time.parse(message.time)) + ']</time>' + (message.id ? "</a>" : "") +
-                       '<button class="name' + (message.name === $.fn.sys().options.currentUser.name ? ' me' : '') + '">' + message.name + '</button>:' +
-                       '<p>' + ((message.to && message.to.length > 0) ? privateMethods.message.formatSendTo(message.to) : '') + $().emoticon(message.text) + '</p>' +
-                   '</div>';
+        format: function(message) {
+            return mote.compile($('#mu-ui-message-format').html())({
+                getTime: function() {
+                    var time = mote.compile($('#mu-ui-message-format-time').html())({
+                        time: $.fn.sys().time.format($.fn.sys().time.parse(message.time))
+                    });
+                    if (message.id) {
+                        return mote.compile($('#mu-ui-message-format-archive').html())({
+                            messageId: message.id,
+                            time: time
+                        });
+                    }
+                    return time;
+                },
+                getName: function() {
+                    return mote.compile($('#mu-ui-message-format-name').html())({
+                        name: message.name,
+                        isMe: function() {
+                            return message.name === $.fn.sys().options.currentUser.name ? ' me' : false;
+                        }
+                    });
+                },
+                getData: function() {
+                    return ((message.to && message.to.length > 0) ? privateMethods.message.formatSendTo(message.to) : '') + $().emoticon(message.text)
+                }
+            });
         }
     };
 
@@ -1379,8 +1400,11 @@
 
                 if (namesCount >= 2) return false;
 
-                var html = (namesCount > 0 ? "<li style='display: none'>" : "<li>") + name + "</li>";
-                $('#channel-' + channelId + '-content .type').append(html);
+                $('#channel-' + channelId + '-content .type').append(mote.compile('<li {{isHidden}}>{{name}}</li>')({
+                    isHidden: function() {
+                        return namesCount > 0 ? 'style="display:none"' : false;
+                    }
+                }));
 
                 if (namesCount === 0) {
                     $('#channel-' + channelId + '-content .type').show('slide', { direction: 'left' }, 'fast', function() {
@@ -1398,27 +1422,22 @@
             }
         },
         qtips: {
-            'private': function (name) {
-                var html = 'Пользователь "' + name + '" хочет пригласить вас в приват, вы согласны?';
-                html += '<div class="actions yesno clearfix">' +
-                            '<button class="yes" data-name="' + name + '" onclick="$.fn.sys().actions.private.yes(\'' + name + '\')">Да</button>' +
-                            '<button class="no" data-name="' + name + '" onclick="$.fn.sys().actions.private.no(\'' + name + '\')">Нет</button>' +
-                        '</div>';
+            'private': function(name) {
                 $(window).qtip($.extend(true, {}, privateMethods.channel.qtips.modalParams, {
                     id: 'privateModal',
                     content: {
-                        text: html,
-                        title: { text: 'Приглашение в приват [' + $.fn.sys().time.format(new Date()) + ']' }
+                        text: mote.compile($('#mu-ui-channel-qtips').html())({ name: name }),
+                        title: {
+                            text: mote.compile('Приглашение в приват [{{time}}]')({
+                                time: $.fn.sys().time.format(new Date())
+                            })
+                        }
                     }
                 }));
             }
         },
-        format: function (channel) {
-            return '<li>' +
-                        '<button data-id="' + channel.id + '" data-url="' + channel.url + '">' +
-                        '<span class="name">' + channel.name + '</span> (<span class="count">' + channel.count + '</span>)' +
-                        '</button>' +
-                   '</li>';
+        format: function(channel) {
+            return mote.compile($('#mu-ui-channel-format').html())({ channel: channel });
         }
     };
 
@@ -1453,4 +1472,4 @@
     $.fn.ufc = function(csrf) {
         return instance ? instance : instance = new UInterface({ csrf: csrf });
     };
-})(jQuery, window, document, GibberishAES);
+})(jQuery, window, document, GibberishAES, mote);
