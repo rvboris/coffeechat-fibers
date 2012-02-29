@@ -23,14 +23,20 @@ module.exports = function(app) {
                 return callback(message);
             }
 
+            if (message.token) delete message.token;
+            if (message.data && message.data.token) delete message.data.token;
+
             // Sender is server
             if (token === app.set('serverToken')) {
                 app.set('log').debug('sent from the server');
+
+                if (message.data && message.data.text) {
+                    message.data.text = aes.enc(message.data.text, app.set('serverKey'));
+                    message.data.time = currentTime;
+                }
+
                 return callback(message);
             }
-
-            if (message.token) delete message.token;
-            if (message.data && message.data.token) delete message.data.token;
 
             sync(function() {
                 var matches;

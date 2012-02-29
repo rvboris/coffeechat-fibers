@@ -1,6 +1,5 @@
 script(type='text/html')#mu-ui-message-format
-  div.message.clearfix  {{{getTime}}}{{{getName}}}
-  p {{{getData}}}
+  div.message.clearfix  {{{getTime}}}{{{getName}}}<p>{{{getData}}}</p>
 
 script(type='text/html')#mu-ui-message-format-time
   time [{{time}}]
@@ -9,5 +8,5 @@ script(type='text/html')#mu-ui-message-format-archive
   a(href='/message/{{messageId}}', title='Открыть в новом окне', target='_blank') {{{time}}}
 
 script(type='text/html')#mu-ui-message-format-name
-  button(class='name{{isMe}}') {{name}}
+  button(class='name {{#isMe}}me{{/isMe}}') {{name}}
   | :

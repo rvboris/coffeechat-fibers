@@ -1,19 +1,14 @@
 script(type='text/html')#mu-ui-user-format
   li(class='{{isIngore}}')
-    span(class='status {{getStatus}}')
-    button(class='name{{isMe}}') {{name}}
-    | {{getGender}}
+    span(class='status {{status}}')
+    button(class='name {{#isMe}}me{{/isMe}}') {{name}}
+    | {{gender}}
 
 script(type='text/html')#mu-ui-user-gender-notfication
- | Пользователь
- button.name {{name}}
- |  сменил пол
+  | Пользователь <button class="name">{{name}}</button> сменил пол
 
 script(type='text/html')#mu-ui-user-exit-notfication
- | Пользователь
- button.name {{name}}
- |  вышел из комнаты
+  | Пользователь <button class="name">{{name}}</button> вышел из комнаты
 
 script(type='text/html')#mu-ui-user-enter-notfication
-  | В комнату вошел пользователь
-  button.name {{name}}
+  | В комнату вошел пользователь <button class="name">{{name}}</button>
