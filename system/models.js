@@ -8,7 +8,7 @@ exports.define = function(app, mongoose, callback) {
     var vdr = new Validator();
 
     var regexp = {
-        url: /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+)/,
+        url: /([a-zA-Z]+):\/\/([^:\/?#\s]+)+(:\d+)?(\/[^?#\s]+)?(\?[^#\s]+)?(#[^\s]+)?/,
         alphabet: /^[А-Яа-яЁёA-Za-z0-9\s]+$/
     };
 
@@ -43,10 +43,7 @@ exports.define = function(app, mongoose, callback) {
             } catch (e) {
                 return false;
             }
-
-            message = message.replace(regexp.url, ''); // Delete urls before XSS check
-
-            return message === filter(message).xss();
+            return true;
         }
     };
 
@@ -182,11 +179,13 @@ exports.define = function(app, mongoose, callback) {
         });
 
         message.method('parseLinks', function(text) {
-            return text.replace(regexp.url, '<a href="$1" class="userLink" target="_blank">$1</a>');
+            return text.replace(regexp.url, '<a href="$&" class="userLink" target="_blank">$&</a>');
         });
 
         message.method('parseText', function(text) {
-            return this.parseLinks(text);
+            text = filter(text).entityEncode();
+            text = this.parseLinks(text);
+            return text;
         });
 
         message.method('formatTo', function(to) {

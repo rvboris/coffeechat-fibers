@@ -591,6 +591,8 @@
                 if (typeof callback === 'function') callback();
             }
 
+            $(channelName + ' .sidebar').css('opacity', 1);
+
             if ($.jStorage.get(channelName + '-sidebar-size') !== null) {
                 $(channelName + ' .chat').animate({
                     'right': (parseInt($.jStorage.get(channelName + '-sidebar-size')) + privateMethods.sidebar.separatorWidth) + 'px'
@@ -628,15 +630,15 @@
 
     privateMethods.message = {
         formatSendTo: function(names) {
-            return mote.compile('→ ({{getNames}})')({
+            return mote.compile('→ ({{{getNames}}}) ')({
                 getNames: function() {
                     var resultString = '';
 
                     for (var idx in names) {
-                        resultString += mote.compile('<button class="name{{#isMe}}me{{/isMe}}">{{name}}</button>{{#comma}}, {{/comma}}')({
+                        resultString += mote.compile('<button class="name {{#isMe}}me{{/isMe}}">{{name}}</button>{{#comma}}, {{/comma}}')({
                             name: names[idx],
                             isMe: names[idx] === $.fn.sys().options.currentUser.name,
-                            comma: idx !== (names.length - 1)
+                            comma: parseInt(idx) !== names.length - 1
                         });
                     }
 
@@ -919,7 +921,7 @@
                     return $.fn.notifier('Вы можете обращаться не более чем к 3 пользователям');
                 }
 
-                $('#channel-' + channelId + '-content .sendto').append(mote.compile($('#mu-ui-tab-sendto'))({
+                $('#channel-' + channelId + '-content .sendto').append(mote.compile($('#mu-ui-tab-sendto').html())({
                     isHidden: namesCount > 0 ? 'display: none' : false,
                     name: name
                 }));
@@ -954,7 +956,7 @@
                     $('#channel-' + channelId + '-content').show('fast', function() {
                         $(document).prop('title', $(document).prop('title').replace(/(?:\/\/\s).+$/, '// ' + channelName));
                         if (typeof callback === 'function') callback();
-                        privateMethods.sidebar.autoPosition();
+                        //privateMethods.sidebar.autoPosition();
                     });
                 });
             } else {
@@ -1014,18 +1016,21 @@
                 $(channelName + ' .sidebar').css('width', $.jStorage.get(channelName + '-sidebar-size'));
             }
 
+            function resize(width) {
+                $(channelName + ' .separator').css('right', width + 'px');
+                $(channelName + ' .chat').css('right', width + privateMethods.sidebar.separatorWidth + 'px');
+            }
+
             $(channelName + ' .sidebar').resizable({
                 handles: 'w',
                 minWidth: 150,
                 maxWidth: 400,
                 resize: function(event, ui) {
-                    $(channelName + ' .separator').css('right', ui.size.width + 'px');
-                    $(channelName + ' .chat').css('right', ui.size.width + privateMethods.sidebar.separatorWidth + 'px');
+                    resize(ui.size.width);
                     privateMethods.sidebar.resizing = true;
                 },
                 stop: function() {
-                    $(channelName + ' .separator').css('right', $(this).width() + 'px');
-                    $(channelName + ' .chat').css('right', $(this).width() + privateMethods.sidebar.separatorWidth + 'px');
+                    resize($(this).width());
 
                     if (!params['private']) {
                         $.jStorage.set(channelName + '-sidebar-size', $(channelName + ' .sidebar').css('width'));
@@ -1215,29 +1220,26 @@
                 $('#channel-list').css('width', $.jStorage.get('channel-list.size'));
             }
 
+            function resize(width) {
+                $('#channels, #channels-content').css('left', width + privateMethods.channels.padding + privateMethods.channels.borders * 2 + privateMethods.channels.space * 2 + parseInt($('#channel-list-holder').css('width')) + 'px');
+                $('#channel-list-holder').css('left', width + privateMethods.channels.padding + privateMethods.channels.borders + privateMethods.channels.space + 'px');
+
+                var sidebar = $('#channels-content .chat').filter(':visible').parent().find('aside.sidebar');
+                if (sidebar.css('left') !== 'auto' && sidebar.css('opacity') !== '0') {
+                    sidebar.css('left', (sidebar.parent().find('.chat').width() + privateMethods.sidebar.separatorWidth) + 'px');
+                }
+            }
+
             $('#channel-list').resizable({
                 handles: 'e',
                 minWidth: 150,
                 maxWidth: 300,
                 resize: function(event, ui) {
-                    $('#channels, #channels-content').css('left', ui.size.width + privateMethods.channels.padding + privateMethods.channels.borders * 2 + privateMethods.channels.space * 2 + parseInt($('#channel-list-holder').css('width')) + 'px');
-                    $('#channel-list-holder').css('left', ui.size.width + privateMethods.channels.padding + privateMethods.channels.borders + privateMethods.channels.space + 'px');
-
-                    var sidebar = $('aside.sidebar').filter(':visible');
-                    if (sidebar.css('left') !== 'auto') {
-                        sidebar.css('left', (sidebar.parent().find('.chat').width() + privateMethods.sidebar.separatorWidth) + 'px');
-                    }
-
+                    resize(ui.size.width);
                     privateMethods.channels.resizing = true;
                 },
                 stop: function() {
-                    $('#channels, #channels-content').css('left', $(this).width() + privateMethods.channels.padding + privateMethods.channels.borders * 2 + privateMethods.channels.space * 2 + parseInt($('#channel-list-holder').css('width')) + 'px');
-                    $('#channel-list-holder').css('left', $(this).width() + privateMethods.channels.padding + privateMethods.channels.borders + privateMethods.channels.space + 'px');
-
-                    var sidebar = $('aside.sidebar').filter(':visible');
-                    if (sidebar.css('left') !== 'auto') {
-                        sidebar.css('left', (sidebar.parent().find('.chat').width() + privateMethods.sidebar.separatorWidth) + 'px');
-                    }
+                    resize($(this).width());
 
                     $.jStorage.set('channel-list.size', $('#channel-list').css('width'));
 
@@ -1324,7 +1326,7 @@
 
                 if (namesCount >= 2) return false;
 
-                $('#channel-' + channelId + '-content .type').append(mote.compile('<li{{#isHidden}}style="display:none"{{/isHidden}}>{{name}}</li>')({
+                $('#channel-' + channelId + '-content .type').append(mote.compile($('#mu-ui-channel-type-private').html())({
                     name: name,
                     isHidden: namesCount > 0
                 }));

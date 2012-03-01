@@ -44,3 +44,6 @@ script(type='text/html')#mu-ui-channel-qtips-info
   .actions.clearfix
     a(href='/archive/{{archiveUrl}}', target='_blank') История сообщений
   | {{/ifMessages}}
+
+script(type='text/html')#mu-ui-channel-type-private
+  li(style='{{isHidden}}') {{name}}
