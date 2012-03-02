@@ -142,7 +142,3 @@ aside.sidebar input.filter:focus {
 #panels {
     filter: alpha(opacity = 85)
 }
-
-#channels-content > section .sidebar ul li.ignore {
-    filter: alpha(opacity = 60)
-}

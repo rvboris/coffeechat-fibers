@@ -123,7 +123,7 @@ html(lang='ru')
         div
           form(method='POST')
             div
-              input(type='text', name='msg', id='message', x-webkit-speech='true', placeholder='сообщение', required='true', autofocus='true')
+              input(type='text', name='msg', id='message', x-webkit-speech='true', placeholder='сообщение', required='true', autofocus='true', onwebkitspeechchange='$("#bottom form").submit();')
             button(type='submit')#send >>>
           button#help ?
           button#smile =)

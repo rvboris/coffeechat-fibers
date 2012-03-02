@@ -66,7 +66,7 @@ module.exports = function(app) {
                     });
                     return { data: { id: channel.id, name: channel.name, url: channel.url }};
                 case 'no':
-                    return app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
+                    app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
                         token: app.set('serverToken'),
                         action: 'private.no',
                         fromUser: { name: fromUser.name },
