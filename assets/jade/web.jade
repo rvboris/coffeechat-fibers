@@ -45,7 +45,7 @@ html(lang='ru')
           load: 'timeout=2500!//ulogin.ru/js/widget.js',
           complete: function() {
             try {
-              $.fn.sys.uLogin.init(typeof uLogin == 'undefined' ? null : uLogin);
+              $.fn.sys().uLogin.init(typeof uLogin == 'undefined' ? null : uLogin);
             } catch (e) {}
           }
         }
@@ -121,6 +121,8 @@ html(lang='ru')
         != partial('forms/web/forgot', { csrf: csrf })
       footer#bottom
         div
+          button.history.up ˄
+          button.history.down ˅
           form(method='POST')
             div
               input(type='text', name='msg', id='message', x-webkit-speech='true', placeholder='сообщение', required='true', autofocus='true', onwebkitspeechchange='$("#bottom form").submit();')

@@ -596,14 +596,33 @@ input, button
       position relative
       width 100%
       height bottom_height
+      button.history
+        position absolute
+        left 55px
+        width 11px
+        height 10px
+        text-indent -99999px
+        border 0
+        cursor pointer
+        z-index 1
+        &.up
+          background transparent url(/images/web/history-arrow-up.png) left center
+          top 15px
+          &:hover
+            background transparent url(/images/web/history-arrow-up.png) right center !important
+        &.down
+          background transparent url(/images/web/history-arrow-down.png) left center
+          top 26px
+          &:hover
+            background transparent url(/images/web/history-arrow-down.png) right center !important
       div
         width inherit
         height inherit
-        padding 10px 135px 10px 50px
+        padding 10px 150px 10px 50px
         input[type=text]
           width 100%
           height 26px
-          padding 1px 18px 1px 5px
+          padding 1px 18px 1px 20px
           border 1px solid #1A2E0B
           box-shadow 1px 1px 0 #49811F
           border-radius 3px
