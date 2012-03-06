@@ -40,10 +40,12 @@ script(type='text/html')#mu-ui-channel-qtips-info
     li
       span.param Дата создания:
       span.value {{date}}
-  | {{#ifMessages}}
-  .actions.clearfix
-    a(href='/archive/{{archiveUrl}}', target='_blank') История сообщений
-  | {{/ifMessages}}
+
+  .actions.channelinfo.clearfix
+    button(onclick='window.print()') Печать
+    | {{#ifMessages}}
+    a(href='/archive/{{archiveUrl}}', target='_blank') Архив сообщений
+    | {{/ifMessages}}
 
 script(type='text/html')#mu-ui-channel-type-private
   li(style='{{isHidden}}') {{name}}

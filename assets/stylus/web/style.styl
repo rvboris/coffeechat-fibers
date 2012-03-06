@@ -605,6 +605,7 @@ input, button
         border 0
         cursor pointer
         z-index 1
+        padding 0
         &.up
           background transparent url(/images/web/history-arrow-up.png) left center
           top 15px
@@ -1089,8 +1090,9 @@ input, button
     button
       font-size 0.9em
       display block
-      padding 0 15px
-      border: 1px solid #143E56
+      padding 0 15px 0 5px
+      border 1px solid #143E56
+      border-left 0
       outline none
       float left
       height tab_height
@@ -1112,6 +1114,25 @@ input, button
       z-index 1
       &:hover
         color #DEB3BA
+    div.info
+      border 1px solid #143E56
+      border-right 0
+      padding 0 5px 0 10px
+      z-index 1
+      width 10px
+      float left
+      height tab_height - 2px
+      button
+        border 0
+        padding 0
+        margin-top 9px
+        text-indent -99999px
+        width 10px
+        height 10px
+        cursor pointer
+        background transparent url(/images/web/info.png) no-repeat left center
+        &:hover
+          background transparent url(/images/web/info.png) no-repeat right center
     &.current
       background #143E56
       border-bottom 1px solid #143E56
@@ -1127,6 +1148,13 @@ input, button
           color #D66004
           &:hover
             color #FFA661
+      div.info
+        button
+          border 0
+          padding 0
+          background transparent url(/images/web/info.png) no-repeat left center
+          &:hover
+            background transparent url(/images/web/info.png) no-repeat right center
     &.arrow
       display none
       background transparent
@@ -1320,6 +1348,18 @@ input, button
           display inline-block
           height auto
           width 100%
+          button.info
+            width 10px
+            padding 0
+            margin 0 5px 0 10px
+            height 20px
+            border 0
+            text-indent -99999px
+            float left
+            cursor pointer
+            background url(/images/web/info.png) no-repeat left center
+            &:hover
+              background url(/images/web/info.png) no-repeat right center
           button.name
             text-align left
             background transparent
@@ -1336,6 +1376,7 @@ input, button
             display inline
             height auto !important
             padding 0
+            margin 0
             &:hover
               color #DAEBD7
             &.me
@@ -1360,7 +1401,7 @@ input, button
             background url(/images/web/statuses.png) no-repeat
             width 10px
             height 20px
-            margin 0 5px 0 10px
+            margin-right 5px
             &.online
               background-position 0 center
             &.away
@@ -1549,13 +1590,17 @@ input, button
         background #DEE7E9
         border-color #97AEB3
         color #63797A
-  a
-    text-decoration none
-    line-height 21px
-    height auto
-    padding 0 5px
-    margin-top 5px
-    float right
+  &.channelinfo
+    a
+      text-decoration none
+      line-height 21px
+      height auto
+      padding 0 5px
+      margin 10px 3px 5px 3px
+      float left
+    button
+      float left
+      margin 10px 3px 5px 3px
 .qtip .yesno
   margin 10px 0
   button

@@ -5,11 +5,13 @@ script(type='text/html')#mu-ui-tab-sendto
 
 script(type='text/html')#mu-ui-tab-button
   li.current
+    div.info.clearfix
+      button i
     button(id='channel-{{channel.id}}').channel
       span.name {{channel.name}}
-      | {{#close}}
-      button.remove x
-      | {{/close}}
+    | {{#close}}
+    button.remove x
+    | {{/close}}
 
 script(type='text/html')#mu-ui-tab-chat
   section(id='channel-{{channel.id}}-content').use-sidebar

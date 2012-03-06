@@ -732,14 +732,11 @@
                 privateMethods.channel.qtips.tabArrow();
             },
             info: function(channel) {
-                $('#channels li').on('mouseup', 'button#channel-' + channel, function(event) {
-                    if (event.which !== 3) return;
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).data('private') || $.fn.sys().actions.popup) return;
-
-                    $(this).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
+                function showTooltip(button, channelName) {
+                    $(button).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
                         content: {
                             title: {
-                                text: 'Информация о чате "' + $(this).find('span.name').text() + '"'
+                                text: 'Информация о чате "' + channelName + '"'
                             },
                             text: 'Загрузка...',
                             ajax: {
@@ -759,16 +756,22 @@
                         position: { viewport: $(window) },
                         show: { event: false }
                     })).show();
+                }
+
+                $('#channels li').on('mouseup', 'button#channel-' + channel, function(event) {
+                    if (event.which !== 3) return;
+                    if ($.fn.sys().options.currentUser.id === '0' || $(this).data('private') || $.fn.sys().actions.popup) return;
+                    showTooltip($(this), $(this).find('span.name').text());
+                }).on('click', 'div.info button', function() {
+                    if ($.fn.sys().options.currentUser.id === '0' || $(this).parent().next().data('private') || $.fn.sys().actions.popup) return;
+                    showTooltip($(this), $(this).parent().next().find('span.name').text());
                 });
             },
             profile: function(channel) {
-                $('#channel-' + channel + '-content').on('mouseup', 'div.message button:not(.me), .sidebar button.name:not(.me)', function(event) {
-                    if (event.which !== 3) return;
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).text() === '$' || $.fn.sys().actions.popup) return;
-
-                    $(this).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
+                function showTooltip(button, userName) {
+                    $(button).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
                         content: {
-                            title: { text: 'Профиль ' + $(this).text() },
+                            title: { text: 'Профиль ' + userName },
                             ajax: {
                                 url: '/user/' + encodeURIComponent($(this).text()) + '/profile',
                                 success: function(data) {
@@ -796,6 +799,12 @@
                         position: { viewport: $('#channel-' + channel + '-content .scrollableArea') },
                         show: { event: false }
                     })).show();
+                }
+
+                $('#channel-' + channel + '-content').on('mouseup', 'div.message button:not(.me), .sidebar button.name:not(.me)', function(event) {
+                    if (event.which !== 3) return;
+                    if ($.fn.sys().options.currentUser.id === '0' || $(this).text() === '$' || $.fn.sys().actions.popup) return;
+                    showTooltip($(this), $(this).text());
                 });
             },
             tabArrow: function() {
