@@ -1,6 +1,6 @@
 script(type='text/html')#mu-ui-user-format
   li(class='{{isIngore}}')
-    button.info i
+    button(class='info {{#isMe}}me{{/isMe}}') i
     span(class='status {{status}}')
     button(class='name {{#isMe}}me{{/isMe}}') {{name}}
     | {{gender}}

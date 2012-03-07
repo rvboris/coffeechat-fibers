@@ -773,7 +773,7 @@
                         content: {
                             title: { text: 'Профиль ' + userName },
                             ajax: {
-                                url: '/user/' + encodeURIComponent($(this).text()) + '/profile',
+                                url: '/user/' + encodeURIComponent(userName) + '/profile',
                                 success: function(data) {
                                     this.set('content.text', mote.compile($('#mu-ui-channel-qtips-profile').html())({
                                         pic: typeof data.pic == 'undefined' ? '/images/web/userpic1.png' : '/userpics/' + data.pic,
@@ -805,6 +805,8 @@
                     if (event.which !== 3) return;
                     if ($.fn.sys().options.currentUser.id === '0' || $(this).text() === '$' || $.fn.sys().actions.popup) return;
                     showTooltip($(this), $(this).text());
+                }).on('click', '.sidebar button.info:not(.me)', function() {
+                    showTooltip($(this), $(this).next().next().text());
                 });
             },
             tabArrow: function() {
@@ -1179,8 +1181,10 @@
             });
         },
         highlightMe: function() {
-            $('.message button.name, .sidebar button.name').filter(function() {
-                return this.innerHTML === $.fn.sys().options.currentUser.name
+            $('.message button.name, .sidebar button.name, .sidebar button.info').filter(function() {
+                if ($(this).hasClass('info'))
+                    return $(this).next().next().text() === $.fn.sys().options.currentUser.name;
+                return $(this).text() === $.fn.sys().options.currentUser.name
             }).addClass('me');
         },
         filterIgnore: function() {
