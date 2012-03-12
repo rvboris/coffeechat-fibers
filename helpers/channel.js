@@ -3,7 +3,7 @@ var sync = require('sync');
 module.exports = function(app) {
     return {
         create: function(params) {
-            var channel = app.Channel.findOne.sync(app.Channel, params);
+            var channel = app.Channel.findOne.sync(app.Channel, { name: params.name });
 
             if (channel) {
                 app.set('log').debug('channel "%s" loaded', params.name);

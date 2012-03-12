@@ -142,10 +142,10 @@ module.exports = function(env, paths, options) {
                 .create(paths.css.stylus)
                 .add([
                     paths.css.stylus + '/web/style.styl',
-                    paths.css.stylus + '/web/archive.styl',
+                    paths.css.stylus + '/web/page.styl',
                     paths.css.stylus + '/web/print.styl',
                     paths.css.stylus + '/mobile/style.styl',
-                    paths.css.stylus + '/mobile/archive.styl'
+                    paths.css.stylus + '/mobile/page.styl'
                 ])
                 .process(function(path, data) {
                     delete this.data[path];

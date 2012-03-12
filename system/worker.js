@@ -99,7 +99,7 @@ module.exports = function(argv) {
         };
 
         Loader.prototype.views = function() {
-            app.set('log').debug('setup redis');
+            app.set('log').debug('setup views');
             app.set('views', __dirname + '/../assets/jade');
             app.set('view engine', 'jade');
             app.set('view options', { layout: false });
@@ -154,7 +154,6 @@ module.exports = function(argv) {
                 })
             });
             app.set('faye').bayeux.addExtension(require('./core.js')(app));
-
         };
 
         Loader.prototype.events = function() {
