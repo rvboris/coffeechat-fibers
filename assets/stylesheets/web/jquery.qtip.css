@@ -156,13 +156,13 @@
 
 .ui-tooltip-tipsy {
     border: 0;
+    z-index: 99999;
 }
 
 .ui-tooltip-tipsy .ui-tooltip-titlebar, .ui-tooltip-tipsy .ui-tooltip-content {
     color: #000;
     border: 0 transparent;
     background: #FFF;
-    opacity: 0.5;
     font-size: .9em;
     line-height: 1.2em;
     -webkit-border-radius: 3px;

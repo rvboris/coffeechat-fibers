@@ -10,10 +10,6 @@ div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#102F41', EndColorStr = '#0B202D');
 }
 
-.ui-tooltip-tipsy .ui-tooltip-titlebar, .ui-tooltip-tipsy .ui-tooltip-content {
-    filter: alpha(opacity = 50)
-}
-
 #bottom, #bottom input[type=text] {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#3D6C1A', EndColorStr = '#315715');
 }
