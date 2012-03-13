@@ -19,13 +19,7 @@ html(lang='ru')
     script(src='/javascripts/web/loader.js')
     script
       yepnope([
-        {
-          load: '/javascripts/web/jquery.js',
-          complete: function () {
-            if (!$) yepnope('//yandex.st/jquery/1.7.1/jquery.min.js');
-            if (!$.ui) yepnope('//yandex.st/jquery-ui/1.8.16/jquery-ui.min.js');
-          }
-        },
+        { load: '/javascripts/web/jquery.js' },
         { load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.interface.plugins.js'] },
         {
           load: '/javascripts/web/jquery.contact.js',

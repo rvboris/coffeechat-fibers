@@ -43,7 +43,7 @@ module.exports = function(app) {
                     sender: 'no-reply@' + app.set('host'),
                     to: user.email,
                     subject: nconf.get('sitename') + ' // Изменение пароля',
-                    html: 'Пароль был изменен, ваш новый пароль: <b>' + req.body.user.password1 + '</b>'
+                    html: 'Пароль для пользователя "' + user.name + '" был изменен, новый пароль: <b>' + req.body.user.password1 + '</b>'
                 })) {
                     return { msg: 'Пароль изменен' };
                 }

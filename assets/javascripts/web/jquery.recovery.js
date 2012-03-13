@@ -4,7 +4,7 @@
     var privateMethods = {};
     var instance;
 
-    function Recovery (options) {
+    function Recovery(options) {
         this.options = options;
         return privateMethods.init(this);
     }
@@ -37,23 +37,23 @@
                 }
             });
 
-            $.post(window.location.href, $('section.recovery form input[type=password]').serialize())
-                .success(function(data) {
-                    if (data.error) {
-                        $.fn.notifier(data.error);
-                    } else {
-                        $.fn.notifier('Через 5 секунд вы будете перенаправлены на главную страницу', data);
-                        setTimeout(function() {
-                            location.replace('http://' + window.location.host);
-                        }, 5000);
-                    }
-                })
-                .error(function() {
-                    $.fn.notifier('Ошибка отправки');
-                })
-                .complete(function() {
-                    $('section.recovery').unblock();
-                });
+            $.post(window.location.href, {
+                _csrf: privateMethods.options.csrf,
+                user: { password1: $('#password1').val(), password2: $('#password2').val() }
+            }).success(function(data) {
+                if (data.error) {
+                    $.fn.notifier(data.error);
+                } else {
+                    $.fn.notifier('Через 5 секунд вы будете перенаправлены на главную страницу', data);
+                    setTimeout(function() {
+                        location.replace('http://' + window.location.host);
+                    }, 5000);
+                }
+            }).error(function() {
+                $.fn.notifier('Ошибка отправки');
+            }).complete(function() {
+                $('section.recovery').unblock();
+            });
 
             return false;
         });
@@ -69,7 +69,7 @@
         privateMethods.form();
     };
 
-    $.fn.contact = function(user, serverKey, env, csrf) {
+    $.fn.recovery = function(user, serverKey, env, csrf) {
         return instance ? instance : instance = new Recovery({
             currentUser: user,
             serverKey: serverKey,

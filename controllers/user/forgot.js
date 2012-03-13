@@ -40,14 +40,14 @@ module.exports = function(app) {
                 return { error: 'Сведения для восстановления пароля уже были отправлены вам на email.' };
             }
 
-            var key = bcrypt.encrypt_sync(rbytes.randomBytes(16).toHex(), bcrypt.gen_salt_sync(10));
+            var key = bcrypt.hashSync(rbytes.randomBytes(16).toHex(), bcrypt.genSaltSync(10));
             var link = 'http://' + app.set('host') + '/recovery/' + encodeURIComponent(key);
 
             if (nodemailer.send_mail.sync(nodemailer, {
                 sender: 'no-reply@' + app.set('host'),
                 to: req.body.user.email,
                 subject: nconf.get('sitename') + ' // Восстановление пароля',
-                html: '<noindex>Для изменения пароля перейдите по этой ссылке: <a href="' + link + '" rel="nofollow">' + link + '</a>.<br /><br />Ссылка действительна в течении двух часов (до ' + moment().add('hours', 2).format('DD.MM.YY HH:mm') + ').</noindex>'
+                html: '<noindex>Пользователь "' + user.name + '" запросил изменение пароля, для изменения перейдите по этой ссылке: <a href="' + link + '" rel="nofollow">' + link + '</a>.<br /><br />Ссылка действительна в течении двух часов (до ' + moment().add('hours', 2).format('DD.MM.YY HH:mm') + ').</noindex>'
             })) {
                 var recovery = new app.PasswordRecovery({ userId: user.id, key: key });
                 recovery.save.sync(recovery);

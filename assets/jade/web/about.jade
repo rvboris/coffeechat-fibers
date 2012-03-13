@@ -20,8 +20,19 @@ html(lang='ru')
       link(rel='stylesheet', href='/web/page.css', media='all')
       link(rel='stylesheet', href='/web/print.css', media='print')
 
-    //if lt IE 9
-      link(rel='stylesheet', href='/stylesheets/web/ie9.css', media='all')
+    script
+      yepnope([
+        { load: '/javascripts/web/jquery.js' },
+        { load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.interface.plugins.js'] },
+        {
+          load: '/javascripts/web/jquery.about.js',
+          complete: function () {
+            if (!$.fn.about) return alert('Ошибка загрузки')
+            $.fn.about('!{env}', '!{csrf}');
+          }
+        },
+        { load: 'ie9!/stylesheets/web/ie9.css' },
+      ]);
   body
     #app
       header#top

@@ -37,7 +37,8 @@ module.exports = function(app) {
                     title: 'Сообщение ID ' + result.message.id,
                     data: result,
                     env: app.set('argv').env,
-                    layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout'
+                    layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout',
+                    csrf: req.session._csrf
                 });
             } catch (e) {
                 app.set('log').error(err.stack);

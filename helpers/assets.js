@@ -63,6 +63,32 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        var webArchive = ams.build
+            .create(paths.js.root)
+            .add(paths.js.root + '/web/jquery.archive.js');
+
+        if (env === 'production') {
+            webArchive.process(options);
+        }
+
+        webArchive.process(options)
+            .combine({ js: 'jquery.archive.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
+        var webAbout = ams.build
+            .create(paths.js.root)
+            .add(paths.js.root + '/web/jquery.about.js');
+
+        if (env === 'production') {
+            webAbout.process(options);
+        }
+
+        webAbout.process(options)
+            .combine({ js: 'jquery.about.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         ams.build
             .create(paths.js.root)
             .add([

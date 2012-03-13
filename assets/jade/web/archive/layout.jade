@@ -10,7 +10,6 @@ html(lang='ru')
 
     link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     link(rel='icon', type='image/x-icon', href='/favicon.ico')
-
     link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css', media='all')
 
     - if (env === 'production')
@@ -20,8 +19,20 @@ html(lang='ru')
       link(rel='stylesheet', href='/web/page.css', media='all')
       link(rel='stylesheet', href='/web/print.css', media='print')
 
-    //if lt IE 9
-      link(rel='stylesheet', href='/stylesheets/web/ie9.css', media='all')
+    script(src='/javascripts/web/loader.js')
+    script
+      yepnope([
+        { load: '/javascripts/web/jquery.js' },
+        { load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.interface.plugins.js'] },
+        {
+          load: '/javascripts/web/jquery.archive.js',
+          complete: function () {
+            if (!$.fn.archive) return alert('Ошибка загрузки')
+            $.fn.archive('!{env}', '!{csrf}');
+          }
+        },
+        { load: 'ie9!/stylesheets/web/ie9.css' },
+      ]);
   body
     #app
       header#top
