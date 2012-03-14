@@ -40,11 +40,14 @@ script(type='text/html')#mu-ui-channel-qtips-info
     li
       span.param Дата создания:
       span.value {{date}}
-
+    li
+      span.param Ссылка на чат:
+      span.value.link
+        a(href='/c/{{url}}', target='_blank') permalink
   .actions.channelinfo.clearfix
     button(onclick='window.print()') Печать
     | {{#ifMessages}}
-    a(href='/archive/{{archiveUrl}}', target='_blank') Архив сообщений
+    a(href='/archive/{{url}}', target='_blank') Архив сообщений
     | {{/ifMessages}}
 
 script(type='text/html')#mu-ui-channel-type-private

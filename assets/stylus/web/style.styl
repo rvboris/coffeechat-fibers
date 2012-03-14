@@ -1132,7 +1132,10 @@ input, button
         cursor pointer
         background transparent url(/images/web/info.png) no-repeat left center
         &:hover
+          background transparent url(/images/web/info.png) no-repeat center center
+        &.disabled
           background transparent url(/images/web/info.png) no-repeat right center
+          cursor default
     &.current
       background #143E56
       border-bottom 1px solid #143E56
@@ -1154,7 +1157,10 @@ input, button
           padding 0
           background transparent url(/images/web/info.png) no-repeat left center
           &:hover
+            background transparent url(/images/web/info.png) no-repeat center center
+          &.disabled
             background transparent url(/images/web/info.png) no-repeat right center
+            cursor default
     &.arrow
       display none
       background transparent
@@ -1302,8 +1308,11 @@ input, button
            vertical-align text-bottom
          a.userLink
            color #AAD6DF
+           text-decoration none
+           border-bottom 1px dotted #AAD6DF
            &:hover
              color #D8E5AE
+             border-bottom 1px solid #AAD6DF
     .separator
       right 260px
       width 10px
@@ -1359,7 +1368,7 @@ input, button
             cursor pointer
             background url(/images/web/info.png) no-repeat left center
             &:hover
-              background url(/images/web/info.png) no-repeat right center
+              background url(/images/web/info.png) no-repeat center center
             &.me
               background none
               cursor default
@@ -1619,3 +1628,9 @@ input, button
     li
       span.param
         width 120px
+      span.value.link a
+        color #0D2C5E
+        text-decoration none
+        border-bottom 1px dotted #0D2C5E
+        &:hover
+          border-bottom 1px solid #0D2C5E

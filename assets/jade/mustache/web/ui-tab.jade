@@ -6,7 +6,7 @@ script(type='text/html')#mu-ui-tab-sendto
 script(type='text/html')#mu-ui-tab-button
   li.current
     div.info.clearfix
-      button i
+      button(class='{{#private}}disabled{{/private}}') i
     button(id='channel-{{channel.id}}').channel
       span.name {{channel.name}}
     | {{#close}}

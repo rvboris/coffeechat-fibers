@@ -746,7 +746,7 @@
                                         users: data.users,
                                         messages: data.messages,
                                         date: $.fn.sys().time.date($.fn.sys().time.parse(data.date)),
-                                        archiveUrl: $('#channels li button#channel-' + channel).data('url'),
+                                        url: $('#channels li button#channel-' + channel).data('url'),
                                         ifMessages: data.messages > 0
                                     }));
                                 },
@@ -871,8 +871,9 @@
             $('#channels-content section').hide();
 
             $("#channels li.arrow").before(mote.compile($('#mu-ui-tab-button').html())({
-                channel: { id: channelId, name: channelName },
-                close: $('#channels li').not('.arrow').size() > 0
+                'channel': { id: channelId, name: channelName },
+                'close': $('#channels li').not('.arrow').size() > 0,
+                'private': params['private'] || false
             }));
 
             $('#channels-content').append(mote.compile($('#mu-ui-tab-chat').html())({
