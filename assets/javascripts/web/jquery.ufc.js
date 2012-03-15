@@ -473,7 +473,10 @@
             scrollable.prop({ scrollTop: scrollable.prop('scrollHeight') });
             $(document).prop('title', $(document).prop('title').replace(/(?:\/\/\s).+$/, '// ' + $(button).find('span.name').text()));
             privateMethods.tab.unreadCounter(button);
-            $(button).stop(true, true).next().stop(true, true);
+
+            $(button).prev().stop(true, true);
+            $(button).stop(true, true);
+            $(button).next().stop(true, true);
         },
 
         autoWidth: function() {
@@ -763,7 +766,7 @@
                     if ($.fn.sys().options.currentUser.id === '0' || $(this).data('private') || $.fn.sys().actions.popup) return;
                     showTooltip($(this), $(this).find('span.name').text());
                 }).on('click', 'div.info button', function() {
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).parent().next().data('private') || $.fn.sys().actions.popup) return;
+                    if ($.fn.sys().options.currentUser.id === '0' || $(this).parent().next().data('private') || $(this).hasClass('disabled') || $.fn.sys().actions.popup) return;
                     showTooltip($(this), $(this).parent().next().find('span.name').text());
                 });
             },
@@ -873,7 +876,7 @@
             $("#channels li.arrow").before(mote.compile($('#mu-ui-tab-button').html())({
                 'channel': { id: channelId, name: channelName },
                 'close': $('#channels li').not('.arrow').size() > 0,
-                'private': params['private'] || false
+                'private': params['url'] === 'quizeton' ? true : params['private']  || false
             }));
 
             $('#channels-content').append(mote.compile($('#mu-ui-tab-chat').html())({
@@ -1003,10 +1006,11 @@
         },
 
         flash: function(channelId, color) {
+            var button = $('button#channel-' + channelId);
             for (var i = 0; i <= 120; i++) {
-                $('button#channel-' + channelId)
-                    .effect('highlight', { color: color }, 500).next()
-                    .effect('highlight', { color: color }, 500);
+                button.prev().effect('highlight', { color: color }, 500);
+                button.effect('highlight', { color: color }, 500);
+                button.next().effect('highlight', { color: color }, 500);
             }
         }
     };
