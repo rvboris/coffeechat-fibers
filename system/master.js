@@ -53,6 +53,7 @@ module.exports = function(argv) {
             app.use(express.errorHandler({ dumpExceptions: true }));
             process.on('uncaughtException', function(err) {
                 app.set('log').error(err.stack);
+                process.exit(1);
             });
         };
 
@@ -221,7 +222,14 @@ module.exports = function(argv) {
             require('../helpers/assets.js')(argv.env, paths, options)();
         })();
 
-        for (var i = 0; i < argv.workers; i++) cluster.fork();
+        for (var i = 0; i < argv.workers; i++) {
+            try {
+                cluster.fork();
+            } catch(e) {
+                app.set('log').critical('worker fork error');
+                process.exit(1);
+            }
+        }
 
         cluster.on('death', function(worker) {
             app.set('log').debug('worker %s died. restart...', worker.pid);

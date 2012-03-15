@@ -2,12 +2,27 @@ module.exports = function(app) {
     app.use(app.router);
 
     app.use(function(req, res) {
-        res.redirect('home')
+        res.send(404);
     });
 
     app.error(function(err) {
-        app.set('log').critical(err.stack)
+        app.set('log').critical(err.stack);
+        process.exit(1);
     });
+
+    // Filter static content
+    if (app.set('argv').env === 'production') {
+        var httpProxy = require('http-proxy');
+        var proxy = new httpProxy.RoutingProxy();
+
+        app.get(/\.[js|css|gif|png|jpg|mp3|ogg|eot|svg|ttf|woff|swf|ico]+$/, function(req, res) {
+            console.log(getClientIp(req));
+            proxy.proxyRequest(req, res, {
+                host: '127.0.0.1',
+                port: 4000
+            });
+        });
+    }
 
     app.get('/', app.set('helpers').user.session, require('./index/index.js')(app));
     app.get('/c/:channel', app.set('helpers').user.session, require('./index/channel.js')(app));
@@ -17,19 +32,6 @@ module.exports = function(app) {
     app.get('/contact', require('./index/contact.js')(app));
     app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
     app.get('/message/:message', require('./index/message.js')(app));
-
-    // Filter static content
-    if (app.set('argv').env === 'production') {
-        var httpProxy = require('http-proxy');
-        var proxy = new httpProxy.RoutingProxy();
-
-        app.get(/\.[js|css|gif|png|jpg|mp3|ogg|eot|svg|ttf|woff|swf|ico]+$/, function(req, res) {
-            proxy.proxyRequest(req, res, {
-                host: '127.0.0.1',
-                port: 4000
-            });
-        });
-    }
 
     app.post('/oauth', require('./index/oauth.js')(app));
     app.post('/channel/list', require('./channel/list.js')(app));
