@@ -16,7 +16,6 @@ module.exports = function(app) {
         var proxy = new httpProxy.RoutingProxy();
 
         app.get(/\.[js|css|gif|png|jpg|mp3|ogg|eot|svg|ttf|woff|swf|ico]+$/, function(req, res) {
-            console.log(getClientIp(req));
             proxy.proxyRequest(req, res, {
                 host: '127.0.0.1',
                 port: 4000
