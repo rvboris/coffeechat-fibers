@@ -56,7 +56,9 @@
                 contact: {
                     name: $('#contact #name').val(),
                     email: $('#contact #email').val(),
-                    message: $('#contact #message').val()
+                    message: $('#contact #message').val(),
+                    recaptcha_challenge_field: $('#contact input#recaptcha_challenge_field').val(),
+                    recaptcha_response_field: $('#contact input#recaptcha_response_field').val()
                 }
             }).success(function(data) {
                 if (data.error) {

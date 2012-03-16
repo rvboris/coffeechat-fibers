@@ -30,6 +30,7 @@ html(lang='ru')
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
       ]);
+      var RecaptchaOptions = { theme: 'white' };
   body
     #app
       header#top
@@ -47,5 +48,7 @@ html(lang='ru')
           div.clearfix.message
             label(for='message') Сообщение
             textarea(name='contact[message]')#message
+          div.clearfix.recaptcha
+            !{recaptcha}
           div.clearfix
             button(type='submit') Отправить сообщение
