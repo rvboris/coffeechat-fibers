@@ -1,0 +1,38 @@
+form(method='POST').audio-settings.clearfix
+  div.clearfix
+    label(for='when-away') Только когда статус "Отошел"
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][whenAway]', value='1')#when-away
+      span.when-away.switch off
+  div.clearfix
+    label(for='when-unavailable') Только когда статус "Недоступен"
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][whenUnavailable]', value='1')#when-unavailable
+      span.when-unavailable.switch off
+  div.clearfix
+    label(for='on-message') Звук сообщения
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][onMessage]', value='1')#on-message
+      span.on-message.switch off
+  div.clearfix
+    label(for='on-private') Запроса привата
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][onPrivate]', value='1')#on-private
+      span.on-private.switch off
+  div.clearfix
+    label(for='on-mention') Упоминание вашего имени
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][onMention]', value='1')#on-mention
+      span.on-mention.switch off
+  div.clearfix
+    label(for='on-enter') Пользователь вошел в комнату
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][onEnter]', value='1')#on-enter
+      span.on-enter.switch off
+  div.clearfix
+    label(for='on-exit') Пользователь вышел из комнаты
+    span.audio-container
+      input(type='checkbox', name='user[settings][audio][onExit]', value='1')#on-exit
+      span.on-exit.switch off
+  input(type='submit', value='Сохранить')
+  button(type='button').cancel Отмена

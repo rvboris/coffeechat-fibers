@@ -1,0 +1,54 @@
+script(type='text/html')#mu-ui-channel-format
+  li <button data-id="{{channel.id}}" data-url="{{channel.url}}">
+    span.name {{channel.name}}
+    |  (<span class="count">{{channel.count}}</span>)
+    | </button>
+
+script(type='text/html')#mu-ui-channel-qtips-private
+  | Пользователь "{{name}}" хочет пригласить вас в приват, вы согласны?
+  div.actions.yesno.clearfix
+    button(data-name='{{name}}', onclick='$.fn.sys().actions.private.yes("{{name}}")').yes Да
+    button(data-name='{{name}}', onclick='$.fn.sys().actions.private.no("{{name}}")').no Нет
+
+script(type='text/html')#mu-ui-channel-qtips-profile
+  img(src='{{pic}}', height='60', width='60').pic
+  ul.clearfix.profile
+    li.status
+      span.param Статус:
+      span.value {{status}}
+    li.gender
+      span.param Пол:
+      span.value {{gender}}
+    li.messages
+      span.param Сообщений:
+      span.value {{messages}}
+    li.points
+      span.param Баллы:
+      span.value {{points}}
+  .clearfix.actions
+    button(class='private {{#isPrivateDisabled}}{{.}}{{/isPrivateDisabled}}', onclick='$.fn.sys().actions.private.request("{{user.name}}", "{{user.status}}")') Приват
+    button(class='private {{isIgnored.disabled}}', onclick='$.fn.sys().actions.ignore("{{user.name}}", "{{isIgnored.command}}")') {{isIgnored.text}}
+
+script(type='text/html')#mu-ui-channel-qtips-info
+  ul.clearfix.channelinfo
+    li
+      span.param Пользователи:
+      span.value {{users}}
+    li
+      span.param Сообщения:
+      span.value {{messages}}
+    li
+      span.param Дата создания:
+      span.value {{date}}
+    li
+      span.param Ссылка на чат:
+      span.value.link
+        a(href='/c/{{url}}', target='_blank') permalink
+  .actions.channelinfo.clearfix
+    button(onclick='window.print()') Печать
+    | {{#ifMessages}}
+    a(href='/archive/{{url}}', target='_blank') Архив сообщений
+    | {{/ifMessages}}
+
+script(type='text/html')#mu-ui-channel-type-private
+  li(style='{{isHidden}}') {{name}}

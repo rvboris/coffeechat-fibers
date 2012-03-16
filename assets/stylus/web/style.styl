@@ -1,0 +1,1638 @@
+@css {
+  .clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+  }
+
+  .clearfix { display: inline-block }
+  html[xmlns] .clearfix { display: block }
+  * html .clearfix { height: 1% }
+
+  @font-face {
+    font-family: 'UniversCyrLight';
+    src: url('/fonts/uvyl_-webfont.eot');
+    src: url('/fonts/uvyl_-webfont.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/uvyl_-webfont.woff') format('woff'),
+       url('/fonts/uvyl_-webfont.ttf') format('truetype'),
+       url('/fonts/uvyl_-webfont.svg#UniversCyrLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  pre, p {
+    white-space: pre;
+    white-space: pre-wrap;
+    white-space: pre-line;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -hp-pre-wrap;
+    word-wrap: break-word;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ui-resizable { position: relative;}
+  .ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block; }
+  .ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+  .ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+  .ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+  .ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+  .ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+  .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+  .ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+  .ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+  .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+
+  #bottom input::-webkit-input-placeholder { color: #89C071; }
+  #bottom input:-moz-placeholder { color: #89C071; }
+
+  #bottom, #bottom input[type=text] {
+    background-color: #3D6C1A;
+    background-image: -moz-linear-gradient(top, #3D6C1A, #315715);
+    background-image: -o-linear-gradient(top, #3D6C1A, #315715);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #3D6C1A),color-stop(1, #315715));
+    background-image: -webkit-linear-gradient(#3D6C1A, #315715);
+    background-image: linear-gradient(top, #3D6C1A, #315715);
+  }
+
+  #bottom input[type=text]:focus {
+    background-color: #254210;
+    background-image: -moz-linear-gradient(top, #315715, #254210);
+    background-image: -o-linear-gradient(top, #315715, #254210);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #315715),color-stop(1, #254210));
+    background-image: -webkit-linear-gradient(#315715, #254210);
+    background-image: linear-gradient(top, #315715, #254210);
+  }
+
+  #bottom button[type=submit], #bottom button#smile, #bottom button#help {
+    background-color: #035C56;
+    background-image: -moz-linear-gradient(top, #035C56, #02433F);
+    background-image: -o-linear-gradient(top, #035C56, #02433F);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #035C56),color-stop(1, #02433F));
+    background-image: -webkit-linear-gradient(#035C56, #02433F);
+    background-image: linear-gradient(top, #035C56, #02433F);
+  }
+
+  #bottom button[type=submit]:hover, #bottom button#smile:hover, #bottom button#smile.pressed, #bottom button#help:hover, #bottom button#help.pressed {
+    background-color: #02433F;
+    background-image: -moz-linear-gradient(top, #02433F, #012A28);
+    background-image: -o-linear-gradient(top, #02433F, #012A28);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #02433F),color-stop(1, #012A28));
+    background-image: -webkit-linear-gradient(#02433F, #012A28);
+    background-image: linear-gradient(top, #02433F, #012A28);
+  }
+
+  #bottom input::-webkit-input-speech-button {
+    -webkit-appearance: button;
+    background: url("/images/web/mic.png") left center no-repeat;
+    display: block;
+    width: 12px;
+    height: 22px;
+    position: absolute;
+    margin-top: 2px;
+    z-index: 1;
+  }
+
+  #bottom input:focus::-webkit-input-speech-button {
+    background: url("/images/web/mic.png") center center no-repeat;
+  }
+
+  #bottom input:focus::-webkit-input-speech-button:hover {
+    background: url("/images/web/mic.png") right center no-repeat;
+  }
+
+  #channels-content div#smiles::after, #channels-content div#smiles::before {
+    position:absolute;
+    z-index:1;
+    right: 10px;
+    bottom:-20px;
+    display:block;
+    width:0px;
+    height:0px;
+    border-style:solid;
+    border-width:10px 10px 10px 10px;
+    border-color: #AC6FAD transparent transparent transparent;
+    content:' ';
+  }
+
+  #top {
+    background-color: #0C2433;
+    background-image: -moz-linear-gradient(top, #0C2433, #0F2D40);
+    background-image: -o-linear-gradient(top, #0C2433, #0F2D40);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #0C2433),color-stop(1, #0F2D40));
+    background-image: -webkit-linear-gradient(#0C2433, #0F2D40);
+    background-image: linear-gradient(top, #0C2433, #0F2D40);
+  }
+
+  #top #login input::-webkit-input-placeholder { color: #748E9C; }
+  #top #login input:-moz-placeholder { color: #748E9C; }
+
+  #top #login input[type=text], #top #login input[type=password] {
+    background-color: #0A202E;
+    background-image: -moz-linear-gradient(top, #0A202E, #0D2B3D);
+    background-image: -o-linear-gradient(top, #0A202E, #0D2B3D);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #0A202E),color-stop(1, #0D2B3D));
+    background-image: -webkit-linear-gradient(#0A202E, #0D2B3D);
+    background-image: linear-gradient(top, #0A202E, #0D2B3D);
+  }
+
+
+  #top #login input[type=text]:focus, #top #login input[type=password]:focus {
+    background-color: #081721;
+    background-image: -moz-linear-gradient(top, #081721, #0C2433);
+    background-image: -o-linear-gradient(top, #081721, #0C2433);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #081721),color-stop(1, #0C2433));
+    background-image: -webkit-linear-gradient(#081721, #0C2433);
+    background-image: linear-gradient(top, #081721, #0C2433);
+  }
+
+  #top #login button[type=submit] {
+    background-color: #3B6819;
+    background-image: -moz-linear-gradient(top, #3B6819, #2F5314);
+    background-image: -o-linear-gradient(top, #3B6819, #2F5314);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #3B6819),color-stop(1, #2F5314));
+    background-image: -webkit-linear-gradient(#3B6819, #2F5314);
+    background-image: linear-gradient(top, #3B6819, #2F5314);
+  }
+
+  #top #login button[type=submit]:hover {
+    background-color: #2F5314;
+    background-image: -moz-linear-gradient(top, #2F5314, #233E0F);
+    background-image: -o-linear-gradient(top, #2F5314, #233E0F);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #2F5314),color-stop(1, #233E0F));
+    background-image: -webkit-linear-gradient(#2F5314, #233E0F);
+    background-image: linear-gradient(top, #2F5314, #233E0F);
+  }
+
+  #top #login button#forgot {
+    background-color: #665B19;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#665B19), to(#544813));
+    background-image: -webkit-linear-gradient(top, #665B19, #544813);
+    background-image: -moz-linear-gradient(top, #665B19, #544813);
+    background-image: -ms-linear-gradient(top, #665B19, #544813);
+    background-image: -o-linear-gradient(top, #665B19, #544813);
+    background-image: linear-gradient(top, #665B19, #544813);
+  }
+
+  #top #login button#forgot:hover {
+    background-color: #504513;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#504513), to(#40380F));
+    background-image: -webkit-linear-gradient(top, #504513, #40380F);
+    background-image: -moz-linear-gradient(top, #504513, #40380F);
+    background-image: -ms-linear-gradient(top, #504513, #40380F);
+    background-image: -o-linear-gradient(top, #504513, #40380F);
+    background-image: linear-gradient(top, #504513, #40380F);
+  }
+
+  #top #user button#channel-list {
+    background-color: #52BEBE;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#52BEBE), to(#2E8B8B));
+    background-image: -webkit-linear-gradient(top, #52BEBE, #2E8B8B);
+    background-image: -moz-linear-gradient(top, #52BEBE, #2E8B8B);
+    background-image: -ms-linear-gradient(top, #52BEBE, #2E8B8B);
+    background-image: -o-linear-gradient(top, #52BEBE, #2E8B8B);
+    background-image: linear-gradient(top, #52BEBE, #2E8B8B);
+  }
+
+  #top #user button#channel-list:hover {
+    background-color: #41ABAB;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#41ABAB), to(#2B8080));
+    background-image: -webkit-linear-gradient(top, #41ABAB, #2B8080);
+    background-image: -moz-linear-gradient(top, #41ABAB, #2B8080);
+    background-image: -ms-linear-gradient(top, #41ABAB, #2B8080);
+    background-image: -o-linear-gradient(top, #41ABAB, #2B8080);
+    background-image: linear-gradient(top, #41ABAB, #2B8080);
+  }
+
+  #top #user div.status:hover, #top #user div.status.opened {
+    background-color: #19384E;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#19384E), to(#132A3B));
+    background-image: -webkit-linear-gradient(top, #19384E, #132A3B);
+    background-image: -moz-linear-gradient(top, #19384E, #132A3B);
+    background-image: -ms-linear-gradient(top, #19384E, #132A3B);
+    background-image: -o-linear-gradient(top, #19384E, #132A3B);
+    background-image: linear-gradient(top, #19384E, #132A3B);
+  }
+
+  #channels, #channels-content { opacity:0.85 }
+  #channels-content > section .separator { opacity:0.9 }
+  #channel-list { opacity:0.85 }
+
+  #channels-content > section .sendto {
+    background-color: #595676;
+    background-image: -moz-linear-gradient(top, #595676, #4E4B67);
+    background-image: -o-linear-gradient(top, #595676, #4E4B67);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #595676),color-stop(1, #4E4B67));
+    background-image: -webkit-linear-gradient(#595676, #4E4B67);
+    background-image: linear-gradient(top, #595676, #4E4B67);
+  }
+
+  section.account input::-webkit-input-placeholder { color: #B06E5F; }
+  section.account input:-moz-placeholder { color: #B06E5F; }
+
+  section.account input, section.forgot input {
+    background-color: #38130D;
+    background-image: -moz-linear-gradient(top, #38130D, #4D1A12);
+    background-image: -o-linear-gradient(top, #38130D, #4D1A12);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#38130D), to(#4D1A12));
+    background-image: -webkit-linear-gradient(top, #38130D, #4D1A12);
+    background-image: linear-gradient(top, #38130D, #4D1A12);
+  }
+
+  section.account input:focus, section.forgot input:focus {
+    background-color: #230C08;
+    background-image: -moz-linear-gradient(top, #230C08, #38130D);
+    background-image: -o-linear-gradient(top, #230C08, #38130D);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#230C08), to(#38130D));
+    background-image: -webkit-linear-gradient(top, #230C08, #38130D);
+    background-image: linear-gradient(top, #230C08, #38130D);
+  }
+
+  section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button {
+    background-color: #38130D;
+    background-image: -moz-linear-gradient(top, #38130D, #30100B);
+    background-image: -o-linear-gradient(top, #38130D, #30100B);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#38130D), to(#30100B));
+    background-image: -webkit-linear-gradient(top, #38130D, #30100B);
+    background-image: linear-gradient(top, #38130D, #30100B);
+  }
+
+  section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover {
+    background-color: #4D1A12;
+    background-image: -moz-linear-gradient(top, #4D1A12, #451710);
+    background-image: -o-linear-gradient(top, #4D1A12, #451710);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#4D1A12), to(#451710));
+    background-image: -webkit-linear-gradient(top, #4D1A12, #451710);
+    background-image: linear-gradient(top, #4D1A12, #451710);
+  }
+
+  section.help button.close, section.help ul.menu {
+    background-color: #48112F;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#48112F), to(#3D0E29));
+    background-image: -webkit-linear-gradient(top, #48112F, #3D0E29);
+    background-image: -moz-linear-gradient(top, #48112F, #3D0E29);
+    background-image: -ms-linear-gradient(top, #48112F, #3D0E29);
+    background-image: -o-linear-gradient(top, #48112F, #3D0E29);
+    background-image: linear-gradient(top, #48112F, #3D0E29);
+  }
+
+  section.help button.close:hover {
+    background-color: #581539;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#581539), to(#4C1132));
+    background-image: -webkit-linear-gradient(top, #581539, #4C1132);
+    background-image: -moz-linear-gradient(top, #581539, #4C1132);
+    background-image: -ms-linear-gradient(top, #581539, #4C1132);
+    background-image: -o-linear-gradient(top, #581539, #4C1132);
+    background-image: linear-gradient(top, #581539, #4C1132);
+  }
+
+  section.account, section.forgot {
+    background-color: #622117;
+    background-image: -moz-linear-gradient(top, #622117, #4D1A12);
+    background-image: -o-linear-gradient(top, #622117, #4D1A12);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#622117), to(#4D1A12));
+    background-image: -webkit-linear-gradient(top, #622117, #4D1A12);
+    background-image: linear-gradient(top, #622117, #4D1A12);
+    opacity: 0.9;
+  }
+
+  section.help {
+    background-color: #611647;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#611647), to(#4C1138));
+    background-image: -webkit-linear-gradient(top, #611647, #4C1138);
+    background-image: -moz-linear-gradient(top, #611647, #4C1138);
+    background-image: -ms-linear-gradient(top, #611647, #4C1138);
+    background-image: -o-linear-gradient(top, #611647, #4C1138);
+    background-image:  linear-gradient(top, #611647, #4C1138);
+    opacity: 0.9;
+  }
+
+  #channel-list input::-webkit-input-placeholder { color: #9E9AAF; }
+  #channel-list input:-moz-placeholder { color: #9E9AAF; }
+
+  #channel-list input.filter {
+    background-color: #47425E;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#47425E), to(#373449));
+    background-image: -webkit-linear-gradient(top, #47425E, #373449);
+    background-image: -moz-linear-gradient(top, #47425E, #373449);
+    background-image: -ms-linear-gradient(top, #47425E, #373449);
+    background-image: -o-linear-gradient(top, #47425E, #373449);
+    background-image: linear-gradient(top, #47425E, #373449);
+  }
+
+  #channel-list input.filter:focus {
+    background-color: #3A344B;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#3A344B), to(#292736));
+    background-image: -webkit-linear-gradient(top, #3A344B, #292736);
+    background-image: -moz-linear-gradient(top, #3A344B, #292736);
+    background-image: -ms-linear-gradient(top, #3A344B, #292736);
+    background-image: -o-linear-gradient(top, #3A344B, #292736);
+    background-image: linear-gradient(top, #3A344B, #292736);
+  }
+
+  aside.sidebar input::-webkit-input-placeholder { color: #95A6AA; }
+  aside.sidebar input:-moz-placeholder { color: #95A6AA; }
+
+  aside.sidebar input.filter {
+    background-color: #304D65;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#304D65), to(#263C4F));
+    background-image: -webkit-linear-gradient(top, #304D65, #263C4F);
+    background-image: -moz-linear-gradient(top, #304D65, #263C4F);
+    background-image: -ms-linear-gradient(top, #304D65, #263C4F);
+    background-image: -o-linear-gradient(top, #304D65, #263C4F);
+    background-image: linear-gradient(top, #304D65, #263C4F);
+  }
+
+  aside.sidebar input.filter:focus {
+    background-color: #273E52;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#273E52), to(#203241));
+    background-image: -webkit-linear-gradient(top, #273E52, #203241);
+    background-image: -moz-linear-gradient(top, #273E52, #203241);
+    background-image: -ms-linear-gradient(top, #273E52, #203241);
+    background-image: -o-linear-gradient(top, #273E52, #203241);
+    background-image: linear-gradient(top, #273E52, #203241);
+  }
+
+  #loading, noscript { opacity: 0.7 }
+}
+
+top_height = 50px
+bottom_height = 50px
+tab_height = 31px
+
+border-radius()
+  -moz-border-radius arguments
+  -webkit-border-radius arguments
+  border-radius arguments
+
+box-shadow()
+  -moz-box-shadow arguments
+  -webkit-box-shadow arguments
+  box-shadow arguments
+
+html
+body
+  height 100%
+  background #0F3044 url(/images/web/bg.png)
+  font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+  overflow hidden
+input, button
+  font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+#app
+  height auto !important
+  height 100%
+  min-height 100%
+  #top
+    height top_height - 2px
+    overflow hidden
+    border-bottom 1px solid #174969
+    outline 1px solid #061117
+    position relative
+    #logo
+      margin 8px 0 0 15px
+    #login
+      position relative
+      float right
+      height top_height
+      line-height top_height
+      display inline-block
+      min-width 610px
+      form
+        display block
+        height 23px
+        line-height 23px
+        margin-top 10px
+        label
+          margin-right 10px
+          color #92A6B2
+          text-shadow 1px 1px 0 #061117
+          font-size 0.9em
+        input[type=text], input[type=password]
+          height 18px
+          margin-right 10px
+          padding 1px 2px
+          border 1px solid #061117
+          box-shadow 1px 1px 0 #174969
+          border-radius 3px
+          color #748E9C
+          font-size 0.8em
+          text-shadow 1px 1px 0 #061117
+          &:focus
+            color #92A6B2
+        button[type=submit], button#forgot
+          height 23px
+          line-height 20px
+          margin-left 10px
+          padding 1px 5px
+          border 1px solid #539223
+          border-radius 3px
+          color #87C15A
+          font-size .75em
+          box-shadow 1px 1px 0 #17290A
+          text-shadow 1px 1px 0 #17290A
+          &:hover
+            color #87C15A
+          &:active
+            border 1px solid #000
+            box-shadow 1px 1px 0 #539223
+        button#forgot
+          border 1px solid #8C7A22
+          color #BDB65E
+          box-shadow 1px 1px 0 #29250A
+          text-shadow 1px 1px 0 #29250A
+          &:hover
+            color #BDB65E
+          &:active
+            border 1px solid #000
+            box-shadow 1px 1px 0 #6E601B
+     button#uLogin, span.oauth
+       display inline-block
+       float right
+     button#uLogin
+       width 50px
+       height 33px
+       margin-top 8px
+       margin-right 15px
+       background url(/images/web/oauth.png)
+       border none
+       cursor pointer
+     span.oauth
+       display inline-block
+       padding 0 10px
+       float right
+       color #92A6B2
+       text-shadow 1px 1px 0 #061117
+       font-size 0.9em
+    #user
+      float right
+      color #388E9E
+      line-height top_height - 3px
+      margin-right 10px
+      text-shadow 1px 1px 1px #001C1C
+      font-size 0.9em
+      overflow hidden
+      div.status
+        display inline-block
+        height 25px
+        line-height 25px
+        padding 0 5px
+        margin 0 1px
+        border-radius 3px
+        span.name
+          float left
+          color #85BBC9
+          margin-right 10px
+        span.icon
+          background url(/images/web/statuses.png) no-repeat
+          width 10px
+          height 10px
+          display inline-block
+          &.online
+            background-position 0px center
+          &.away
+            background-position -10px center
+          &.unavailable
+            background-position -20px center
+        button.switch
+          text-decoration none
+          display inline-block
+          margin-left 5px
+          border none
+          background none
+          width 16px
+          height 16px
+          color #85BBC9
+          font-size 0.8em
+          height 25px
+          line-height 25px
+          text-shadow 1px 1px 1px #001C1C
+          &:hover
+            color #CCB86B
+        div.statuses
+          display none
+          height 25px
+          line-height 25px
+          float right
+          margin-left 5px
+          border-left 1px solid #091C28
+          button
+            height 25px
+            line-height 25px
+            margin-right 5px
+            text-decoration none
+            text-shadow 1px 1px 1px #001C1C
+            background none
+            span.icon
+              margin 0 5px
+              float left
+              height 25px
+            &#online
+              .status
+                color #62AC2B
+                &:hover
+                  color #89D34F
+              .icon
+                background-position 0px center
+            &#away
+              .status
+                color #AEA028
+                &:hover
+                  color #D6C74D
+              .icon
+                background-position -10px center
+            &#unavailable
+              .status
+                color #B16125
+                &:hover
+                  color #D98749
+              .icon
+                background-position -20px center
+            span.status
+              float right
+              height 25px
+              line-height 25px
+        &.closed:hover, &.opened
+          border 1px solid #091C28
+          box-shadow 1px 1px 0 #216291
+          margin 0
+        &.opened
+          margin 0 5px
+      button
+        text-decoration underline
+        cursor pointer
+        border none
+        padding 0
+        font-size 1em
+      button#account
+        color #01CE6D
+        text-shadow 1px 1px 1px #002010
+        background none
+        &:hover
+          text-decoration none
+      button#logout
+        color #DD6262
+        text-shadow 1px 1px 1px #330B0B
+        background none
+        &:hover
+          text-decoration none
+  #bottom
+    position absolute
+    bottom 0
+    height bottom_height
+    width 100%
+    border-top 1px solid #49811F
+    outline 1px solid #0E1906
+    z-index 1
+    div
+      position relative
+      width 100%
+      height bottom_height
+      button.history
+        position absolute
+        left 55px
+        width 11px
+        height 10px
+        text-indent -99999px
+        border 0
+        cursor pointer
+        z-index 1
+        padding 0
+        &.up
+          background transparent url(/images/web/history-arrow-up.png) left center
+          top 15px
+          &:hover
+            background transparent url(/images/web/history-arrow-up.png) right center !important
+        &.down
+          background transparent url(/images/web/history-arrow-down.png) left center
+          top 26px
+          &:hover
+            background transparent url(/images/web/history-arrow-down.png) right center !important
+      div
+        width inherit
+        height inherit
+        padding 10px 150px 10px 50px
+        input[type=text]
+          width 100%
+          height 26px
+          padding 1px 18px 1px 20px
+          border 1px solid #1A2E0B
+          box-shadow 1px 1px 0 #49811F
+          border-radius 3px
+          color #89C071
+          text-shadow 1px 1px 0 #1A2E0B
+          font-size 1em
+          &:focus
+            color #E3F0DD
+            text-shadow 1px 1px 0 #0E1906
+      button[type=submit], button#smile, button#help
+        position absolute
+        height 28px
+        top 10px
+        padding-bottom 2px
+        border 1px solid #058E84
+        box-shadow 1px 1px 0 #001110
+        border-radius 3px
+        color #05ABA1
+        font-size 1em
+        text-shadow 1px 1px 0 #2E1A0C
+        &:hover
+          border 1px solid #058E84
+          color #06C4B8
+        &:active, &.pressed
+          border 1px solid #001110
+          box-shadow 1px 1px 0 #058E84
+      button[type=submit]
+        right 10px
+        width 50px
+      button#smile
+        right 70px
+        width 30px
+      button#help
+        left 10px
+        width 30px
+  section#container, section.account, section.forgot, section.help
+    padding 10px 20px 10px 10px
+    position relative
+  section#container
+    #loading, noscript
+      display block
+      width 400px
+      height 30px
+      line-height 30px
+      color #fff
+      margin 0 auto
+      text-align center
+      font-size 1.3em
+  section.account, section.help, section.forgot
+    position absolute
+    top top_height - 1px
+    left 50%
+    margin-left -170px
+    display none
+    border 1px solid #963B31
+    box-shadow 1px 1px 0 #37140D
+    border-top none
+    width 340px
+    padding 10px
+    text-align center
+    -webkit-border-bottom-right-radius 5px
+    -webkit-border-bottom-left-radius 5px
+    -moz-border-radius-bottomright 5px
+    -moz-border-radius-bottomleft 5px
+    border-bottom-right-radius 5px
+    border-bottom-left-radius 5px
+    & > div
+      display none
+    & > div.expand
+      display block
+    h1
+      font-size 1.1em
+      margin-bottom 10px
+      font-weight normal
+      color #D5AD8C
+      text-shadow 1px 1px 1px #2B110E
+      cursor pointer
+      &:hover
+        color #FFF
+    form
+      display none
+      text-align left
+      margin 10px
+      margin-bottom 10px
+      label
+        float left
+        font-size 0.9em
+        color #D5AD8C
+        text-shadow 1px 1px 1px #2B110E
+      input, span, button
+        float right
+      input, button
+        border 1px solid #2B110E
+        box-shadow 1px 1px 0 #963B31
+        padding 2px 5px
+        margin-top 4px
+        margin-bottom 3px
+        border-radius 3px
+        height 16px
+        width 150px
+        color #B06E5F
+        font-size 0.8em
+      input:focus
+        color #D1B9A3
+      input[type=radio]
+        width 20px
+        display none
+      input[type=submit], button, .uploadifyButton
+        width 90px
+        height 25px
+        margin-top 10px
+        border 1px solid #83332B
+        color #CEA079
+        box-shadow 1px 1px 0 #2B110E
+        text-shadow 1px 1px 1px #2B110E
+        cursor pointer
+        &:hover
+          color #D5AD8C
+          border-color #963A31
+      span.gender, span.switch
+        display block
+        color #D5AD8C
+        font-size 1em
+        width 20px
+        height 24px
+        line-height 24px
+        margin 4px 2px 3px 2px
+        padding 0 5px
+        text-align center
+        border 1px solid #83332B
+        box-shadow 1px 1px 0 #2B110E
+        border-radius 3px
+        cursor pointer
+        float left
+        &:hover
+          color #D5AD8C
+          border-color #963A31
+        &.checked
+          border 1px solid #2B110E
+          box-shadow 1px 1px 0 #83332B
+      button
+        margin-right 10px
+      div
+        width 100%
+        height 31px
+        line-height 31px
+      &.expand
+        display block
+    form.account
+      label
+        width 150px
+      span.gender-container
+        width 162px
+        float right
+      span.male
+        margin-left 0
+      .pic
+        height 80px
+        .userpic
+          border 3px solid #33110C
+          padding 5px
+          margin 0 auto
+          float left
+        #userpic
+          display block
+          float left
+          margin 50px 0 0 80px
+          .uploadifyButton
+            margin 0
+            height 25px
+            width 90px
+            border-radius 3px
+            span
+              margin 0
+              float none
+              display block
+              height 25px
+              line-height 25px
+              text-align center
+              font-size 0.8em
+        #userpic_queue
+          display none
+    form.audio-settings, form.interface-settings
+      label
+        width 250px
+      input[type=checkbox]
+        display none
+      span.audio-container, span.interface-container
+        width 70px
+      span.switch
+        font-size 0.8em
+        margin 0
+        float right
+  section.help
+    width 600px
+    height 430px
+    margin-left -300px
+    border 1px solid #953075
+    border-top none
+    box-shadow 1px 1px 0 #360E2F
+    padding 10px 15px
+    div.helpscroll li
+      cursor pointer
+      &:hover
+        color #FFF
+    div.helpscroll, div.rulesscroll
+      height 335px
+      position relative
+    .scrollingHotSpotUp, .scrollingHotSpotDown
+      position absolute
+      width 100px
+      height 20px
+      left 50%
+      background #420F2C
+      border 1px solid #894C76
+      box-shadow 1px 1px 0 #2B1A2D
+      color #ECAAD7
+      text-shadow 1px 1px 1px #2B0E2C
+      display none
+      z-index 2
+      font-size 1.2em
+      line-height 24px
+      margin-left -50px
+      border-radius 3px
+      &:hover
+        color #FFCC33
+    .scrollingHotSpotUp
+      top 0
+    .scrollingHotSpotDown
+      bottom 0
+    .scrollableArea
+      position absolute
+      top 0
+      right 0
+      bottom 0
+      left 0
+      overflow hidden
+      padding-bottom 10px
+    h1
+      color #ECAAD7
+      text-shadow 1px 1px 1px #2B0E2C
+    h2
+      text-align left
+      color #ECAAAA
+      text-shadow 1px 1px 1px #420F0F
+      font-weight normal
+      margin 10px 0 5px 0
+    ol
+      text-align left
+      p
+        color #D7BFD2
+        display none
+        padding 8px
+        text-shadow 1px 1px 1px #2B0E2C
+        &.expand
+          display block
+        a
+          color #D7BFD2
+          &:hover
+            color #F3CBE7
+            text-decoration none
+      li
+        background transparent
+        float none
+        color #D7BFD2
+        text-shadow 1px 1px 1px #2B0E2C
+        border none
+        text-align left
+        height auto !important
+        line-height 20px
+      list-style decimal inside
+      padding-left 10px
+    button.close
+      position absolute
+      right 10px
+      top 0
+      width 27px
+      height 25px
+      margin-top 10px
+      border 1px solid #894C76
+      box-shadow 1px 1px 0 #2B1A2D
+      color #ECAAD7
+      text-shadow 1px 1px 1px #2B0E2C
+      cursor pointer
+      border-radius 15px
+      &:hover
+        color #F3CBE7
+        border-color #92517D
+    ul.menu
+      border-radius 5px
+      position absolute
+      bottom 10px
+      left 10px
+      right 10px
+      list-style none
+      padding 5px 15px
+      font-size 0.9em
+      height 22px
+      line-height 20px
+      li
+        float right
+        a
+          font-family UniversCyrLight, "Gill Sans", Calibri, "Trebuchet MS", sans-serif
+          color #ECAAD7
+          text-decoration none
+          &:hover
+            color #F3CBE7
+        span
+          margin 0 7px
+          color #F3CBE7
+  section.forgot
+    height 165px
+    width 360px
+    h1
+      cursor default
+      padding-bottom 5px
+      &:hover
+        color #D5AD8C
+    p
+      padding-bottom 10px
+      text-align center
+      color #D5AD8C
+      text-shadow 1px 1px 1px #2B110E
+      font-size 1em
+    input[type=submit]
+      width 120px !important
+  #channel-list-holder
+    position fixed
+    bottom bottom_height + 10px
+    top top_height + 10px - 1px
+    left 5px
+    width 10px
+    z-index 3
+    background #0F2C3E
+    border 1px solid #1E597D
+    box-shadow 1px 0px 0 #0A1D29
+    border-radius 3px
+    outline none
+    cursor pointer
+    &:hover
+      background #491B12
+      border 1px solid #933523
+      box-shadow 1px 1px 0 #30120C
+  #channel-list
+    position fixed
+    bottom bottom_height + 10px
+    top top_height + 10px - 1px
+    left -265px
+    width 250px
+    z-index 3
+    border 1px solid #25202F
+    background #423953
+    -moz-border-radius-bottomright 5px
+    -khtml-border-radius-bottomright 5px
+    -webkit-border-bottom-right-radius 5px
+    -moz-border-radius-bottomleft 5px
+    -khtml-border-radius-bottomleft 5px
+    -webkit-border-bottom-left-radius 5px
+    .filterBox
+      position absolute
+      bottom 10px
+      left 0
+      right 0
+      padding 0 25px 0 15px
+      input.filter
+        height 20px
+        line-height 20px
+        width 100%
+        border 1px solid #23212E
+        box-shadow 1px 1px 0 #625A85
+        padding 2px 5px
+        border-radius 3px
+        color #9E9AAF
+        &:focus
+          color #BEB9D0
+    header
+      display inline-block
+      font-weight normal
+      text-align center
+      height 30px
+      line-height 30px
+      color #BEC9C9
+      font-size 0.9em
+      text-shadow 1px 1px 0 #313A3A
+      width 100%
+    menu
+      position absolute
+      top 35px
+      bottom 44px
+      left 0
+      right 0
+      list-style none
+      overflow hidden
+      li
+        width 100%
+        background transparent
+        border none
+        height auto
+        float none
+        margin 3px 0
+        line-height 17px
+        button
+          padding 0
+          margin 0 15px
+          height auto
+          border none
+          max-width 85%
+          background transparent
+          color #9D9BB9
+          text-shadow 1px 1px 0 #201F2C
+          text-align left
+          cursor pointer
+          &:hover
+            color #E1E0E9
+          span
+            text-overflow ellipsis
+            word-wrap break-word
+            padding 0
+    .scrollingHotSpotUp, .scrollingHotSpotDown
+      position absolute
+      width 70px
+      height 20px
+      left 50%
+      background #2C2C3F
+      border 1px solid #201E2D
+      display none
+      z-index 2
+      color #8982B0
+      font-size 1.2em
+      line-height 24px
+      margin-left -35px
+      border-radius 3px
+      &:hover
+        color #FFCC33
+    .scrollingHotSpotUp
+      top 35px
+    .scrollingHotSpotDown
+      bottom 49px
+#channels
+  position: absolute
+  top 10px
+  left 25px
+  right 10px
+  padding 0
+  margin 0
+  list-style none
+  height tab_height + 2px
+  background transparent url(/images/web/tabs-bg.gif) repeat-x bottom
+  border-left 1px solid #0C2534
+  display none
+  overflow hidden
+  li
+    float left
+    margin 0
+    padding 0
+    display none
+    height tab_height
+    line-height tab_height - 3px
+    border 1px solid #0C2534
+    border-left none
+    margin-bottom -1px
+    background #0C2534
+    overflow hidden
+    button
+      font-size 0.9em
+      display block
+      padding 0 15px 0 5px
+      border 1px solid #143E56
+      border-left 0
+      outline none
+      float left
+      height tab_height
+      z-index 0
+      color #6B828D
+      text-shadow 0px 1px 1px #061219
+      background #0C2534
+      margin 0
+      cursor pointer
+      &:hover
+        color #AEBBC1
+      span.count
+        padding-left 5px
+    button.remove
+      color #A15B66
+      border-left none
+      padding 0 15px 0 1px
+      margin-left -1px
+      z-index 1
+      &:hover
+        color #DEB3BA
+    div.info
+      border 1px solid #143E56
+      border-right 0
+      background #0C2534
+      padding 0 5px 0 10px
+      z-index 1
+      width 10px
+      float left
+      height tab_height - 2px
+      button
+        border 0
+        padding 0
+        margin-top 9px
+        text-indent -99999px
+        width 10px
+        height 10px
+        cursor pointer
+        background transparent url(/images/web/info.png) no-repeat left center
+        &:hover
+          background transparent url(/images/web/info.png) no-repeat center center
+        &.disabled
+          background transparent url(/images/web/info.png) no-repeat right center
+          cursor default
+    &.current
+      background #143E56
+      border-bottom 1px solid #143E56
+      button
+        color #92B229
+        border-bottom 1px solid #143E56
+        background #143E56
+        height tab_height
+        cursor default
+        &.remove
+          cursor pointer
+          background #143E56
+          color #D66004
+          &:hover
+            color #FFA661
+      div.info
+        background #143E56
+        button
+          border 0
+          padding 0
+          background transparent url(/images/web/info.png) no-repeat left center
+          &:hover
+            background transparent url(/images/web/info.png) no-repeat center center
+          &.disabled
+            background transparent url(/images/web/info.png) no-repeat right center
+            cursor default
+    &.arrow
+      display none
+      background transparent
+      border 0
+      margin 0
+      padding 0
+      width tab_height
+      height tab_height + 1px
+      margin-bottom 1px
+      position relative
+      overflow visible
+      div
+        position absolute
+        right -16px
+        top 0
+        bottom 0
+        width 0
+        height 0
+        border-top 16px solid transparent
+        border-bottom 16px solid transparent
+        border-left 16px solid #92B229
+      div.counter
+        position static
+        font-size 0.9em
+        float left
+        margin 0
+        background #92B229
+        border 0
+        padding 0
+        width 100%
+        text-align center
+        height tab_height + 1px
+        line-height tab_height + 1px
+        color #435113
+        text-overflow ellipsis
+        text-shadow none
+#channels-content
+  position fixed
+  bottom bottom_height + 10px
+  top top_height + tab_height + 10px + 1px
+  left 25px
+  right 10px
+  border 1px solid #0C2534
+  border-top none
+  background #143E56
+  padding 10px
+  display none
+  z-index 2
+  overflow visible
+  -moz-border-radius-bottomright 5px
+  -khtml-border-radius-bottomright 5px
+  -webkit-border-bottom-right-radius 5px
+  -moz-border-radius-bottomleft 5px
+  -khtml-border-radius-bottomleft 5px
+  -webkit-border-bottom-left-radius 5px
+  & .ternMask
+    border-radius 5px
+  & > section
+    top 10px
+    bottom 10px
+    left 10px
+    right 10px
+    position absolute
+    overflow visible
+    .chat
+    .separator
+    .sidebar
+      position absolute
+      top 0
+      bottom 0
+    .chat
+      left 0
+      right 280px
+      z-index 1
+      .scrollingHotSpotUp, .scrollingHotSpotDown
+        position absolute
+        width 100px
+        height 20px
+        left 50%
+        background #162B38
+        border 1px solid #0F1D26
+        display none
+        z-index 2
+        color #A2DFDF
+        font-size 1.2em
+        line-height 24px
+        margin-left -50px
+        border-radius 3px
+        &:hover
+          color #FFCC33
+      .scrollingHotSpotUp
+        top 0
+      .scrollingHotSpotDown
+        bottom 0
+      .scrollableArea
+        position absolute
+        top 0
+        right 0
+        bottom 0
+        left 0
+        overflow hidden
+        padding-bottom 10px
+      div.message
+        display block
+        &.ignore
+          display none
+        color #81CB67
+        line-height 18px
+        & > a
+          text-decoration none
+          color #FFCC33
+          &:hover
+            border-bottom 1px dotted #FFCC33
+        time
+          color #FFCC33
+          text-shadow 0 1px 1px #0F1619
+          font-size .9em
+          letter-spacing 1px
+        button
+          color #81CB67
+          text-shadow 1px 1px 1px #12250D
+          background none
+          border none
+          padding 0
+          cursor pointer
+          font-size .9em
+          height 18px
+          line-height 18px
+          &:hover
+            color #DAEBD7
+        button.name
+          margin-left 5px
+        button.me
+          color #E98DDF
+          cursor default
+        p
+         color #D7E9EA
+         margin-left 10px
+         font-size .9em
+         text-shadow 1px 1px 1px #142727
+         display inline
+         & button.name
+           margin 0
+         img
+           vertical-align text-bottom
+         a.userLink
+           color #AAD6DF
+           text-decoration none
+           border-bottom 1px dotted #AAD6DF
+           &:hover
+             color #D8E5AE
+             border-bottom 1px solid #AAD6DF
+    .separator
+      right 260px
+      width 10px
+      display block
+      z-index 1
+      background #0F2C3E
+      border 1px solid #1E597D
+      box-shadow 1px 0px 0 #0A1D29
+      border-radius 3px
+      outline none
+      cursor pointer
+      &:hover
+        background #491B12
+        border 1px solid #933523
+        box-shadow 1px 1px 0 #30120C
+    .sidebar
+      right 0
+      width 250px
+      z-index 0
+      header
+        position absolute
+        top 0
+        left 0
+        right 0
+        height 20px
+        line-height 20px
+        text-align center
+        color #BEC9C9
+        font-size 0.9em
+        text-shadow 1px 1px 0 #313A3A
+      ul
+        position absolute
+        top 25px
+        bottom 44px
+        left 0
+        right 0
+        padding 0
+        display block
+        li
+          background none
+          border none
+          display inline-block
+          height auto
+          width 100%
+          button.info
+            width 10px
+            padding 0
+            margin 0 5px 0 10px
+            height 20px
+            border 0
+            text-indent -99999px
+            float left
+            cursor pointer
+            background url(/images/web/info.png) no-repeat left center
+            &:hover
+              background url(/images/web/info.png) no-repeat center center
+            &.me
+              background none
+              cursor default
+              margin-right 0
+              width 0
+          button.name
+            text-align left
+            background transparent
+            word-wrap break-word
+            text-overflow ellipsis
+            float left
+            border none
+            cursor pointer
+            color #81CB67
+            text-shadow 1px 1px 1px #12250D
+            max-width 72%
+            min-height 20px
+            line-height 20px
+            display inline
+            height auto !important
+            padding 0
+            margin 0
+            &:hover
+              color #DAEBD7
+            &.me
+              color #E98DDF
+              cursor default
+          span.gender, span.status
+            display inline-block
+            float left
+            text-indent -9999px
+          span.gender
+            background url(/images/web/gender.png) no-repeat
+            margin-left 3px
+            width 16px
+            height 20px
+            &.male
+              background-position 0 center
+              color #62B4E3
+            &.female
+              background-position -16px center
+              color pink
+          span.status
+            background url(/images/web/statuses.png) no-repeat
+            width 10px
+            height 20px
+            margin-right 5px
+            &.online
+              background-position 0 center
+            &.away
+              background-position -10px center
+            &.unavailable
+              background-position -20px center
+          &.ignore
+            button.name
+              text-decoration line-through
+      .filterBox
+        position absolute
+        bottom 10px
+        left 0
+        right 0
+        padding 0 25px 0 15px
+        input.filter
+          height 20px
+          line-height 20px
+          width 100%
+          border 1px solid #0F2B3C
+          box-shadow 1px 1px 0 #326685
+          padding 2px 5px
+          border-radius 3px
+          color #95A6AA
+          &:focus
+            color #CDD5D6
+      .scrollingHotSpotUp, .scrollingHotSpotDown
+        position absolute
+        width 70px
+        height 20px
+        left 50%
+        background #162B38
+        border 1px solid #0F1D26
+        display none
+        z-index 2
+        color #A2DFDF
+        font-size 1.2em
+        line-height 24px
+        margin-left -35px
+        border-radius 3px
+        &:hover
+          color #FFCC33
+      .scrollingHotSpotUp
+        top 30px
+      .scrollingHotSpotDown
+        bottom 49px
+    .sendto
+      display none
+      position absolute
+      left -10px
+      bottom -25px
+      z-index 10
+      height 20px
+      border 1px solid #383126
+      padding 3px 1px
+      border-radius 5px
+      span
+        float left
+        margin 0 5px
+        font-size 0.9em
+        line-height 20px
+        color #16141C
+      li
+        float left
+        display inline-block
+        background #363243
+        height 16px
+        line-height 15px
+        border none
+        padding 2px 6px
+        margin 0 2px
+        border-radius 2px
+        button
+          background none
+          line-height 16px
+          font-size 0.9em
+          height 16px
+          border none
+          color #D7E9EA
+          text-shadow none
+          cursor default
+          padding 0
+          &.name
+            margin-right 5px
+          &.close
+            cursor pointer
+            color #D7E9EA
+            &:hover
+              color #9B99B5
+    .type
+      display none
+      z-index 10
+      height 16px
+      padding 3px 1px
+      span
+        float left
+        display block
+        height 16px
+        width 60px
+        background url(/images/web/typing.png) no-repeat left center
+        margin-left 2px
+        padding 0 5px 0 26px
+        color #CCC
+        line-height 14px
+        font-size .9em
+        text-shadow 1px 1px 1px #142727
+      li
+        float left
+        display inline-block
+        background none
+        height 16px
+        line-height 16px
+        border none
+        padding 0 6px
+        margin -1px 2px
+        color #CCC
+        font-size .9em
+        text-shadow 1px 1px 1px #142727
+  div#smiles
+    position absolute
+    display none
+    bottom -10px
+    right 45px
+    width 245px
+    height 170px
+    z-index 10
+    background #4A324A
+    border 1px solid #AC6FAD
+    box-shadow 1px 0px 0 #140914
+    border-radius 3px
+    padding 10px
+    margin 10px
+    img
+      margin 2px
+      cursor pointer
+.qtip .pic
+  border 3px solid #77AFD2
+  padding 5px
+  margin 5px
+.qtip .profile, .qtip .channelinfo
+  display block
+  width 170px
+  background transparent
+  margin 5px 0 10px 0
+  float right
+  list-style none
+  li
+    padding 0
+    border 0
+    width inherit
+    background transparent
+    line-height 19px
+    height 19px
+    span
+      display inline-block
+    span.param
+      width 90px
+      float left
+    span.value
+      width 80px
+      float right
+.qtip .actions
+  width 100%
+  button, a
+    display inline-block
+    height 25px
+    font-size 0.9em
+    background #D2E8F4
+    color #0A1D29
+    border 2px solid #6EB1DB
+    border-radius 5px
+    outline none
+    cursor pointer
+    margin 0 5px
+    &:hover
+      background #CC0033
+      border 2px solid #990027
+      border-radius 5px
+      color #FFF
+    &.disabled
+      background #DEE7E9
+      border-color #97AEB3
+      color #63797A
+      cursor default
+      &:hover
+        background #DEE7E9
+        border-color #97AEB3
+        color #63797A
+  &.channelinfo
+    a
+      text-decoration none
+      line-height 21px
+      height auto
+      padding 0 5px
+      margin 10px 3px 5px 3px
+      float left
+    button
+      float left
+      margin 10px 3px 5px 3px
+.qtip .yesno
+  margin 10px 0
+  button
+    width 50px
+    margin 0 5px
+    float right
+.qtip .channelinfo
+    width 200px
+    margin 0
+    float none
+    li
+      span.param
+        width 120px
+      span.value.link a
+        color #0D2C5E
+        text-decoration none
+        border-bottom 1px dotted #0D2C5E
+        &:hover
+          border-bottom 1px solid #0D2C5E

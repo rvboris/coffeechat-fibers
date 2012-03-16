@@ -1,0 +1,11 @@
+section.archive#container
+  if data.dates.length === 0
+    h4 Архив пуст
+  else
+    a(href='/archive').back Вернуться к выбору комнаты
+    h4 Выберите год и месяц
+    ul#years
+      each monthyear in data.dates
+        li
+          a(href='/archive/#{data.channel.url}/#{monthyear._id}') #{monthyear.month} #{monthyear.year}
+          |  (#{monthyear.value.count})

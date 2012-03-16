@@ -1,0 +1,17 @@
+section.archive#container
+  a(href='/').back На главную
+  if data.channels.length === 0
+    h4 Архив пуст
+  else
+    h4 Выберите комнату
+    ul#channels
+      each channel in data.channels
+        li
+          a(href='/archive/#{channel.channel.url}') #{channel.channel.name}
+          |  (#{channel.count})
+    if data.prev !== null || data.next !== null
+      div.pagination
+        if data.prev !== null
+          a(href='/archive/p/#{data.prev}').prev < Предыдущая
+        if data.next !== null
+          a(href='/archive/p/#{data.next}').next Следующая >

@@ -1,0 +1,18 @@
+form(method='POST').interface-settings.clearfix
+  div.clearfix
+    label(for='flashTabOnMessage') Мигать вкладкой: новое сообщение
+    span.interface-container
+      input(type='checkbox', name='user[settings][interface][flashTabOnMessage]', value='1')#flashTabOnMessage
+      span.flashTabOnMessage.switch off
+  div.clearfix
+    label(for='flashTabOnMention') Мигать вкладкой: упоминание имени
+    span.interface-container
+      input(type='checkbox', name='user[settings][interface][flashTabOnMention]', value='1')#flashTabOnMention
+      span.flashTabOnMention.switch off
+  div.clearfix
+    label(for='chatNotifications') Показывать уведомления в чате
+    span.interface-container
+      input(type='checkbox', name='user[settings][interface][chatNotifications]', value='1')#chatNotifications
+      span.chatNotifications.switch off
+  input(type='submit', value='Сохранить')
+  button(type='button').cancel Отмена

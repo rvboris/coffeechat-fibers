@@ -1,0 +1,137 @@
+!!! 5
+html(lang='ru')
+  head
+    title CoffeeChat // #{title}
+
+    meta(charset='utf-8')
+    meta(name='keywords', content='бесплатный чат, чат онлайн, чат кроватка, чат знакомств, веб чат, русский чат, анонимный чат')
+    meta(name='description', content='Cовременный чат для живого общения, приватный чат, знакомства с интересными людьми.')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+
+    link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
+    link(rel='icon', type='image/x-icon', href='/favicon.ico')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/plugins.css', media='all')
+
+    - if (env === 'production')
+      link(rel='stylesheet', href='/stylesheets/web/style.css', media='all')
+      link(rel='stylesheet', href='/stylesheets/web/print.css', media='print')
+    - else
+      link(rel='stylesheet', href='/web/style.css', media='all')
+      link(rel='stylesheet', href='/web/print.css', media='print')
+
+    script(src='/javascripts/web/loader.js')
+    script
+      yepnope([
+        { load: '/javascripts/web/jquery.js' },
+        { load: '/javascripts/web/jquery.interface.plugins.js' },
+        {
+          load: '/javascripts/web/jquery.interface.js',
+          complete: function () {
+            if (!$.fn.ufc) return alert('Ошибка загрузки jquery.interface');
+            $.fn.ufc('!{csrf}');
+          }
+        },
+        {
+          load: ['/javascripts/web/jquery.system.plugins.js', '/javascripts/web/jquery.system.js'],
+          complete: function() {
+            if (!$.fn.sys) return alert('Ошибка загрузки jquery.system');
+            $.fn.sys(!{JSON.stringify(user)}, !{JSON.stringify(channels)}, '!{serverKey}', '!{env}', '!{csrf}', !{JSON.stringify(errors)});
+          }
+        },
+        { load: 'ie9!/stylesheets/web/ie9.css' },
+        { test: Modernizr.input.placeholder, nope: '/javascripts/web/jquery.placeholder.js' },
+        {
+          load: 'timeout=2500!//ulogin.ru/js/widget.js',
+          complete: function() {
+            try {
+              $.fn.sys().uLogin.init(typeof uLogin == 'undefined' ? null : uLogin);
+            } catch (e) {}
+          }
+        }
+      ]);
+  body
+    #app
+      header#top
+        img(src='/images/web/logo.png', width='176', height='36')#logo
+        - if (user.id != '0')
+          #user
+            | Добро пожаловать
+            div.status.closed
+              span.name #{user.name}
+              - if (user.status == 'O' || user.status == 'F')
+                span.icon.online
+              - if (user.status == 'A')
+                span.icon.away
+              - if (user.status == 'U')
+                span.icon.unavailable
+              button.switch ►
+              div.statuses
+                button#online
+                  span.icon
+                  span.status На месте
+                button#away
+                  span.icon
+                  span.status Отошел
+                button#unavailable
+                  span.icon
+                  span.status Недоступен
+            |  /
+            button#account Аккаунт
+            |  /
+            button#logout Выйти
+          #login(style='display:none')
+            != partial('forms/web/login')
+        - else
+          #login
+            != partial('forms/web/login')
+      section#container
+        noscript
+          Для работы сайта сайта необходимо включить javascript
+          style
+            #loading { display:none !important }
+        #loading Загрузка...
+        #channel-list
+          header Список комнат (
+            span.count 0
+            )
+          button.scrollingHotSpotUp ˄ ˄ ˄
+          menu
+          button.scrollingHotSpotDown ˅ ˅ ˅
+          .filterBox
+            input(type='text', name='channelFilter', placeholder='поиск').filter
+        #channel-list-holder
+        menu#channels
+          li.arrow
+            div.counter 0
+            div
+        #channels-content
+          #smiles
+            != partial('partials/web/smiles')
+      section.account.clearfix
+        h1 Управление аккаунтом
+        != partial('forms/web/account', { csrf: csrf })
+        h1 Настройки звука
+        != partial('forms/web/audio-settings')
+        h1 Настройки интерфейса
+        != partial('forms/web/interface-settings')
+      section.help.clearfix
+        != partial('partials/web/help')
+      section.forgot.clearfix
+        != partial('forms/web/forgot', { csrf: csrf })
+      footer#bottom
+        div
+          button.history.up ˄
+          button.history.down ˅
+          form(method='POST')
+            div
+              input(type='text', name='msg', id='message', x-webkit-speech='true', placeholder='сообщение', required='true', autofocus='true', onwebkitspeechchange='$("#bottom form").submit();')
+            button(type='submit')#send >>>
+          button#help ?
+          button#smile =)
+    != partial('mustache/web/ui-channel')
+    != partial('mustache/web/ui-message')
+    != partial('mustache/web/ui-user')
+    != partial('mustache/web/ui-login')
+    != partial('mustache/web/ui-tab')
+    != partial('partials/web/metrika', { user: user, channels: channels })

@@ -1,0 +1,11 @@
+section.archive#container
+  if data.dates.length === 0
+    h4 Архив пуст
+  else
+    a(href='/archive/#{data.channel.url}').back Вернуться к выбору месяца
+    h4 Выберите дату
+    ul#days
+      each date in data.dates
+        li
+          a(href='/archive/#{data.channel.url}/#{date._id}/#{date.day}') #{date.dayOfWeek} #{date.day} #{date.month} #{date.year}
+          |  (#{date.value.count})

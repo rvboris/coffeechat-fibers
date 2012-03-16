@@ -1,0 +1,8 @@
+section.archive#messages-container
+  h4.message-id #{title}
+  #messages
+    .message.clearfix
+      time [#{data.message.timeString}]
+      button.name #{data.user.name}
+      | :
+      p !{data.message.text}

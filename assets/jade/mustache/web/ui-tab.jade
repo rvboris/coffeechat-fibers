@@ -1,0 +1,35 @@
+script(type='text/html')#mu-ui-tab-sendto
+  li(style='{{isHidden}}')
+    button.name {{name}}
+    button.close x
+
+script(type='text/html')#mu-ui-tab-button
+  li.current
+    div.info.clearfix
+      button(class='{{#private}}disabled{{/private}}') i
+    button(id='channel-{{channel.id}}').channel
+      span.name {{channel.name}}
+    | {{#close}}
+    button.remove x
+    | {{/close}}
+
+script(type='text/html')#mu-ui-tab-chat
+  section(id='channel-{{channel.id}}-content').use-sidebar
+    .chat
+      button.scrollingHotSpotUp ˄ ˄ ˄
+      .scrollableArea
+        .notifications
+          ul.type
+            span Печатает:
+      button.scrollingHotSpotDown ˅ ˅ ˅
+    a.separator
+    aside.sidebar
+      header Пользователи (<span>0</span>)
+      button.scrollingHotSpotUp ˄ ˄ ˄
+      ul.user-list
+      button.scrollingHotSpotDown ˅ ˅ ˅
+      .filterBox
+        input(type='text', name='userFilter', placeholder='поиск').filter
+    ul.sendto
+      span →
+
