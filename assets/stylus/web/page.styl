@@ -304,21 +304,40 @@ input, textarea, button
         &:hover
           color #D5AD8C
           border-color #963A31
+      div.clearfix.message
+        height 151px
+      div.clearfix.recaptcha
+        height 120px
+        #recaptcha_widget
+          position relative
+          & > a
+            position absolute
+            color #000
+            font-size 0.7em
+            top 61px
+            left 3px
+            text-decoration none
+            line-height 12px
+            border-bottom 1px dotted #000
+            &:hover
+              border-bottom 1px solid #000
+        #recaptcha_image
+          width 318px !important
+          height 77px !important
+          padding 0
+          margin 0 0 10px 0
+          text-align center
+          background #FFF
+          border-radius 3px
+          img
+            padding 9px
+        .recaptcha_input_area_text
+          text-shadow none
+          line-height 16px
       div
         width 100%
         height 31px
         line-height 31px
-      div.clearfix.message
-        height 151px
-      div.clearfix.recaptcha
-        height 129px
-        .recaptcha_input_area_text
-          text-shadow none
-          line-height 16px
-        #recaptcha_response_field
-          box-shadow none
-          background #FFF
-          border 1px solid #CCC
   section.about
     width 650px
   section.recovery

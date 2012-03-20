@@ -222,9 +222,9 @@ module.exports = function(argv) {
             require('../helpers/assets.js')(argv.env, paths, options)();
         })();
 
-        for (var i = 0; i < argv.workers; i++) {
+        for (var i = 0, childProcesses = []; i < argv.workers; i++) {
             try {
-                cluster.fork();
+                childProcesses[i] = cluster.fork();
             } catch(e) {
                 app.set('log').critical('worker fork error');
                 process.exit(1);
@@ -232,8 +232,25 @@ module.exports = function(argv) {
         }
 
         cluster.on('death', function(worker) {
-            app.set('log').debug('worker %s died. restart...', worker.pid);
-            cluster.fork();
+            for (var i in childProcesses) {
+                if (childProcesses[i].pid !== worker.pid) continue;
+                app.set('log').debug('worker %s died. restart...', worker.pid);
+                try {
+                    childProcesses[i] = cluster.fork();
+                } catch (e) {
+                    app.set('log').critical('worker fork error');
+                    process.exit(1);
+                }
+            }
         });
+
+        var signals = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
+
+        for (i in signals) {
+            process.on(signals[i], function() {
+                for (var j in childProcesses) childProcesses[j].kill();
+                process.exit(1);
+            });
+        }
     });
 };

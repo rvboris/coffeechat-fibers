@@ -73,6 +73,8 @@
                 $.fn.notifier('Ошибка отправки');
             }).complete(function() {
                 $('section.contact').unblock();
+                Recaptcha.reload();
+                $('#contact input#recaptcha_response_field').val('');
             });
 
             return false;
