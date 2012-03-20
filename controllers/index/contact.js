@@ -58,12 +58,12 @@ module.exports = function(app) {
                         return res.send({ error: 'Ошибка при отправке сообщения' });
                     });
                 } else {
-                    return res.send({ error: 'Проверочный код введен не верно' });
+                    return res.send({ error: 'Код введен не верно' });
                 }
             });
 
             if (!req.body.contact.recaptcha_challenge_field || !req.body.contact.recaptcha_response_field) {
-                return res.send({ error: 'Проверочный код введен не верно' });
+                return res.send({ error: 'Код подверждения не заполен' });
             }
 
             recaptcha.checkAnswer(nconf.get('recaptcha').privateKey, app.set('helpers').utils.getIp(req), req.body.contact.recaptcha_challenge_field, req.body.contact.recaptcha_response_field);

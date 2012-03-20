@@ -30,7 +30,7 @@ html(lang='ru')
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
       ]);
-      var RecaptchaOptions = { theme: 'white' };
+      var RecaptchaOptions = { theme: 'custom', custom_theme_widget: 'recaptcha_widget' };
   body
     #app
       header#top
@@ -49,6 +49,11 @@ html(lang='ru')
             label(for='message') Сообщение
             textarea(name='contact[message]')#message
           div.clearfix.recaptcha
+            div(style='display:none')#recaptcha_widget
+              div#recaptcha_image
+              a(href='javascript:Recaptcha.reload()') обновить
+              label(for='recaptcha') Введите то что видете
+              input(type='text', name='recaptcha_response_field')#recaptcha_response_field
             !{recaptcha}
           div.clearfix
             button(type='submit') Отправить сообщение
