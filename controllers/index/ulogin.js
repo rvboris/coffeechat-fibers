@@ -4,6 +4,7 @@ module.exports = function(app) {
             res.render(req.mobile ? 'partials/mobile/ulogin' : 'partials/web/ulogin');
         } catch (e) {
             app.set('log').error(e.stack);
+            res.send(500);
         }
     };
 };

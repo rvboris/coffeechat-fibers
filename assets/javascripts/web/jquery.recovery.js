@@ -39,12 +39,19 @@
 
             $.post(window.location.href, {
                 _csrf: privateMethods.options.csrf,
-                user: { password1: $('#password1').val(), password2: $('#password2').val() }
+                user: {
+                    password1: $('#recovery #password1').val(),
+                    password2: $('#recovery #password2').val(),
+                    recaptcha_challenge_field: $('#recovery input#recaptcha_challenge_field').val(),
+                    recaptcha_response_field: $('#recovery input#recaptcha_response_field').val()
+                }
             }).success(function(data) {
                 if (data.error) {
                     $.fn.notifier(data.error);
                 } else {
-                    $.fn.notifier('Через 5 секунд вы будете перенаправлены на главную страницу', data);
+                    $('#recovery #password1').val('');
+                    $('#recovery #password2').val('');
+                    $.fn.notifier('Через 5 секунд вы будете перенаправлены на главную страницу', data.msg);
                     setTimeout(function() {
                         location.replace('http://' + window.location.host);
                     }, 5000);
@@ -53,6 +60,8 @@
                 $.fn.notifier('Ошибка отправки');
             }).complete(function() {
                 $('section.recovery').unblock();
+                Recaptcha.reload();
+                $('#recovery input#recaptcha_response_field').val('');
             });
 
             return false;

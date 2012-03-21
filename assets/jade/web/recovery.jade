@@ -31,6 +31,7 @@ html(lang='ru')
         },
         { load: 'ie9!/stylesheets/web/ie9.css' },
       ]);
+      var RecaptchaOptions = { theme: 'custom', custom_theme_widget: 'recaptcha_widget' };
   body
     #app
       header#top
@@ -38,12 +39,19 @@ html(lang='ru')
           img(src='/images/web/logo.png', width='176', height='36')#logo
       section.recovery
         h1 Изменение пароля
-        form(method='POST')
+        form(method='POST')#recovery.clearfix
           div.clearfix
             label(for='password') Новый пароль
             input(type='password', name='user[password1]', maxlength='30')#password1
           div.clearfix
             label(for='password') Повторите пароль
             input(type='password', name='user[password2]', maxlength='30')#password2
+          div.clearfix.recaptcha
+            div(style='display:none')#recaptcha_widget
+              div#recaptcha_image
+              a(href='javascript:Recaptcha.reload()') обновить
+              label(for='recaptcha') Введите то что видете
+              input(type='text', name='recaptcha_response_field')#recaptcha_response_field
+            !{recaptcha}
           div.clearfix
             input(type='submit', value='Изменить пароль')
