@@ -37,7 +37,7 @@ module.exports = function(app) {
                     return res.send({ error: 'Недопустимые данные статуса' });
                 }
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
             }
         });
     }

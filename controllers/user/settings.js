@@ -56,7 +56,7 @@ module.exports = function(app) {
                     return res.send({ error: 'Недопустимые данные настроек' });
                 }
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
             }
         });
     }

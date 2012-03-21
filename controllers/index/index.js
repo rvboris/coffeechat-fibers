@@ -27,7 +27,7 @@ module.exports = function(app) {
         }, function(err) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
             }
         });
     }
