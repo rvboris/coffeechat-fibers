@@ -31,6 +31,7 @@ module.exports = function(app) {
     app.get('/contact', require('./index/contact.js')(app));
     app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
     app.get('/message/:message', require('./index/message.js')(app));
+    app.get('/admin', require('./admin/index.js')(app));
 
     app.post('/oauth', require('./index/oauth.js')(app));
     app.post('/channel/list', require('./channel/list.js')(app));
