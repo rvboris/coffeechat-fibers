@@ -89,6 +89,19 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        var webAdmin = ams.build
+            .create(paths.js.root)
+            .add(paths.js.root + '/web/jquery.admin.js');
+
+        if (env === 'production') {
+            webAdmin.process(options);
+        }
+
+        webAdmin.process(options)
+            .combine({ js: 'jquery.admin.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         ams.build
             .create(paths.js.root)
             .add([

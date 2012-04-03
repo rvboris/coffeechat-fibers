@@ -1,0 +1,36 @@
+!!! 5
+html(lang='ru')
+  head
+    title CoffeeChat - Панель управления
+
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    meta(name='robots', content='noindex')
+
+    link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
+    link(rel='icon', type='image/x-icon', href='/favicon.ico')
+    link(rel='stylesheet', media='all', href='/stylesheets/bootstrap.css', media='all')
+    link(rel='stylesheet', media='all', href='/stylesheets/bootstrap-responsive.css', media='all')
+
+    - if (env === 'production')
+      link(rel='stylesheet', href='/stylesheets/web/admin.css', media='all')
+    - else
+      link(rel='stylesheet', href='/web/admin.css', media='all')
+
+    script(src='/javascripts/web/loader.js')
+    script
+      yepnope([
+        { load: '/javascripts/web/jquery.js' },
+        { load: '/javascripts/library/bootstrap.js' },
+        {
+          load: '/javascripts/web/jquery.admin.js',
+          complete: function () {
+            if (!$.fn.admin) return alert('Ошибка загрузки jquery.admin');
+            $.fn.admin('!{env}', '!{csrf}');
+          }
+        },
+        { load: 'ie9!http://html5shim.googlecode.com/svn/trunk/html5.js' },
+      ]);
+  body
+    !{body}
