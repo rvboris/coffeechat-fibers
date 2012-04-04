@@ -89,6 +89,8 @@ module.exports = function(app) {
                         return message.error = 'Ключ не верный';
                     }
 
+                    var isSystem = app.set('systemUserIds').indexOf(user.id) >= 0;
+
                     app.set('log').debug('user login through the token');
 
                     var channelId;
@@ -143,11 +145,13 @@ module.exports = function(app) {
                             return message.error = 'Ошибка декодирования сообщения';
                         }
 
-                        var query = app.Message.findOne({ userId: user.id }, ['time']).sort('time', -1);
-                        var lastMessage = query.execFind.sync(query);
+                        if (!isSystem) {
+                            var query = app.Message.findOne({ userId: user.id }, ['time']).sort('time', -1);
+                            var lastMessage = query.execFind.sync(query);
 
-                        if (lastMessage.length > 0 && new Date().getTime() - lastMessage[0].time.getTime() <= 3000) {
-                            return message.error = 'Сообщения можно отправлять не чаще чем раз в 3 секунды';
+                            if (lastMessage.length > 0 && new Date().getTime() - lastMessage[0].time.getTime() <= 3000) {
+                                return message.error = 'Сообщения можно отправлять не чаще чем раз в 3 секунды';
+                            }
                         }
 
                         var msg = new app.Message({
@@ -174,16 +178,18 @@ module.exports = function(app) {
                             }
                         }
 
-                        if (app.set('channels')[channel.url]) {
-                            if (app.set('channels')[channel.url].params.history) {
+                        if (!isSystem) {
+                            if (app.set('channels')[channel.url]) {
+                                if (app.set('channels')[channel.url].params.history) {
+                                    msg.save.sync(msg);
+                                } else {
+                                    msg.validate.sync(msg);
+                                }
+                            } else if (!channel['private']) {
                                 msg.save.sync(msg);
                             } else {
                                 msg.validate.sync(msg);
                             }
-                        } else if (!channel['private']) {
-                            msg.save.sync(msg);
-                        } else {
-                            msg.validate.sync(msg);
                         }
 
                         message.data.text = aes.enc(msg.parsed, app.set('serverKey'));

@@ -102,6 +102,19 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        var bootstrap = ams.build
+            .create(paths.js.root)
+            .add(paths.js.library + '/bootstrap.js');
+
+        if (env === 'production') {
+            bootstrap.process(options);
+        }
+
+        bootstrap.process(options)
+            .combine({ js: 'bootstrap.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         ams.build
             .create(paths.js.root)
             .add([
@@ -176,6 +189,15 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/stylesheets/web')
             .end();
 
+        ams.build
+            .create(paths.css.root)
+            .add(paths.css.root + '/web/bootstrap.css')
+            .add(paths.css.root + '/web/bootstrap-responsive.css')
+            .process(options)
+            .combine({ css: 'bootstrap.css' })
+            .write(paths['public'] + '/stylesheets/web')
+            .end();
+
         if (env === 'production') {
             ams.build
                 .create(paths.css.stylus)
@@ -183,6 +205,7 @@ module.exports = function(env, paths, options) {
                     paths.css.stylus + '/web/style.styl',
                     paths.css.stylus + '/web/page.styl',
                     paths.css.stylus + '/web/print.styl',
+                    paths.css.stylus + '/web/admin.styl',
                     paths.css.stylus + '/mobile/style.styl',
                     paths.css.stylus + '/mobile/page.styl'
                 ])
