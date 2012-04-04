@@ -2,7 +2,7 @@ var sync = require('sync');
 
 module.exports = function(app) {
     return {
-        create: function(name, password) {
+        create: function(name, password, role) {
             var user = app.User.findOne.sync(app.User, { name: name });
 
             if (user) {
@@ -10,7 +10,7 @@ module.exports = function(app) {
                 return user;
             }
 
-            user = new app.User({ name: name, secret: password });
+            user = new app.User({ name: name, secret: password, role: role || 'U' });
             user.save.sync(user);
             return user;
         }.async(),

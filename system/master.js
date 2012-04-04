@@ -106,7 +106,7 @@ module.exports = function(argv) {
 
             for (i = 0; i < userFiles.length; i++) {
                 users.push(require(userFiles[i]));
-                users[i].userId = app.set('helpers').user.create.sync(app.set('helpers').user, users[i].name, users[i].password).id;
+                users[i].userId = app.set('helpers').user.create.sync(app.set('helpers').user, users[i].name, users[i].password, users[i].role || 'U').id;
             }
 
             app.set('users', app.set('helpers').user.getUserObjects.sync(app.set('helpers').user, users));

@@ -1,7 +1,7 @@
 !!! 5
 html(lang='ru')
   head
-    title CoffeeChat - Панель управления
+    title Панель управления
 
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
@@ -10,8 +10,7 @@ html(lang='ru')
 
     link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     link(rel='icon', type='image/x-icon', href='/favicon.ico')
-    link(rel='stylesheet', media='all', href='/stylesheets/bootstrap.css', media='all')
-    link(rel='stylesheet', media='all', href='/stylesheets/bootstrap-responsive.css', media='all')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/bootstrap.css', media='all')
 
     - if (env === 'production')
       link(rel='stylesheet', href='/stylesheets/web/admin.css', media='all')
@@ -22,7 +21,7 @@ html(lang='ru')
     script
       yepnope([
         { load: '/javascripts/web/jquery.js' },
-        { load: '/javascripts/library/bootstrap.js' },
+        { load: '/javascripts/web/bootstrap.js' },
         {
           load: '/javascripts/web/jquery.admin.js',
           complete: function () {
@@ -33,4 +32,19 @@ html(lang='ru')
         { load: 'ie9!http://html5shim.googlecode.com/svn/trunk/html5.js' },
       ]);
   body
-    !{body}
+    div.navbar.navbar-fixed-top
+      div.navbar-inner
+        div.container
+          a(href='/admin').brand Панель управления
+          div.nav-collapse
+            ul.nav
+              li
+                a(href='/admin/hearbeat') Графики
+              li
+                a(href='/admin/users') Пользователи
+              li
+                a(href='/admin/channels') Комнаты
+              li
+                a(href='/admin/settings') Настройки
+    div.container
+      !{body}

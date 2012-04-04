@@ -16,7 +16,7 @@ module.exports = function(app) {
 
             for (var i = 0; i < subscriptions.length; i++) subscriptions[i].remove.sync(subscriptions[i]);
 
-            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel }, ['userId']);
+            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel, userId: { $nin: app.set('systemUserIds') } }, ['userId']);
             if (!subscriptions) return;
 
             var userList = [];

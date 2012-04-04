@@ -29,7 +29,7 @@ module.exports = function(app) {
                 }
             }
 
-            user = app.User.findOne.sync(app.User, { name: auth.name, '_id': { $nin: app.set('systemUserIds') } });
+            user = app.User.findOne.sync(app.User, { name: auth.name /*, '_id': { $nin: app.set('systemUserIds') } */ });
 
             if (user) {
                 if (!user.authenticate(auth.password)) {
@@ -52,15 +52,14 @@ module.exports = function(app) {
             for (var i = 0, newSubscriptions = [], userChannels = []; i < channels.length; i++) {
                 result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
                 if (result.error) return result;
+                if (app.set('systemUserIds').indexOf(user.id) >= 0) return { user: user };
                 if (!result.update) {
                     newSubscriptions.push({
                         id: channels[i],
                         diff: 1,
                         count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
                     });
-                    if (!userChannels[channels[i]]) {
-                        userChannels[channels[i]] = [];
-                    }
+                    if (!userChannels[channels[i]]) userChannels[channels[i]] = [];
                     userChannels[channels[i]].push({ name: user.name, gender: user.gender, status: user.status });
                 }
             }
@@ -86,7 +85,7 @@ module.exports = function(app) {
 
             if (result.error) return res.send(result);
 
-            if (result.newSubscriptions.length) {
+            if (result.newSubscriptions) {
                 setTimeout(function() {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
                         token: app.set('serverToken'),

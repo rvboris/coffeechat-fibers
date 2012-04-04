@@ -9,7 +9,7 @@ module.exports = function(app) {
             if (!channels) throw new Error('channels not found');
 
             for (var i = 0, channelList = []; i < channels.length; i++) {
-                channelList.push({ id: channels[i].id, name: channels[i].name, url: channels[i].url, count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i].id }) });
+                channelList.push({ id: channels[i].id, name: channels[i].name, url: channels[i].url, count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i].id, userId: { $nin: app.set('systemUserIds') } }) });
             }
 
             return channelList;

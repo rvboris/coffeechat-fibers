@@ -47,7 +47,7 @@ module.exports = function(app) {
             var userProvider = crypto.createHash('md5').update(userData.network).digest('hex');
             var userPassword = rbytes.randomBytes(16).toHex();
 
-            var user = app.User.findOne.sync(app.User, { name: userName, '_id': { $nin: app.set('systemUserIds') } });
+            var user = app.User.findOne.sync(app.User, { name: userName /*, '_id': { $nin: app.set('systemUserIds') } */ });
 
             if (user) {
                 var oauthUser = app.User.findOne.sync(app.User, {
