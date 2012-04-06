@@ -1,38 +1,61 @@
-var log = require('log');
+var moment   = require('moment');
+var workerId = process.env.NODE_WORKER_ID;
+var hook;
 
-module.exports = function(level) {
-    log = new log(level);
-    var workerId = process.env.NODE_WORKER_ID;
+var levels = {
+    EMERGENCY: 0,
+    ALERT:     1,
+    CRITICAL:  2,
+    ERROR:     3,
+    WARNING:   4,
+    NOTICE:    5,
+    INFO:      6,
+    DEBUG:     7
+};
 
-    function prefixMessage (args) {
-        workerId ? args[0] = 'W' + workerId + ' ' + args[0] : args[0] = 'M ' + args[0];
-        return args;
-    }
+var level = levels.DEBUG;
+
+function log(levelStr, args) {
+    if (levels[levelStr] > level || !args[0]) return;
+    var i = 1;
+    var msg = moment().format('DD.MM.YY HH:mm:ss (z)') + ' ' + (workerId ? 'W' + workerId : 'M') + ' ' + levelStr + ' ' + args[0].replace(/%s/g, function() { return args[i++] }) + '\n';
+    if (typeof hook === 'function') hook(msg);
+    process.stdout.write(msg);
+}
+
+module.exports = function(lvl) {
+    if ('string' === typeof lvl) level = levels[lvl.toUpperCase()] || levels.DEBUG;
 
     return {
-        error: function() {
-            log.error.apply(log, prefixMessage(arguments));
+        emergency: function(msg) {
+            log('EMERGENCY', arguments);
         },
-        debug: function() {
-            log.debug.apply(log, prefixMessage(arguments));
+        alert: function(msg) {
+            log('ALERT', arguments);
         },
-        info: function() {
-            log.info.apply(log, prefixMessage(arguments));
+        critical: function(msg) {
+            log('CRITICAL', arguments);
         },
-        notice: function() {
-            log.notice.apply(log, prefixMessage(arguments));
+        error: function(msg) {
+            log('ERROR', arguments);
         },
-        warning: function() {
-            log.warning.apply(log, prefixMessage(arguments));
+        warning: function(msg) {
+            log('WARNING', arguments);
         },
-        alert: function() {
-            log.alert.apply(log, prefixMessage(arguments));
+        notice: function(msg) {
+            log('NOTICE', arguments);
         },
-        critical: function() {
-            log.critical.apply(log, prefixMessage(arguments));
+        info: function(msg) {
+            log('INFO', arguments);
         },
-        emergency: function() {
-            log.emergency.apply(log, prefixMessage(arguments));
+        debug: function(msg) {
+            log('DEBUG', arguments);
+        },
+        setHook: function(fn) {
+            hook = fn;
+        },
+        unsetHook: function() {
+            hook = null;
         }
-    };
+    }
 };

@@ -1,16 +1,17 @@
-var path     = require('path');
-var cluster  = require('cluster');
-var express  = require('express');
-var dnode    = require('dnode');
-var rbytes   = require('rbytes');
-var bcrypt   = require('bcrypt');
-var log      = require('log');
-var mongoose = require('mongoose');
-var sync     = require('sync');
-var nconf    = require('nconf');
-var app      = express.createServer();
-var aes      = require('../helpers/aes.js');
-var task     = require('./task.js');
+var path      = require('path');
+var cluster   = require('cluster');
+var express   = require('express');
+var dnode     = require('dnode');
+var rbytes    = require('rbytes');
+var bcrypt    = require('bcrypt');
+var logger    = require('../helpers/logger.js');
+var logserver = require('./logserver.js');
+var mongoose  = require('mongoose');
+var sync      = require('sync');
+var nconf     = require('nconf');
+var app       = express.createServer();
+var aes       = require('../helpers/aes.js');
+var task      = require('./task.js');
 
 module.exports = function(argv) {
     sync(function() {
@@ -34,11 +35,11 @@ module.exports = function(argv) {
         Loader.prototype.init = function() {
             switch (app.set('argv').env) {
                 case 'production':
-                    app.set('log', require('../helpers/logger.js')(log.INFO));
+                    app.set('log', logger('INFO'));
                     app.set('log').info('production mode');
                     break;
                 case 'development':
-                    app.set('log', require('../helpers/logger.js')(log.DEBUG));
+                    app.set('log', logger('DEBUG'));
                     app.set('log').info('development mode');
             }
 
@@ -85,7 +86,8 @@ module.exports = function(argv) {
                 channel: require('../helpers/channel.js')(app),
                 user: require('../helpers/user.js')(app),
                 lang: require('../helpers/lang.js'),
-                plugins: require('../helpers/plugins.js')
+                plugins: require('../helpers/plugins.js'),
+                utils: require('../helpers/utils.js')
             });
         };
 
@@ -222,21 +224,36 @@ module.exports = function(argv) {
             require('../helpers/assets.js')(argv.env, paths, options)();
         })();
 
-        for (var i = 0, childProcesses = []; i < argv.workers; i++) {
+        logserver = logserver(app.set('argv'));
+
+        for (var i = 0, workers = []; i < argv.workers; i++) {
             try {
-                childProcesses[i] = cluster.fork();
-            } catch(e) {
+                workers[i] = cluster.fork();
+                workers[i].on('message', function(msg) {
+                    if (msg.cmd && msg.cmd == 'log' && logserver.log) {
+                        logserver.log(msg.msg);
+                    }
+                });
+            } catch (e) {
                 app.set('log').critical('worker fork error');
                 process.exit(1);
             }
         }
 
+        var stdout = process.stdout;
+
+        app.set('helpers').utils.hook(stdout);
+
+        stdout.hook('write', function(string) {
+            logserver.log(string);
+        });
+
         cluster.on('death', function(worker) {
-            for (var i in childProcesses) {
-                if (childProcesses[i].pid !== worker.pid) continue;
+            for (var i in workers) {
+                if (workers[i].pid !== worker.pid) continue;
                 app.set('log').debug('worker %s died. restart...', worker.pid);
                 try {
-                    childProcesses[i] = cluster.fork();
+                    workers[i] = cluster.fork();
                 } catch (e) {
                     app.set('log').critical('worker fork error');
                     process.exit(1);
@@ -248,7 +265,7 @@ module.exports = function(argv) {
 
         for (i in signals) {
             process.on(signals[i], function() {
-                for (var j in childProcesses) childProcesses[j].kill();
+                for (var j in workers) workers[j].kill();
                 process.exit(1);
             });
         }
