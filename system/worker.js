@@ -6,7 +6,7 @@ var fayeRedis    = require('faye-redis');
 var stylus       = require('stylus');
 var mongoose     = require('mongoose');
 var redisStore   = require('connect-redis')(express);
-var log          = require('log');
+var logger       = require('../helpers/logger.js');
 var sync         = require('sync');
 var dnode        = require('dnode');
 var rbytes       = require('rbytes');
@@ -59,7 +59,7 @@ module.exports = function(argv) {
         };
 
         Loader.prototype.developmentSetup = function() {
-            app.set('log', require('../helpers/logger.js')(log.DEBUG));
+            app.set('log', logger('DEBUG'));
             app.set('log').info('development mode');
 
             app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }));
@@ -75,7 +75,7 @@ module.exports = function(argv) {
         };
 
         Loader.prototype.productionSetup = function() {
-            app.set('log', require('../helpers/logger.js')(log.INFO));
+            app.set('log', logger('INFO'));
             app.set('log').info('production mode');
 
             app.use(express.vhost('hg.*', subServer));
@@ -250,6 +250,14 @@ module.exports = function(argv) {
             starter.on('start', function(syncServer) {
                 app.set('syncServer', syncServer);
                 app.set('faye').bayeux.attach(app);
+
+                var stdout = process.stdout;
+
+                app.set('helpers').utils.hook(stdout);
+
+                stdout.hook('write', function(string) {
+                    process.send({ cmd: 'log', msg: string });
+                });
 
                 if (app.set('argv').env === 'production') {
                     app.listen(app.set('argv').port, '127.0.0.1');

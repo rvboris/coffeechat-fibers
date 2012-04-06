@@ -20,13 +20,13 @@ html(lang='ru')
     script(src='/javascripts/web/loader.js')
     script
       yepnope([
-        { load: '/javascripts/web/jquery.js' },
-        { load: '/javascripts/web/bootstrap.js' },
+        { load: '/javascripts/web/jquery-standalone.js' },
+        { load: ['/javascripts/web/bootstrap.js', 'http://!{hostname}:!{logserver}/socket.io/socket.io.js', '/javascripts/web/jquery.system.plugins.js'] },
         {
           load: '/javascripts/web/jquery.admin.js',
           complete: function () {
             if (!$.fn.admin) return alert('Ошибка загрузки jquery.admin');
-            $.fn.admin('!{env}', '!{csrf}');
+            $.fn.admin('!{env}', '!{csrf}', '!{logserver}');
           }
         },
         { load: 'ie9!http://html5shim.googlecode.com/svn/trunk/html5.js' },
@@ -48,3 +48,8 @@ html(lang='ru')
                 a(href='/admin/settings') Настройки
     div.container
       !{body}
+    div.navbar.navbar-fixed-bottom
+      div.navbar-inner
+        div.console-header
+          button#console-button Раскрыть
+        div.console
