@@ -45,19 +45,26 @@ module.exports = function (app) {
 
     server.listen(app.set('argv').logserver);
 
+    function sendToAuthorized(event, msg) {
+        var clients = io.of('/logs').clients();
+        sync(function() {
+            for (var i = 0; i < clients.length; i++) {
+                var userId = clients[i].get.sync(clients[i], 'authorized');
+                if (!userId) return;
+                var user = app.User.findById.sync(app.User, userId, ['role']);
+                if (!user) return;
+                if (user.role !== 'R') return;
+                clients[i].emit(event, msg);
+            }
+        });
+    }
+
     return {
-        log:function (msg) {
-            var clients = io.of('/logs').clients();
-            sync(function () {
-                for (var i = 0; i < clients.length; i++) {
-                    var userId = clients[i].get.sync(clients[i], 'authorized');
-                    if (!userId) return;
-                    var user = app.User.findById.sync(app.User, userId, ['role']);
-                    if (!user) return;
-                    if (user.role !== 'R') return;
-                    clients[i].emit('log', msg);
-                }
-            });
+        log: function(msg) {
+            sendToAuthorized('log', msg);
+        },
+        event: function(event) {
+            sendToAuthorized(event, null);
         }
     };
 };

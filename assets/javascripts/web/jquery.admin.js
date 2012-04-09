@@ -51,48 +51,84 @@
         });
     };
 
-    privateMethods.messagesGraph = function () {
-        var data = new Rickshaw.Series([{
-            name:"Northeast",
-            data:[
-                { x: new Date().getTime(), y:1 },
-                { x: new Date().getTime()+10, y:1 }
-            ],
-            color:new Rickshaw.Color.Palette()
-        }]);
+    privateMethods.messagesPerSecondGraph = {
+        stack: 0,
+        init: function() {
+            var series = new Rickshaw.Series.FixedDuration([
+                { name: 'messages', x: 0, y: 0 }
+            ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
+                maxDataPoints: 30,
+                timeInterval: 30000
+            });
 
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector('#chart-messages'),
+                width: 800,
+                height: 150,
+                series: series,
+                interpolation: 'cardinal',
+                renderer: 'line',
+                offset: 'value'
+            });
 
-        var graph = new Rickshaw.Graph({
-            element: document.querySelector('#chart-messages .chart'),
-            width: 800,
-            height: 300,
-            series: data
-        });
+            new Rickshaw.Graph.Axis.Time({ graph: graph });
+            new Rickshaw.Graph.Axis.Y({ graph: graph });
 
-        new Rickshaw.Graph.Axis.Time( { graph: graph } );
+            graph.onUpdate(function() {
+                privateMethods.messagesPerSecondGraph.stack = 0;
+            });
 
-        new Rickshaw.Graph.Axis.Y({
-            graph:graph,
-            orientation:'left',
+            graph.render();
 
-            element:document.querySelector('#chart-messages .y-axis')
-        });
+            setInterval(function() {
+                series.addData({ messages: privateMethods.messagesPerSecondGraph.stack });
+                graph.update();
+            }, 1000);
 
-        new Rickshaw.Graph.HoverDetail({
-            graph:graph
-        });
-
-        graph.render();
-
-        setInterval(function(){
-            graph.series.addData({ x: new Date().getTime() });
-            graph.update();
-        },1000);
-
+            privateMethods.socket.on('sendMessage', function () {
+                privateMethods.messagesPerSecondGraph.stack++;
+            });
+        }
     };
 
-    privateMethods.subscriptionsGraph = function () {
+    privateMethods.connectionsHeartBeatGraph = {
+        stack: 0,
+        init: function() {
+            var series = new Rickshaw.Series.FixedDuration([
+                { name: 'connections', x: 0, y: 0 }
+            ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
+                maxDataPoints: 30,
+                timeInterval: 30000
+            });
 
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector('#chart-connections'),
+                width: 800,
+                height: 150,
+                series: series,
+                interpolation: 'step-after',
+                renderer: 'line',
+                offset: 'value'
+            });
+
+            new Rickshaw.Graph.Axis.Time({ graph: graph });
+            new Rickshaw.Graph.Axis.Y({ graph: graph });
+
+            graph.onUpdate(function() {
+                privateMethods.connectionsHeartBeatGraph.stack = 0;
+            });
+
+            graph.render();
+
+            setInterval(function() {
+                series.addData({ connections: privateMethods.connectionsHeartBeatGraph.stack });
+                graph.update();
+            }, 1000);
+
+            privateMethods.socket.on('userConnect', function() {
+                privateMethods.connectionsHeartBeatGraph.stack++;
+            });
+        }
     };
 
     privateMethods.init = function (admin) {
@@ -103,7 +139,8 @@
         }
 
         privateMethods.systemConsole();
-        privateMethods.messagesGraph();
+        privateMethods.messagesPerSecondGraph.init();
+        privateMethods.connectionsHeartBeatGraph.init();
     };
 
     $.fn.admin = function(env, csrf, logserver, secretKey) {
