@@ -90,6 +90,15 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        // rickshaw
+        ams.build
+            .create(paths.js.root)
+            .add(paths.js.library + '/d3.js')
+            .add(paths.js.library + '/rickshaw.js')
+            .combine({ js: 'rickshaw.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         // jquery.sys
         var webSystem = ams.build
             .create(paths.js.root)
@@ -200,6 +209,15 @@ module.exports = function(env, paths, options) {
             .add(paths.css.root + '/web/bootstrap-responsive.css')
             .process(options)
             .combine({ css: 'bootstrap.css' })
+            .write(paths['public'] + '/stylesheets/web')
+            .end();
+
+        // rickshaw.css
+        ams.build
+            .create(paths.css.root)
+            .add(paths.css.root + '/web/rickshaw.css')
+            .process(options)
+            .combine({ css: 'rickshaw.css' })
             .write(paths['public'] + '/stylesheets/web')
             .end();
 

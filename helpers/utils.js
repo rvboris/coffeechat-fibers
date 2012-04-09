@@ -1,3 +1,5 @@
+var net = require('net');
+
 module.exports.getUTCDate = function(date) {
     var now = date || new Date();
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()));
@@ -78,4 +80,33 @@ module.exports.hook = function(obj) {
     };
 
     obj.unhook.methods = {};
+};
+
+module.exports.base64 = {
+    encode:function (string) {
+        return new Buffer(string || '').toString('base64');
+    },
+    decode:function (string) {
+        return new Buffer(string || '', 'base64').toString('utf8');
+    }
+};
+
+module.exports.checkPort = function(port, host, callback) {
+    var isOpen = false;
+    var connection = net.createConnection(port, host);
+
+    var timeoutId = setTimeout(function() { onClose() }, 200);
+    var onClose = function() {
+        clearTimeout(timeoutId);
+        callback(null, isOpen);
+    };
+
+    var onOpen = function() {
+        isOpen = true;
+        connection.end();
+    };
+
+    connection.on('close', onClose);
+    connection.on('error', function() { connection.end() });
+    connection.on('connect', onOpen);
 };
