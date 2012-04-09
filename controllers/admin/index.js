@@ -1,5 +1,6 @@
 var sync  = require('sync');
 var nconf = require('nconf');
+var aes   = require('../../helpers/aes.js');
 
 module.exports = function(app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
@@ -15,7 +16,8 @@ module.exports = function(app) {
                 csrf: req.session._csrf,
                 layout: 'admin/layout',
                 logserver: app.set('argv').logserver,
-                hostname: nconf.get('hostname')
+                hostname: nconf.get('hostname'),
+                secretKey: app.set('helpers').utils.base64.encode(aes.enc(req.session.user.id, app.set('serverKey')))
             });
         }, function(err) {
             if (err) {

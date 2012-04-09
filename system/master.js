@@ -46,6 +46,19 @@ module.exports = function(argv) {
             this.exceptions();
             this.mongo();
             this.helpers();
+
+            function isOpen(port) {
+                var isClosed = app.set('helpers').utils.checkPort.sync(app.set('helpers').utils, port, nconf.get('hostname'));
+                if (isClosed) {
+                    app.set('log').critical('port %s in use', port);
+                    process.exit(1);
+                }
+            }
+
+            isOpen(argv.port);
+            isOpen(argv.sync);
+            isOpen(argv.logserver);
+
             return this.plugins();
         };
 
@@ -139,6 +152,8 @@ module.exports = function(argv) {
     }, function(err, plugins) {
         if (err) return console.log(err.stack);
 
+
+
         var clients = [];
 
         dnode(function(client, conn) {
@@ -224,12 +239,12 @@ module.exports = function(argv) {
             require('../helpers/assets.js')(argv.env, paths, options)();
         })();
 
-        logserver = logserver(app.set('argv'));
+        logserver = logserver(app);
 
         for (var i = 0, workers = []; i < argv.workers; i++) {
             try {
                 workers[i] = cluster.fork();
-                workers[i].on('message', function(msg) {
+                workers[i].on('message', function (msg) {
                     if (msg.cmd && msg.cmd == 'log' && logserver.log) {
                         logserver.log(msg.msg);
                     }

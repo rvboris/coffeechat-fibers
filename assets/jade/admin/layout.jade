@@ -11,6 +11,7 @@ html(lang='ru')
     link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     link(rel='icon', type='image/x-icon', href='/favicon.ico')
     link(rel='stylesheet', media='all', href='/stylesheets/web/bootstrap.css', media='all')
+    link(rel='stylesheet', media='all', href='/stylesheets/web/rickshaw.css', media='all')
 
     - if (env === 'production')
       link(rel='stylesheet', href='/stylesheets/web/admin.css', media='all')
@@ -21,12 +22,18 @@ html(lang='ru')
     script
       yepnope([
         { load: '/javascripts/web/jquery-standalone.js' },
-        { load: ['/javascripts/web/bootstrap.js', 'http://!{hostname}:!{logserver}/socket.io/socket.io.js', '/javascripts/web/jquery.system.plugins.js'] },
+        { load: [
+            '/javascripts/web/bootstrap.js',
+            'http://!{hostname}:!{logserver}/socket.io/socket.io.js',
+            '/javascripts/web/jquery.system.plugins.js',
+            '/javascripts/web/rickshaw.js',
+          ]
+        },
         {
           load: '/javascripts/web/jquery.admin.js',
           complete: function () {
             if (!$.fn.admin) return alert('Ошибка загрузки jquery.admin');
-            $.fn.admin('!{env}', '!{csrf}', '!{logserver}');
+            $.fn.admin('!{env}', '!{csrf}', '!{logserver}', '!{secretKey}');
           }
         },
         { load: 'ie9!http://html5shim.googlecode.com/svn/trunk/html5.js' },
@@ -46,10 +53,11 @@ html(lang='ru')
                 a(href='/admin/channels') Комнаты
               li
                 a(href='/admin/settings') Настройки
-    div.container
+    div.container#wrapper
       !{body}
-    div.navbar.navbar-fixed-bottom
+    div.navbar.navbar-fixed-bottom#console
       div.navbar-inner
         div.console-header
-          button#console-button Раскрыть
+          button#console-button.up
+          span Консоль
         div.console

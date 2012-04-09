@@ -1,18 +1,48 @@
-div.console-header
-  height 25px
-  line-height 25px
-  text-align right
-  button
+#wrapper
+  margin-top 40px
+  h3.graph
+    padding 20px
+#console
+  .navbar-inner
+    background none
+  .console-header
     height 25px
     line-height 25px
-    background none
-    border none
-    display inline
-div.console
-  height 200px
-  min-height 200px
-  overflow scroll
-  background #FFF
-  display none
-  padding 10px
-  color #000
+    text-align right
+    border-bottom 3px solid #444
+    button
+      width 20px
+      margin-bottom 5px
+      border none
+      display inline-block
+      padding 0
+      background url('../images/web/console-arrow.png') no-repeat
+      &.up
+        background-position left center
+      &.down
+        background-position right center
+    span
+      color #000
+      padding 0px 10px
+      height 28px
+      display inline-block
+  .console
+    height 200px
+    overflow-y scroll
+    overflow-x hidden
+    background #FFF
+    display none
+    padding 10px
+    color #000
+#chart-messages, #chart-subscriptions
+  height 300px
+  margin-top 50px
+  position relative
+  .chart, .y-axis
+    position absolute
+  .chart
+    top 0
+    left 80px
+  .y-axis
+    top 0
+    left 0
