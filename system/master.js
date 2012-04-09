@@ -244,10 +244,10 @@ module.exports = function(argv) {
         for (var i = 0, workers = []; i < argv.workers; i++) {
             try {
                 workers[i] = cluster.fork();
-                workers[i].on('message', function (msg) {
-                    if (msg.cmd && msg.cmd == 'log' && logserver.log) {
-                        logserver.log(msg.msg);
-                    }
+                workers[i].on('message', function(msg) {
+                    if (!msg.cmd || !logserver) return;
+                    if (msg.cmd === 'log') return logserver.log(msg.msg);
+                    if (msg.cmd === 'event') return logserver.event(msg.msg);
                 });
             } catch (e) {
                 app.set('log').critical('worker fork error');
