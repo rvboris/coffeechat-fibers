@@ -3,15 +3,15 @@ var aes  = require('../helpers/aes.js');
 var sync = require('sync');
 var io   = require('socket.io');
 
-module.exports = function (app) {
-    var server = http.createServer(function (req, res) {
+module.exports = function(app) {
+    var server = http.createServer(function(req, res) {
         res.statusCode = 403;
         res.end();
     });
 
     io = io.listen(server);
 
-    io.configure(function () {
+    io.configure(function() {
         io.enable('browser client minification');
         io.enable('browser client etag');
         io.enable('browser client gzip');
@@ -19,8 +19,8 @@ module.exports = function (app) {
     });
 
     io.of('/logs')
-        .on('connection', function (socket) {
-            socket.on('authentication', function (key, callback) {
+        .on('connection', function(socket) {
+            socket.on('authentication', function(key, callback) {
                 key = app.set('helpers').utils.base64.decode(key);
 
                 try {
@@ -29,12 +29,12 @@ module.exports = function (app) {
                     return callback('key encoding failed');
                 }
 
-                sync(function () {
+                sync(function() {
                     return app.User.findById.sync(app.User, userId, ['role']);
-                }, function (err, user) {
+                }, function(err, user) {
                     if (err) return callback('failed');
                     if (user && user.role === 'R') {
-                        return socket.set('authorized', userId, function () {
+                        return socket.set('authorized', userId, function() {
                             callback('ok');
                         });
                     }
