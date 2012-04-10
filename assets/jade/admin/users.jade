@@ -1,0 +1,17 @@
+h3 Список пользователей
+table.table.table-striped.table.bordered.table-condensed
+  thead
+    tr
+      th Имя
+      th Последний заход
+      th Дата регистрации
+      th Количество сообщений
+      th Действия
+  tbody
+    each user in users
+      tr
+        td user.name
+        td user.lasttime
+        td user.date
+        td user.messages
+        td 1

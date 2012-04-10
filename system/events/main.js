@@ -81,7 +81,7 @@ module.exports = function(app) {
                 user.stats.messages++;
                 user.save.sync(user);
             }, function(err) {
-                if (err) app.set('log').error(err.stack);
+                if (err) return app.set('log').error(err.stack);
                 process.send({ cmd: 'event', msg: 'sendMessage' });
             });
         },
