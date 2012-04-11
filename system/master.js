@@ -152,8 +152,6 @@ module.exports = function(argv) {
     }, function(err, plugins) {
         if (err) return console.log(err.stack);
 
-
-
         var clients = [];
 
         dnode(function(client, conn) {
@@ -259,7 +257,8 @@ module.exports = function(argv) {
 
         app.set('helpers').utils.hook(stdout);
 
-        stdout.hook('write', function(string) {
+        stdout.hook('write', function(string, encoding, fd, write) {
+            write(string);
             logserver.log(string);
         });
 

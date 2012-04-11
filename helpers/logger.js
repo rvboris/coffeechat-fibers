@@ -1,6 +1,5 @@
 var moment   = require('moment');
 var workerId = process.env.NODE_WORKER_ID;
-var hook;
 
 var levels = {
     EMERGENCY: 0,
@@ -18,8 +17,7 @@ var level = levels.DEBUG;
 function log(levelStr, args) {
     if (levels[levelStr] > level || !args[0]) return;
     var i = 1;
-    var msg = moment().format('DD.MM.YY HH:mm:ss (z)') + ' ' + (workerId ? 'W' + workerId : 'M') + ' ' + levelStr + ' ' + args[0].replace(/%s/g, function() { return args[i++] }) + '\n';
-    if (typeof hook === 'function') hook(msg);
+    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + args[0].replace(/%s/g, function() { return args[i++] }) + '\n';
     process.stdout.write(msg);
 }
 
@@ -50,12 +48,6 @@ module.exports = function(lvl) {
         },
         debug: function(msg) {
             log('DEBUG', arguments);
-        },
-        setHook: function(fn) {
-            hook = fn;
-        },
-        unsetHook: function() {
-            hook = null;
         }
     }
 };

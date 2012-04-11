@@ -24,7 +24,7 @@ html(lang='ru')
         { load: '/javascripts/web/jquery-standalone.js' },
         { load: [
             '/javascripts/web/bootstrap.js',
-            'http://!{hostname}:!{logserver}/socket.io/socket.io.js',
+            '/javascripts/web/socket.io.js',
             '/javascripts/web/jquery.system.plugins.js',
             '/javascripts/web/rickshaw.js',
           ]
@@ -33,7 +33,7 @@ html(lang='ru')
           load: '/javascripts/web/jquery.admin.js',
           complete: function () {
             if (!$.fn.admin) return alert('Ошибка загрузки jquery.admin');
-            $.fn.admin('!{env}', '!{csrf}', '!{logserver}', '!{secretKey}');
+            $.fn.admin('!{env}', '!{csrf}', '!{logServer}', '!{secretKey}', '!{section}');
           }
         },
         { load: 'ie9!http://html5shim.googlecode.com/svn/trunk/html5.js' },
@@ -45,15 +45,20 @@ html(lang='ru')
           a(href='/admin').brand Панель управления
           div.nav-collapse
             ul.nav
-              li
-                a(href='/admin/hearbeat') Графики
-              li
+              - var chartsActive = (section === 'charts' ? 'active' : '')
+              - var usersActive = (section == 'users' ? 'active' : '')
+              - var channelsActive = (section === 'channels' ? 'active' : '')
+              - var settingsActive = (section === 'settings' ? 'active' : '')
+
+              li(class=chartsActive)
+                a(href='/admin/') Графики
+              li(class=usersActive)
                 a(href='/admin/users') Пользователи
-              li
+              li(class=channelsActive)
                 a(href='/admin/channels') Комнаты
-              li
+              li(class=settingsActive)
                 a(href='/admin/settings') Настройки
-    div.container#wrapper
+    div(id=section + '-wrapper').container.main-container
       !{body}
     div.navbar.navbar-fixed-bottom#console
       div.navbar-inner

@@ -32,6 +32,7 @@ module.exports = function(app) {
     app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
     app.get('/message/:message', require('./index/message.js')(app));
     app.get('/admin', app.set('helpers').user.session, require('./admin/index.js')(app));
+    app.get('/admin/users/:name?/:page?', app.set('helpers').user.session, require('./admin/users.js')(app));
 
     app.post('/oauth', require('./index/oauth.js')(app));
     app.post('/channel/list', require('./channel/list.js')(app));

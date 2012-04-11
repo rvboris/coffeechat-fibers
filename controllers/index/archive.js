@@ -251,7 +251,7 @@ module.exports = function(app) {
                     layout: (req.mobile ? 'mobile' : 'web') + '/archive/layout',
                     csrf: req.session._csrf
                 });
-            } catch (e) {
+            } catch (err) {
                 app.set('log').error(err.stack);
                 res.send(500);
             }

@@ -6,7 +6,7 @@
 
     function Admin(options) {
         this.options = options;
-        this.socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + options.logserver + '/logs');
+        this.socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + options.logServer + '/logs');
         return privateMethods.init(this);
     }
 
@@ -51,82 +51,99 @@
         });
     };
 
-    privateMethods.messagesPerSecondGraph = {
-        stack: 0,
+    privateMethods.charts = {
         init: function() {
-            var series = new Rickshaw.Series.FixedDuration([
-                { name: 'messages', x: 0, y: 0 }
-            ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
-                maxDataPoints: 30,
-                timeInterval: 30000
-            });
+            privateMethods.charts.messagesPerSecond.init();
+            privateMethods.charts.connectionsActivity.init();
+        },
+        messagesPerSecond: {
+            stack: 0,
+            init: function() {
+                var series = new Rickshaw.Series.FixedDuration([
+                    { name: 'messages', x: 0, y: 0 }
+                ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
+                    maxDataPoints: 30,
+                    timeInterval: 30000
+                });
 
-            var graph = new Rickshaw.Graph({
-                element: document.querySelector('#chart-messages'),
-                width: 800,
-                height: 150,
-                series: series,
-                interpolation: 'cardinal',
-                renderer: 'line',
-                offset: 'value'
-            });
+                var chart = new Rickshaw.Graph({
+                    element: document.querySelector('#chart-messages'),
+                    width: 800,
+                    height: 150,
+                    series: series,
+                    interpolation: 'cardinal',
+                    renderer: 'line',
+                    offset: 'value'
+                });
 
-            new Rickshaw.Graph.Axis.Time({ graph: graph });
-            new Rickshaw.Graph.Axis.Y({ graph: graph });
+                new Rickshaw.Graph.Axis.Time({ graph: chart });
+                new Rickshaw.Graph.Axis.Y({ graph: chart });
 
-            graph.onUpdate(function() {
-                privateMethods.messagesPerSecondGraph.stack = 0;
-            });
+                chart.onUpdate(function() {
+                    privateMethods.charts.messagesPerSecond.stack = 0;
+                });
 
-            graph.render();
+                chart.render();
 
-            setInterval(function() {
-                series.addData({ messages: privateMethods.messagesPerSecondGraph.stack });
-                graph.update();
-            }, 1000);
+                setInterval(function() {
+                    series.addData({ messages: privateMethods.charts.messagesPerSecond.stack });
+                    chart.update();
+                }, 1000);
 
-            privateMethods.socket.on('sendMessage', function () {
-                privateMethods.messagesPerSecondGraph.stack++;
-            });
+                privateMethods.socket.on('sendMessage', function() {
+                    privateMethods.charts.messagesPerSecond.stack++;
+                });
+            }
+        },
+        connectionsActivity: {
+            stack: 0,
+            init: function() {
+                var series = new Rickshaw.Series.FixedDuration([
+                    { name: 'connections', x: 0, y: 0 }
+                ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
+                    maxDataPoints: 30,
+                    timeInterval: 30000
+                });
+
+                var chart = new Rickshaw.Graph({
+                    element: document.querySelector('#chart-connections'),
+                    width: 800,
+                    height: 150,
+                    series: series,
+                    interpolation: 'step-after',
+                    renderer: 'line',
+                    offset: 'value'
+                });
+
+                new Rickshaw.Graph.Axis.Time({ graph: chart });
+                new Rickshaw.Graph.Axis.Y({ graph: chart });
+
+                chart.onUpdate(function() {
+                    privateMethods.charts.connectionsActivity.stack = 0;
+                });
+
+                chart.render();
+
+                setInterval(function() {
+                    series.addData({ connections: privateMethods.charts.connectionsActivity.stack });
+                    chart.update();
+                }, 1000);
+
+                privateMethods.socket.on('userConnect', function() {
+                    privateMethods.charts.connectionsActivity.stack++;
+                });
+            }
         }
     };
 
-    privateMethods.connectionsHeartBeatGraph = {
-        stack: 0,
+    privateMethods.users = {
         init: function() {
-            var series = new Rickshaw.Series.FixedDuration([
-                { name: 'connections', x: 0, y: 0 }
-            ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
-                maxDataPoints: 30,
-                timeInterval: 30000
-            });
-
-            var graph = new Rickshaw.Graph({
-                element: document.querySelector('#chart-connections'),
-                width: 800,
-                height: 150,
-                series: series,
-                interpolation: 'step-after',
-                renderer: 'line',
-                offset: 'value'
-            });
-
-            new Rickshaw.Graph.Axis.Time({ graph: graph });
-            new Rickshaw.Graph.Axis.Y({ graph: graph });
-
-            graph.onUpdate(function() {
-                privateMethods.connectionsHeartBeatGraph.stack = 0;
-            });
-
-            graph.render();
-
-            setInterval(function() {
-                series.addData({ connections: privateMethods.connectionsHeartBeatGraph.stack });
-                graph.update();
-            }, 1000);
-
-            privateMethods.socket.on('userConnect', function() {
-                privateMethods.connectionsHeartBeatGraph.stack++;
+            privateMethods.users.searchForm();
+        },
+        searchForm: function() {
+            $('#user-search').submit(function() {
+                window.location = window.location.protocol + '//' + window.location.host + '/admin/users/' + $(this).find('input').val();
+                return false;
             });
         }
     };
@@ -139,11 +156,16 @@
         }
 
         privateMethods.systemConsole();
-        privateMethods.messagesPerSecondGraph.init();
-        privateMethods.connectionsHeartBeatGraph.init();
+        privateMethods[privateMethods.options.section].init();
     };
 
-    $.fn.admin = function(env, csrf, logserver, secretKey) {
-        return instance ? instance : instance = new Admin({ env: env, csrf: csrf, logserver: logserver, secretKey: secretKey });
+    $.fn.admin = function(env, csrf, logServer, secretKey, section) {
+        return instance ? instance : instance = new Admin({
+            env: env,
+            csrf: csrf,
+            logServer: logServer,
+            secretKey: secretKey,
+            section: section
+        });
     };
 })(jQuery, window);
