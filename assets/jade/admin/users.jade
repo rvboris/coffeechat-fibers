@@ -1,17 +1,64 @@
 h3 Список пользователей
-table.table.table-striped.table.bordered.table-condensed
-  thead
-    tr
-      th Имя
-      th Последний заход
-      th Дата регистрации
-      th Количество сообщений
-      th Действия
-  tbody
-    each user in users
+if users.length === 0
+  .alert.alert-info
+    Пользователей не найдено
+else
+  table.table.table-striped
+    thead
       tr
-        td user.name
-        td user.lasttime
-        td user.date
-        td user.messages
-        td 1
+        th Имя
+        th Последний вход
+        th Дата регистрации
+        th Cообщения
+        th Права
+        th Действия
+    tbody
+      each user in users
+        tr(id='uid-' + user._id)
+          td !{user.name}
+          td !{moment(user.stats.lastaccess).format('DD.MM.YYYY HH:MM (z)')}
+          td !{moment(user.date).format('DD.MM.YYYY HH:MM (z)')}
+          td !{user.stats.messages}
+          td !{user.role}
+          td
+            if user.role === 'R'
+              button.btn.btn-danger.btn-mini.disabled Удалить
+            else
+              button.btn.btn-danger.btn-mini Удалить
+  .row-fluid
+    .span4
+      form(method='GET', action='/admin/users/').form-search#user-search
+        input(type='text', name='name').input-medium.search-query
+        button(type='submit').btn Поиск по имени
+    .span8
+      if pagination.pages > 1
+        .pagination.pagination-right
+          ul
+            if pagination.isFirstPage
+              li.disabled
+                a(href='/admin/users/' + userName).disabled ←
+            else
+              li
+                a(href='/admin/users/' + userName + '/' + (pagination.currentPage - 1)) ←
+
+            - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
+              - if (i < 0) continue;
+              li
+                a(href='/admin/users/' + userName + '/' + i) !{i + 1}
+            - }
+
+              li.active
+                a(href='/admin/users/' + userName + '/' + pagination.currentPage) !{pagination.currentPage + 1}
+
+            - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
+              - if (i >= pagination.pages) break;
+              li
+                a(href='/admin/users/' + userName + '/' + i) !{i + 1}
+            - }
+
+            if pagination.isLastPage
+              li.disabled
+                a(href='/admin/users/' + userName + '/' + (pagination.pages - 1)).disabled →
+            else
+              li
+                a(href='/admin/users/' + userName + '/' + (pagination.currentPage + 1)) →

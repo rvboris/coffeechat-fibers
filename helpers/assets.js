@@ -99,6 +99,13 @@ module.exports = function(env, paths, options) {
             .write(paths['public'] + '/javascripts/web')
             .end();
 
+        ams.build
+            .create(paths.js.root)
+            .add(paths.js.library + '/socket.io.js')
+            .combine({ js: 'socket.io.js' })
+            .write(paths['public'] + '/javascripts/web')
+            .end();
+
         // jquery.sys
         var webSystem = ams.build
             .create(paths.js.root)

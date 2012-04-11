@@ -255,7 +255,8 @@ module.exports = function(argv) {
 
                 app.set('helpers').utils.hook(stdout);
 
-                stdout.hook('write', function(string) {
+                stdout.hook('write', function(string, encoding, fd, write) {
+                    write(string);
                     process.send({ cmd: 'log', msg: string });
                 });
 
