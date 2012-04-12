@@ -62,7 +62,6 @@ module.exports = function(argv) {
             app.set('log', logger('DEBUG'));
             app.set('log').info('development mode');
 
-            app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }));
             app.use(express['static'](__dirname + '/../public/stylesheets'));
             app.use(stylus.middleware({
                 src: __dirname + '/../assets/stylus',

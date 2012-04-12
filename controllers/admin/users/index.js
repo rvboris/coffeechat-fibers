@@ -1,12 +1,14 @@
 var sync   = require('sync');
 var nconf  = require('nconf');
-var aes    = require('../../helpers/aes.js');
+var aes    = require('../../../helpers/aes.js');
 var moment = require('moment');
 
 module.exports = function(app) {
-    var usersPerPage = 3;
+    var usersPerPage = nconf.get('admin').usersPerPage;
 
     return function(req, res) {
+        if (!req.haveAccess) return res.send(403);
+
         sync(function() {
             var name = req.params.name || '*';
             var page = parseInt(req.params.page || 0);

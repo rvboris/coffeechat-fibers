@@ -60,7 +60,7 @@ exports.define = function(app, mongoose, callback) {
         var user = new schema({
             'name'    : { 'type': String, 'index': true, 'required': true, 'unique': true, 'set': setters.stringSetter, 'validate': [validators.isValidName, 'invalid name'] },
             'password': { 'type': String, 'required': true, 'validate': [ validators.isValidPassword, 'invalid password'] },
-            'role'    : { 'type': String, 'default': 'U', 'enum': ['U', 'R'] }, // U - User, R - Root
+            'role'    : { 'type': String, 'default': 'U', 'enum': ['U', 'R', 'S'] }, // U - User, R - Root, S - System
             'salt'    : { 'type': String, 'required': true },
             'email'   : { 'type': String, 'set': setters.stringSetter, 'validate': [validators.isValidEmail, 'invalid email'] },
             'gender'  : { 'type': String, 'default': 'N', 'enum': ['N', 'W', 'M'] }, // N - Neutral, W - Woman, M - Man

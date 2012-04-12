@@ -3,7 +3,7 @@ if users.length === 0
   .alert.alert-info
     Пользователей не найдено
 else
-  table.table.table-striped
+  table.table.table-striped#user-list
     thead
       tr
         th Имя
@@ -14,22 +14,28 @@ else
         th Действия
     tbody
       each user in users
+        - var isDisabled = (user.role === 'R' || user.role === 'S' ? 'disabled' : '')
         tr(id='uid-' + user._id)
           td !{user.name}
           td !{moment(user.stats.lastaccess).format('DD.MM.YYYY HH:MM (z)')}
           td !{moment(user.date).format('DD.MM.YYYY HH:MM (z)')}
           td !{user.stats.messages}
           td !{user.role}
-          td
-            if user.role === 'R'
-              button.btn.btn-danger.btn-mini.disabled Удалить
-            else
-              button.btn.btn-danger.btn-mini Удалить
+          td.actions
+            .btn-group
+              button(class=isDisabled).btn.btn-danger.btn-mini.delete Удалить
+              button(class=isDisabled, data-toogle='dropdown').btn.btn-danger.btn-mini.dropdown-toggle
+                span.caret
+              ul.dropdown-menu
+                li
+                  a(href='#') Удалить с сообщениями
   .row-fluid
     .span4
       form(method='GET', action='/admin/users/').form-search#user-search
         input(type='text', name='name').input-medium.search-query
-        button(type='submit').btn Поиск по имени
+        button(type='submit').btn
+          i.icon-user
+          |  Поиск по имени
     .span8
       if pagination.pages > 1
         .pagination.pagination-right
