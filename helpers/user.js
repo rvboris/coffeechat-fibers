@@ -41,6 +41,25 @@ module.exports = function(app) {
                 next();
             }
         },
+        rootAccess: function(req, res, next) {
+            if (req.session.user.id === '0') {
+                req.haveAccess = false;
+                return next();
+            }
+
+            sync(function() {
+                return app.User.findById.sync(app.User, req.session.user.id, ['role']);
+            }, function(err, user) {
+                if (err) {
+                    app.set('log').error(err.stack);
+                    return next();
+                }
+
+                req.haveAccess = user.role === 'R';
+
+                next();
+            });
+        },
         createPublic: function(user) {
             return {
                 name: user.name,

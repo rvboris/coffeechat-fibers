@@ -9,11 +9,7 @@ module.exports = function(app) {
         res.end();
     });
 
-    io = io.listen(server);
-
-    io.configure(function() {
-        io.set('log level', 1);
-    });
+    io = io.listen(server, { log: false });
 
     io.of('/logs')
         .on('connection', function(socket) {

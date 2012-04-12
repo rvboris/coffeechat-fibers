@@ -38,5 +38,8 @@
     "recaptcha": {
         "publicKey": "6LcNA88SAAAAAHDgINrY9q-8QMy3Loj4yGiMvisz",
         "privateKey": "6LcNA88SAAAAAAr2bHHhOy6lsxEqBmOM1ZYc8-jQ"
+    },
+    "admin": {
+        "usersPerPage": 20
     }
 }

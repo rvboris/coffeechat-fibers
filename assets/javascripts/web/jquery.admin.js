@@ -139,10 +139,35 @@
     privateMethods.users = {
         init: function() {
             privateMethods.users.searchForm();
+            privateMethods.users.tableActions();
         },
         searchForm: function() {
             $('#user-search').submit(function() {
                 window.location = window.location.protocol + '//' + window.location.host + '/admin/users/' + $(this).find('input').val();
+                return false;
+            });
+        },
+        tableActions: function() {
+            $('.dropdown-toggle').dropdown();
+            $('#user-list .actions button.delete, #user-list .actions .dropdown-menu a').on('click', function() {
+                var uid = $(this).parents('tr').attr('id');
+                var withMessages = $(this)[0].tagName.toLowerCase() === 'a';
+                bootbox.confirm('Вы уверены что хотите удалить пользователя' + (withMessages ? ' и его сообщения' : '') + '?', function(confirmed) {
+                    if (confirmed) {
+                        $.post('/admin/users/delete', {
+                            _csrf: privateMethods.options.csrf,
+                            uid: uid.substr(4, uid.length),
+                            withMessages: withMessages
+                        }).success(function(data) {
+                            if (data.error) return $.fn.notifier(data.error);
+                            $('#' + uid).fadeOut('fast', function() {
+                                $(this).remove();
+                            });
+                        }).error(function() {
+                            $.fn.notifier('Ошибка отправки данных.');
+                        });
+                    }
+                });
                 return false;
             });
         }

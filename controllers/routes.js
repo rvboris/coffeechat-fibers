@@ -31,8 +31,8 @@ module.exports = function(app) {
     app.get('/contact', require('./index/contact.js')(app));
     app.get('/archive/:channel?/:monthyear?/:day?/:page?', require('./index/archive.js')(app));
     app.get('/message/:message', require('./index/message.js')(app));
-    app.get('/admin', app.set('helpers').user.session, require('./admin/index.js')(app));
-    app.get('/admin/users/:name?/:page?', app.set('helpers').user.session, require('./admin/users.js')(app));
+    app.get('/admin', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/index.js')(app));
+    app.get('/admin/users/:name?/:page?', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/users/index.js')(app));
 
     app.post('/oauth', require('./index/oauth.js')(app));
     app.post('/channel/list', require('./channel/list.js')(app));
@@ -52,4 +52,5 @@ module.exports = function(app) {
     app.post('/user/:key/pic', require('./user/pic.js')(app));
     app.post('/recovery/:key', require('./index/recovery.js')(app));
     app.post('/contact', require('./index/contact.js')(app));
+    app.post('/admin/users/delete', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/users/delete.js')(app));
 };
