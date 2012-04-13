@@ -1,23 +1,24 @@
-var express      = require('express');
-var connect      = require('connect');
-var jade         = require('jade');
-var faye         = require('faye');
-var fayeRedis    = require('faye-redis');
-var stylus       = require('stylus');
-var mongoose     = require('mongoose');
-var redisStore   = require('connect-redis')(express);
-var logger       = require('../helpers/logger.js');
-var sync         = require('sync');
-var dnode        = require('dnode');
-var rbytes       = require('rbytes');
-var mime         = require('mime');
-var httpProxy    = require('http-proxy');
-var aes          = require('../helpers/aes.js');
-var EventEmitter = require('events').EventEmitter;
-var nconf        = require('nconf');
-var app          = express.createServer();
-var subServer    = express.createServer();
-var proxy        = new httpProxy.RoutingProxy();
+var express       = require('express');
+var connect       = require('connect');
+var jade          = require('jade');
+var faye          = require('faye');
+var fayeRedis     = require('faye-redis');
+var stylus        = require('stylus');
+var mongoose      = require('mongoose');
+var redisStore    = require('connect-redis')(express);
+var logger        = require('../helpers/logger.js');
+var sync          = require('sync');
+var dnode         = require('dnode');
+var rbytes        = require('rbytes');
+var mime          = require('mime');
+var httpProxy     = require('http-proxy');
+var aes           = require('../helpers/aes.js');
+var EventEmitter  = require('events').EventEmitter;
+var nconf         = require('nconf');
+var app           = express.createServer();
+var subServer     = express.createServer();
+var proxy         = new httpProxy.RoutingProxy();
+var ElasticSearch = require('elasticsearchclient');
 
 module.exports = function(argv) {
     sync(function() {
@@ -56,6 +57,7 @@ module.exports = function(argv) {
             this.helpers();
             this.faye();
             this.events();
+            this.elasticSearch();
         };
 
         Loader.prototype.developmentSetup = function() {
@@ -287,6 +289,14 @@ module.exports = function(argv) {
                     starter.emit('serverToken', key, syncServer);
                 });
             });
+        };
+
+        Loader.prototype.elasticSearch = function() {
+            app.set('esClient', new ElasticSearch(nconf.get('elasticsearch')));
+
+            if (app.set('argv').env === 'development') {
+                app.set('esClient').deleteIndex(nconf.get('elasticsearch').index);
+            }
         };
 
         return new Loader();

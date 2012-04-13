@@ -40,6 +40,12 @@
         "privateKey": "6LcNA88SAAAAAAr2bHHhOy6lsxEqBmOM1ZYc8-jQ"
     },
     "admin": {
-        "usersPerPage": 20
+        "usersPerPage": 20,
+        "messagesPerPage": 3
+    },
+    "elasticsearch": {
+        "host": "localhost",
+        "post": 9200,
+        "index": "coffeechat_production"
     }
 }

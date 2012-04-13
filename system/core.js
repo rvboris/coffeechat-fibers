@@ -196,7 +196,7 @@ module.exports = function(app) {
                         message.data.name = user.name;
                         message.data.time = currentTime;
 
-                        return app.set('events').emit('userSend', user, channel, decodedText);
+                        return app.set('events').emit('userSend', user, channel, msg);
                     }
 
                     // Subscribe

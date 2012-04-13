@@ -33,6 +33,7 @@ module.exports = function(app) {
     app.get('/message/:message', require('./index/message.js')(app));
     app.get('/admin', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/index.js')(app));
     app.get('/admin/users/:name?/:page?', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/users/index.js')(app));
+    app.get('/admin/messages/:text?/:page?', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/messages/index.js')(app));
 
     app.post('/oauth', require('./index/oauth.js')(app));
     app.post('/channel/list', require('./channel/list.js')(app));

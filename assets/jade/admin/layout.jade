@@ -48,6 +48,7 @@ html(lang='ru')
             ul.nav
               - var chartsActive = (section === 'charts' ? 'active' : '')
               - var usersActive = (section == 'users' ? 'active' : '')
+              - var messagesActive = (section == 'messages' ? 'active' : '')
               - var channelsActive = (section === 'channels' ? 'active' : '')
               - var settingsActive = (section === 'settings' ? 'active' : '')
 
@@ -55,6 +56,8 @@ html(lang='ru')
                 a(href='/admin/') Графики
               li(class=usersActive)
                 a(href='/admin/users') Пользователи
+              li(class=usersActive)
+                a(href='/admin/messages') Сообщения
               li(class=channelsActive)
                 a(href='/admin/channels') Комнаты
               li(class=settingsActive)
