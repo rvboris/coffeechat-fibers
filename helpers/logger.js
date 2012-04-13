@@ -17,7 +17,7 @@ var level = levels.DEBUG;
 function log(levelStr, args) {
     if (levels[levelStr] > level || !args[0]) return;
     var i = 1;
-    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + args[0].replace(/%s/g, function() { return args[i++] }) + '\n';
+    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + ( args[0].replace ? args[0].replace(/%s/g, function() { return args[i++] }) : args[0]) + '\n';
     process.stdout.write(msg);
 }
 

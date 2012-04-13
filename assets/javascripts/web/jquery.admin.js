@@ -173,6 +173,12 @@
         }
     };
 
+    privateMethods.messages = {
+        init: function() {
+
+        }
+    };
+
     privateMethods.init = function (admin) {
         $.extend(true, privateMethods, admin);
 
@@ -181,7 +187,10 @@
         }
 
         privateMethods.systemConsole();
-        privateMethods[privateMethods.options.section].init();
+
+        if (privateMethods[privateMethods.options.section] && typeof privateMethods[privateMethods.options.section].init === 'function') {
+            privateMethods[privateMethods.options.section].init();
+        }
     };
 
     $.fn.admin = function(env, csrf, logServer, secretKey, section) {

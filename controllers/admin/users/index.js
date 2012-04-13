@@ -13,13 +13,10 @@ module.exports = function(app) {
             var name = req.params.name || '*';
             var page = parseInt(req.params.page || 0);
             var usersCount = (name === '*') ? app.User.count.sync(app.User) : app.User.count.sync(app.User, { name: { $regex: name } });
-            var pages;
+            var pages = 0;
             var users;
 
-            if (usersCount === 0) {
-                pages = 0;
-                users = [];
-            } else {
+            if (usersCount > 0) {
                 pages = Math.ceil(usersCount / usersPerPage);
                 var query;
 
@@ -39,8 +36,8 @@ module.exports = function(app) {
                 logServer: app.set('argv').logserver,
                 secretKey: app.set('helpers').utils.base64.encode(aes.enc(req.session.user.id, app.set('serverKey'))),
                 section: 'users',
-                users: users,
-                userName: name,
+                users: users || [],
+                query: name,
                 moment: moment,
                 pagination: {
                     pages: pages,

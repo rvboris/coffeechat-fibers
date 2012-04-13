@@ -42,29 +42,29 @@ else
           ul
             if pagination.isFirstPage
               li.disabled
-                a(href='/admin/users/' + userName).disabled ←
+                a(href='/admin/users/' + query).disabled ←
             else
               li
-                a(href='/admin/users/' + userName + '/' + (pagination.currentPage - 1)) ←
+                a(href='/admin/users/' + query + '/' + (pagination.currentPage - 1)) ←
 
             - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
               - if (i < 0) continue;
               li
-                a(href='/admin/users/' + userName + '/' + i) !{i + 1}
+                a(href='/admin/users/' + query + '/' + i) !{i + 1}
             - }
 
               li.active
-                a(href='/admin/users/' + userName + '/' + pagination.currentPage) !{pagination.currentPage + 1}
+                a(href='/admin/users/' + query + '/' + pagination.currentPage) !{pagination.currentPage + 1}
 
             - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
               - if (i >= pagination.pages) break;
               li
-                a(href='/admin/users/' + userName + '/' + i) !{i + 1}
+                a(href='/admin/users/' + query + '/' + i) !{i + 1}
             - }
 
             if pagination.isLastPage
               li.disabled
-                a(href='/admin/users/' + userName + '/' + (pagination.pages - 1)).disabled →
+                a(href='/admin/users/' + query + '/' + (pagination.pages - 1)).disabled →
             else
               li
-                a(href='/admin/users/' + userName + '/' + (pagination.currentPage + 1)) →
+                a(href='/admin/users/' + query + '/' + (pagination.currentPage + 1)) →

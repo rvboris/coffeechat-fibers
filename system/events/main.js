@@ -1,7 +1,21 @@
 var moment = require('moment');
 var sync   = require('sync');
+var nconf  = require('nconf');
 
 module.exports = function(app) {
+    nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
+
+    function elasticSearchIndex(message, callback) {
+        app.set('esClient').index(nconf.get('elasticsearch').index, 'message', {
+            id: message.id,
+            text: message.text
+        }).on('error', function(error) {
+            callback(error);
+        }).on('done', function() {
+            callback(null);
+        }).exec();
+    }
+
     return {
         name: 'system',
         userSubscribe: function(user) {
@@ -74,12 +88,20 @@ module.exports = function(app) {
                 process.send({ cmd: 'event', msg: 'userConnect' });
             });
         },
-        userSend: function(user) {
+        userSend: function(user, channel, message) {
             app.set('log').debug('user "%s" send message', user.name);
+
+            if (!channel['private']) {
+
+            }
 
             sync(function() {
                 user.stats.messages++;
                 user.save.sync(user);
+
+                if (!channel['private']) {
+                    elasticSearchIndex.sync(this, message);
+                }
             }, function(err) {
                 if (err) return app.set('log').error(err.stack);
                 process.send({ cmd: 'event', msg: 'sendMessage' });
