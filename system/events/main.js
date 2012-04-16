@@ -91,14 +91,7 @@ module.exports = function(app) {
         userSend: function(user, channel, message) {
             app.set('log').debug('user "%s" send message', user.name);
 
-            if (!channel['private']) {
-
-            }
-
             sync(function() {
-                user.stats.messages++;
-                user.save.sync(user);
-
                 if (!channel['private']) {
                     elasticSearchIndex.sync(this, message);
                 }

@@ -133,7 +133,8 @@ module.exports = function(argv) {
                 user: require('../helpers/user.js')(app),
                 lang: require('../helpers/lang.js'),
                 plugins: require('../helpers/plugins.js'),
-                utils: require('../helpers/utils.js')
+                utils: require('../helpers/utils.js'),
+                elastic: require('../helpers/elasticwrapper.js')(app)
             });
         };
 
@@ -291,12 +292,19 @@ module.exports = function(argv) {
             });
         };
 
-        Loader.prototype.elasticSearch = function() {
+        Loader.prototype.elasticSearch = function () {
             app.set('esClient', new ElasticSearch(nconf.get('elasticsearch')));
 
             if (app.set('argv').env === 'development') {
-                app.set('esClient').deleteIndex(nconf.get('elasticsearch').index);
+                app.set('helpers').elastic.sync(app.set('helpers'), 'deleteIndex', nconf.get('elasticsearch').index);
+                app.set('helpers').elastic.sync(app.set('helpers'), 'createIndex', nconf.get('elasticsearch').index);
             }
+
+            app.set('helpers').elastic.sync(app.set('helpers'), 'putMapping', nconf.get('elasticsearch').index, 'message', {
+                properties:{
+                    text:{ type:'string', analyzer:'myAnalyzer' }
+                }
+            });
         };
 
         return new Loader();

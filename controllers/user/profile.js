@@ -23,7 +23,7 @@ module.exports = function(app) {
                 pic: profileUser.pic,
                 status: profileUser.status,
                 gender: profileUser.gender,
-                messages: profileUser.stats.messages,
+                messages: app.Message.count.sync(app.Message, { userId: profileUser.id }),
                 points: profileUser.points,
                 isIgnore: me.ignore.indexOf(profileUser.name) > -1
             });

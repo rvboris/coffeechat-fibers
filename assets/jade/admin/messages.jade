@@ -8,28 +8,28 @@ else
       tr
         th #
         th Отправитель
-        th Дата отправки
+        th Дата
         th Комната
         th Текст
         th Действия
     tbody
       each message in messages
         tr(id='mid-' + message._id)
-          td
+          td.id
             a(href='/message/' + message._id) #
-          td
+          td.name
             a(href='/admin/users/' + users[message.userId]) !{users[message.userId]}
-          td !{moment(message.time).format('DD.MM.YYYY HH:MM (z)')}
-          td !{channels[message.channelId]}
-          td !{message.text}
+          td.date !{moment(message.time).format('DD.MM.YYYY HH:MM')}
+          td.channel !{channels[message.channelId]}
+          td.text !{message.text}
           td.actions
             button.btn.btn-danger.btn-mini.delete Удалить
   .row-fluid
     .span4
-      form(method='GET', action='/admin/messages/').form-search#messages-search
+      form(method='GET', action='/admin/messages/').form-search#message-search
         input(type='text', name='text').input-medium.search-query
         button(type='submit').btn
-          i.icon-comment
+          i.icon-search
           |  Поиск
     .span8
       if pagination.pages > 1

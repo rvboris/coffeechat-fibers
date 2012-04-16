@@ -153,20 +153,19 @@
                 var uid = $(this).parents('tr').attr('id');
                 var withMessages = $(this)[0].tagName.toLowerCase() === 'a';
                 bootbox.confirm('Вы уверены что хотите удалить пользователя' + (withMessages ? ' и его сообщения' : '') + '?', function(confirmed) {
-                    if (confirmed) {
-                        $.post('/admin/users/delete', {
-                            _csrf: privateMethods.options.csrf,
-                            uid: uid.substr(4, uid.length),
-                            withMessages: withMessages
-                        }).success(function(data) {
-                            if (data.error) return $.fn.notifier(data.error);
-                            $('#' + uid).fadeOut('fast', function() {
-                                $(this).remove();
-                            });
-                        }).error(function() {
-                            $.fn.notifier('Ошибка отправки данных.');
+                    if (!confirmed) return;
+                    $.post('/admin/users/delete', {
+                        _csrf:privateMethods.options.csrf,
+                        uid:uid.substr(4, uid.length),
+                        withMessages:withMessages
+                    }).success(function (data) {
+                        if (data.error) return $.fn.notifier(data.error);
+                        $('#' + uid).fadeOut('fast', function () {
+                            $(this).remove();
                         });
-                    }
+                    }).error(function () {
+                        $.fn.notifier('Ошибка отправки данных.');
+                    });
                 });
                 return false;
             });
@@ -174,8 +173,35 @@
     };
 
     privateMethods.messages = {
-        init: function() {
-
+        init:function () {
+            privateMethods.messages.searchForm();
+            privateMethods.messages.tableActions();
+        },
+        searchForm:function () {
+            $('#message-search').submit(function () {
+                window.location = window.location.protocol + '//' + window.location.host + '/admin/messages/' + $(this).find('input').val();
+                return false;
+            });
+        },
+        tableActions:function () {
+            $('#message-list .actions button.delete').on('click', function() {
+                var mid = $(this).parents('tr').attr('id');
+                bootbox.confirm('Вы уверены что хотите удалить сообщение?', function(confirmed) {
+                    if (!confirmed) return;
+                    $.post('/admin/messages/delete', {
+                        _csrf:privateMethods.options.csrf,
+                        mid:mid.substr(4, mid.length)
+                    }).success(function (data) {
+                        if (data.error) return $.fn.notifier(data.error);
+                        $('#' + mid).fadeOut('fast', function () {
+                            $(this).remove();
+                        });
+                    }).error(function () {
+                        $.fn.notifier('Ошибка отправки данных.');
+                    });
+                });
+                return false;
+            });
         }
     };
 
