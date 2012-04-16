@@ -54,4 +54,5 @@ module.exports = function(app) {
     app.post('/recovery/:key', require('./index/recovery.js')(app));
     app.post('/contact', require('./index/contact.js')(app));
     app.post('/admin/users/delete', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/users/delete.js')(app));
+    app.post('/admin/messages/delete', app.set('helpers').user.session, app.set('helpers').user.rootAccess, require('./admin/messages/delete.js')(app));
 };

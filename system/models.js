@@ -70,7 +70,6 @@ exports.define = function(app, mongoose, callback) {
             'points'  : { 'type': Number, 'default': 0, 'min': 0 },
             'ignore'  : [String],
             'stats'   : {
-                'messages'  : { 'type': Number, 'default': 0, 'min': 0 },
                 'fulltime'  : { 'type': Number, 'default': 0, 'min': 0 },
                 'lastaccess': { 'type': Date, 'default': new Date() }
             },
