@@ -31,9 +31,7 @@ module.exports = function(app) {
             if (req.body.withMessages === 'true') {
                 app.Message.remove.sync(app.Message, { userId: userToDelete.id });
                 app.set('helpers').elastic.sync(app.set('helpers'), 'deleteByQuery', nconf.get('elasticsearch').index, 'message', {
-                    query:{
-                        queryString:{ query:'_id:' + queryText, analyze_wildcard:true }
-                    }
+                    term:{ userId: userToDelete.id }
                 });
             } else {
                 app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, null);

@@ -10,7 +10,7 @@ module.exports = function(app) {
         }
 
         sync(function() {
-            var profileUser = app.User.findOne.sync(app.User, { name: req.params.name, '_id': { $nin: app.set('systemUserIds') } }, ['name', 'pic', 'status', 'gender', 'stats', 'points']);
+            var profileUser = app.User.findOne.sync(app.User, { name: req.params.name, '_id': { $nin: app.set('systemUserIds') } }, ['name', 'pic', 'status', 'gender', 'points']);
             var me = app.User.findById.sync(app.User, req.session.user.id, ['ignore']);
 
             if (!profileUser || !me) {
