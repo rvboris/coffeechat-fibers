@@ -5,17 +5,6 @@ var nconf  = require('nconf');
 module.exports = function(app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
 
-    function elasticSearchIndex(message, callback) {
-        app.set('esClient').index(nconf.get('elasticsearch').index, 'message', {
-            id: message.id,
-            text: message.text
-        }).on('error', function(error) {
-            callback(error);
-        }).on('done', function() {
-            callback(null);
-        }).exec();
-    }
-
     return {
         name: 'system',
         userSubscribe: function(user) {
@@ -93,7 +82,11 @@ module.exports = function(app) {
 
             sync(function() {
                 if (!channel['private']) {
-                    elasticSearchIndex.sync(this, message);
+                    app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
+                        id: message.id,
+                        userId: user.id,
+                        text: message.text
+                    });
                 }
             }, function(err) {
                 if (err) return app.set('log').error(err.stack);
