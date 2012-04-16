@@ -29,12 +29,12 @@ module.exports = function(app) {
             }
 
             if (req.body.withMessages === 'true') {
-                app.Message.remove.sync(app.Message, { userId: userToDelete.id });
+                app.Message.remove.sync(app.Message, { userId:userToDelete.id });
                 app.set('helpers').elastic.sync(app.set('helpers'), 'deleteByQuery', nconf.get('elasticsearch').index, 'message', {
-                    term:{ userId: userToDelete.id }
+                    term:{ userId:userToDelete.id }
                 });
             } else {
-                app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, null);
+                app.Message.update.sync(app.Message, { userId:userToDelete.id }, { userId:app.set('users')['deleted'].id }, null);
             }
 
             userToDelete.remove.sync(userToDelete);

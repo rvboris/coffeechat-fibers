@@ -22,6 +22,9 @@ module.exports = function(app) {
             var users;
             var channelsArray = [];
             var usersArray = [];
+            var usersIds = [];
+            var channelsIds = [];
+            var i;
 
             if (queryText === '*') {
                 messagesCount = app.Message.count.sync(app.Message);
@@ -35,21 +38,38 @@ module.exports = function(app) {
 
                 if (queryText === '*') {
                     query = app.Message.find({}).skip(page * messagesPerPage).limit(messagesPerPage);
+
+                    messages = query.execFind.sync(query);
+
+                    for (i = 0; i < messages.length; i++) {
+                        usersIds.push(messages[i].userId);
+                        channelsIds.push(messages[i].channelId);
+                    }
                 } else {
-                    var findedDocIds = app.set('helpers').elastic.sync(app.set('helpers'), 'search', nconf.get('elasticsearch').index, 'message', {
-                        query: {
-                            queryString: { query: 'text:' + queryText, analyze_wildcard: true }
-                        }
-                    }).map(function(doc) { return doc._id });
+                    var findedDocs = app.set('helpers').elastic.sync(app.set('helpers'), 'search', nconf.get('elasticsearch').index, 'message', {
+                        query:{
+                            queryString:{ query:'text:' + queryText, analyze_wildcard:true }
+                        },
+                        highlight:{ fields:{ text:{} } },
+                        from: page * messagesPerPage,
+                        size: messagesPerPage
+                    });
 
-                    query = app.Message.find({ _id: { $in: findedDocIds } }).skip(page * messagesPerPage).limit(messagesPerPage);
-                }
+                    var highlightedTexts = [];
 
-                messages = query.execFind.sync(query);
+                    var messagesIds = findedDocs.map(function (doc) {
+                        highlightedTexts[doc._id] = doc.highlight.text[0];
+                        usersIds.push(doc._source.userId);
+                        return doc._id
+                    });
 
-                for (var i = 0, usersIds = [], channelsIds = []; i < messages.length; i++) {
-                    usersIds.push(messages[i].userId);
-                    channelsIds.push(messages[i].channelId);
+                    query = app.Message.find({ _id: { $in: messagesIds } }, ['_id', 'channelId', 'time']).skip(page * messagesPerPage).limit(messagesPerPage);
+                    messages = query.execFind.sync(query);
+
+                    for (i = 0; i < messages.length; i++) {
+                        channelsIds.push(messages[i].channelId);
+                        messages[i].text = highlightedTexts[messages[i]._id];
+                    }
                 }
 
                 users = app.User.find.sync(app.User, { _id: { $in: usersIds, $nin: app.set('systemUserIds') } }, ['name']);
