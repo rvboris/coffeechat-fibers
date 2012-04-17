@@ -730,12 +730,12 @@
                 style: 'ui-tooltip-styling'
             },
             init: function(channel) {
-                privateMethods.channel.qtips.profile(channel);
-                privateMethods.channel.qtips.info(channel);
+                privateMethods.channel.qtips.profile.events(channel);
+                privateMethods.channel.qtips.info.events(channel);
                 privateMethods.channel.qtips.tabArrow();
             },
-            info: function(channel) {
-                function showTooltip(button, channelName) {
+            info: {
+                tooltip: function(button, channelName, channelId) {
                     $(button).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
                         content: {
                             title: {
@@ -743,13 +743,13 @@
                             },
                             text: 'Загрузка...',
                             ajax: {
-                                url: '/channel/' + encodeURIComponent(channel) + '/info',
+                                url: '/channel/' + encodeURIComponent(channelId) + '/info',
                                 success: function(data) {
                                     this.set('content.text', mote.compile($('#mu-ui-channel-qtips-info').html())({
                                         users: data.users,
                                         messages: data.messages,
                                         date: $.fn.sys().time.date($.fn.sys().time.parse(data.date)),
-                                        url: $('#channels li button#channel-' + channel).data('url'),
+                                        url: $('#channels li button#channel-' + channelId).data('url'),
                                         ifMessages: data.messages > 0
                                     }));
                                 },
@@ -759,19 +759,17 @@
                         position: { viewport: $(window) },
                         show: { event: false }
                     })).show();
+                },
+                events: function(channel) {
+                    $('#channels li').on('mouseup', 'button#channel-' + channel, function(event) {
+                        if (event.which !== 3) return;
+                        if ($.fn.sys().options.currentUser.id === '0' || $(this).data('private') || $.fn.sys().actions.popup) return;
+                        privateMethods.channel.qtips.info.tooltip($(this), $(this).find('span.name').text(), channel);
+                    });
                 }
-
-                $('#channels li').on('mouseup', 'button#channel-' + channel, function(event) {
-                    if (event.which !== 3) return;
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).data('private') || $.fn.sys().actions.popup) return;
-                    showTooltip($(this), $(this).find('span.name').text());
-                }).on('click', 'div.info button', function() {
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).parent().next().data('private') || $(this).hasClass('disabled') || $.fn.sys().actions.popup) return;
-                    showTooltip($(this), $(this).parent().next().find('span.name').text());
-                });
             },
-            profile: function(channel) {
-                function showTooltip(button, userName) {
+            profile: {
+                tooltip: function (button, userName, channelId) {
                     $(button).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
                         content: {
                             title: { text: 'Профиль ' + userName },
@@ -799,18 +797,19 @@
                                 data: { _csrf: privateMethods.options.csrf }
                             }
                         },
-                        position: { viewport: $('#channel-' + channel + '-content .scrollableArea') },
+                        position: { viewport: $('#channel-' + channelId + '-content .scrollableArea') },
                         show: { event: false }
                     })).show();
+                },
+                events: function(channel) {
+                    $('#channel-' + channel + '-content').on('mouseup', 'div.message button:not(.me), .sidebar button.name:not(.me)', function(event) {
+                        if (event.which !== 3) return;
+                        if ($.fn.sys().options.currentUser.id === '0' || $(this).text() === '$' || $.fn.sys().actions.popup) return;
+                        privateMethods.channel.qtips.profile.tooltip($(this), $(this).text(), channel);
+                    }).on('click', '.sidebar button.info:not(.me)', function() {
+                        privateMethods.channel.qtips.profile.tooltip($(this), $(this).next().next().text(), channel);
+                    });
                 }
-
-                $('#channel-' + channel + '-content').on('mouseup', 'div.message button:not(.me), .sidebar button.name:not(.me)', function(event) {
-                    if (event.which !== 3) return;
-                    if ($.fn.sys().options.currentUser.id === '0' || $(this).text() === '$' || $.fn.sys().actions.popup) return;
-                    showTooltip($(this), $(this).text());
-                }).on('click', '.sidebar button.info:not(.me)', function() {
-                    showTooltip($(this), $(this).next().next().text());
-                });
             },
             tabArrow: function() {
                 $('#channels li.arrow')
@@ -876,7 +875,7 @@
             $("#channels li.arrow").before(mote.compile($('#mu-ui-tab-button').html())({
                 'channel': { id: channelId, name: channelName },
                 'close': $('#channels li').not('.arrow').size() > 0,
-                'private': params['url'] === 'quizeton' ? true : params['private']  || false
+                'private': params['url'] === 'quizeton' ? true : (params['private'] || false)
             }));
 
             $('#channels-content').append(mote.compile($('#mu-ui-tab-chat').html())({
@@ -1298,6 +1297,14 @@
                 return false;
             }).keyup(function() {
                 $(this).change();
+            });
+
+            $('#channels li').on('click', 'div.info button', function() {
+                var tabButton = $(this).parent().next();
+                var channelId = tabButton.attr('id');
+                channelId = channelId.substr(8, channelId.length);
+                if ($.fn.sys().options.currentUser.id === '0' || $(tabButton).data('private') || $(this).hasClass('disabled') || $.fn.sys().actions.popup) return;
+                privateMethods.channel.qtips.info.tooltip($(this), $(this).parent().next().find('span.name').text(), channelId);
             });
         },
         showChannelList: function(remember) {

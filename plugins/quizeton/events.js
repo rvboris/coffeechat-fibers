@@ -24,10 +24,10 @@ module.exports = function(app) {
                 });
             }
         },
-        userSend: function(user, channel, text) {
+        userSend: function(user, channel, message) {
             if (channel.id === app.set('channels')[name].id) {
                 app.set('syncServer').task('quizeton', 'getAnswer', function(answer) {
-                    if (text.toLowerCase() !== answer.toLowerCase()) return;
+                    if (message.text.toLowerCase() !== answer.toLowerCase()) return;
                     app.set('syncServer').task('quizeton', 'newQuiz', user.id);
                 });
             }

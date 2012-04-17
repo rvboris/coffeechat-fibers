@@ -104,6 +104,10 @@ exports.define = function(app, mongoose, callback) {
             this.set('salt', this.makeSalt());
         });
 
+        user.method('isSystem', function() {
+            return app.set('systemUserIds').indexOf(this.id) >= 0 || this.role === 'R' || this.role === 'S';
+        });
+
         user.method('authenticate', function(txt) {
             return txt.length > 30 ? false : this.encryptPassword(txt) === this.password;
         });

@@ -12,7 +12,7 @@ module.exports = function(app) {
                 newSubscriptions.push({
                     id: channels[i],
                     diff: 1,
-                    count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
+                    count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i], userId: { $nin: app.set('systemUserIds') } })
                 });
                 if (!userChannels[channels[i]]) {
                     userChannels[channels[i]] = [];

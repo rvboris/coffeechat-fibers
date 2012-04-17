@@ -29,10 +29,10 @@ module.exports = function(app) {
         }
     });
 
-    eventer.on('userSend', function(user, channel, text) {
+    eventer.on('userSend', function(user, channel, message) {
         for (var i = 0; i < events.length; i++) {
             if (events[i].userSend && typeof events[i].userSend === 'function') {
-                events[i].userSend(user, channel, text);
+                events[i].userSend(user, channel, message);
             }
         }
     });

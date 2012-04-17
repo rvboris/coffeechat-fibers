@@ -13,6 +13,8 @@ module.exports = function(app) {
             var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } }, ['name']);
             var fromUser = app.User.findById.sync(app.User, req.session.user.id, ['name']);
 
+            if (fromUser.isSystem()) return;
+
             switch (req.body.action) {
                 case 'request':
                     var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: fromUser.id }, ['channelId']);

@@ -22,7 +22,7 @@ module.exports = function(app) {
             if (channel['private']) throw new Error('access denied');
 
             return {
-                users: app.Subscription.count.sync(app.Subscription, { channelId: channel.id }),
+                users: app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: { $nin: app.set('systemUserIds') } }),
                 messages: app.Message.count.sync(app.Message, { channelId: channel.id }),
                 date: channel.date
             };

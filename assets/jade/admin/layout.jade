@@ -53,13 +53,11 @@ html(lang='ru')
               - var settingsActive = (section === 'settings' ? 'active' : '')
 
               li(class=chartsActive)
-                a(href='/admin/') Графики
+                a(href='/admin/') Статистика
               li(class=usersActive)
                 a(href='/admin/users') Пользователи
               li(class=messagesActive)
                 a(href='/admin/messages') Сообщения
-              li(class=channelsActive)
-                a(href='/admin/channels') Комнаты
               li(class=settingsActive)
                 a(href='/admin/settings') Настройки
     div(id=section + '-wrapper').container.main-container

@@ -49,11 +49,13 @@ module.exports = function(app) {
             user.status = 'O';
             user.save.sync(user);
 
-            app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
-                token: app.set('serverToken'),
-                action: 'connect',
-                user: app.set('helpers').user.createPublic(user)
-            });
+            if (!user.isSystem()) {
+                app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
+                    token: app.set('serverToken'),
+                    action: 'connect',
+                    user: app.set('helpers').user.createPublic(user)
+                });
+            }
 
             return { channel: channel, subscription: newSubscription, update: false };
         }.async(),
