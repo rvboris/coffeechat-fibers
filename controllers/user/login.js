@@ -52,12 +52,12 @@ module.exports = function(app) {
             for (var i = 0, newSubscriptions = [], userChannels = []; i < channels.length; i++) {
                 result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
                 if (result.error) return result;
-                if (app.set('systemUserIds').indexOf(user.id) >= 0) return { user: user };
+                if (user.isSystem()) return { user: user };
                 if (!result.update) {
                     newSubscriptions.push({
                         id: channels[i],
                         diff: 1,
-                        count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i] })
+                        count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i], userId: { $nin: app.set('systemUserIds') } })
                     });
                     if (!userChannels[channels[i]]) userChannels[channels[i]] = [];
                     userChannels[channels[i]].push({ name: user.name, gender: user.gender, status: user.status });

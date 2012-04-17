@@ -120,7 +120,8 @@ module.exports = function(app) {
                 sync(function() {
                     var user = app.User.findById.sync(app.User, userId);
                     user.points += points;
-                    return user.save.sync(user);
+                    user.save.sync(user);
+                    return user;
                 }, function(err, user) {
                     if (err) return eventer.emit('error', recipient);
                     eventer.emit('reply', recipient, 'Поздравляю это правильный ответ! +' + points + ' (' + user.points + ').', [user.name]);

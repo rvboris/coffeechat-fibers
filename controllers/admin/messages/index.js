@@ -2,7 +2,6 @@ var sync   = require('sync');
 var nconf  = require('nconf');
 var aes    = require('../../../helpers/aes.js');
 var moment = require('moment');
-var qs     = require('querystring');
 
 module.exports = function(app) {
     nconf.use('file', { file: __dirname + '/../../../config/' + app.set('argv').env + '.json' });
@@ -29,7 +28,7 @@ module.exports = function(app) {
             if (queryText === '*') {
                 messagesCount = app.Message.count.sync(app.Message);
             } else {
-                messagesCount = app.set('helpers').elastic.sync(app.set('helpers'), 'count', nconf.get('elasticsearch').index, 'message', qs.stringify({text: queryText}, ';', ':'));
+                messagesCount = app.set('helpers').elastic.sync(app.set('helpers'), 'count', nconf.get('elasticsearch').index, 'message', 'text:' + queryText);
             }
 
             if (messagesCount > 0) {
@@ -47,17 +46,17 @@ module.exports = function(app) {
                     }
                 } else {
                     var findedDocs = app.set('helpers').elastic.sync(app.set('helpers'), 'search', nconf.get('elasticsearch').index, 'message', {
-                        query:{
-                            queryString:{ query:'text:' + queryText, analyze_wildcard:true }
+                        query: {
+                            queryString: { query: 'text:' + queryText, analyze_wildcard: true }
                         },
-                        highlight:{ fields:{ text:{} } },
+                        highlight: { fields: { text: { number_of_fragments: 0 } } },
                         from: page * messagesPerPage,
                         size: messagesPerPage
                     });
 
                     var highlightedTexts = [];
 
-                    var messagesIds = findedDocs.map(function (doc) {
+                    var messagesIds = findedDocs.map(function(doc) {
                         highlightedTexts[doc._id] = doc.highlight.text[0];
                         usersIds.push(doc._source.userId);
                         return doc._id

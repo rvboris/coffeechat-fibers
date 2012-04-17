@@ -143,7 +143,7 @@
         },
         searchForm: function() {
             $('#user-search').submit(function() {
-                window.location = window.location.protocol + '//' + window.location.host + '/admin/users/' + $(this).find('input').val();
+                window.location = window.location.protocol + '//' + window.location.host + '/admin/users/' + encodeURIComponent($(this).find('input').val());
                 return false;
             });
         },
@@ -179,7 +179,7 @@
         },
         searchForm:function () {
             $('#message-search').submit(function () {
-                window.location = window.location.protocol + '//' + window.location.host + '/admin/messages/' + $(this).find('input').val();
+                window.location = window.location.protocol + '//' + window.location.host + '/admin/messages/' + encodeURIComponent($(this).find('input').val());
                 return false;
             });
         },

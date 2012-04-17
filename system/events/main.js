@@ -81,7 +81,7 @@ module.exports = function(app) {
             app.set('log').debug('user "%s" send message', user.name);
 
             sync(function() {
-                if (!channel['private']) {
+                if (!channel['private'] && !user.isSystem()) {
                     app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
                         id: message.id,
                         userId: user.id,

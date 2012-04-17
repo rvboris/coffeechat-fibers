@@ -12,6 +12,9 @@ module.exports = function(app) {
         sync(function() {
             var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } });
             var fromUser = app.User.findById.sync(app.User, req.session.user.id);
+
+            if (fromUser.isSystem()) return;
+
             var idx = fromUser.ignore.indexOf(toUser.name);
 
             switch (req.body.action) {
@@ -42,7 +45,7 @@ module.exports = function(app) {
 
             if (result) return res.send(result);
 
-            res.send(500);
+            res.send(200);
         });
     }
 };

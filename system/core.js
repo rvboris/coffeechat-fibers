@@ -89,8 +89,6 @@ module.exports = function(app) {
                         return message.error = 'Ключ не верный';
                     }
 
-                    var isSystem = app.set('systemUserIds').indexOf(user.id) >= 0;
-
                     app.set('log').debug('user login through the token');
 
                     var channelId;
@@ -145,7 +143,7 @@ module.exports = function(app) {
                             return message.error = 'Ошибка декодирования сообщения';
                         }
 
-                        if (!isSystem) {
+                        if (!user.isSystem()) {
                             var query = app.Message.findOne({ userId: user.id }, ['time']).sort('time', -1);
                             var lastMessage = query.execFind.sync(query);
 
@@ -178,7 +176,7 @@ module.exports = function(app) {
                             }
                         }
 
-                        if (!isSystem) {
+                        if (!user.isSystem()) {
                             if (app.set('channels')[channel.url]) {
                                 if (app.set('channels')[channel.url].params.history) {
                                     msg.save.sync(msg);
@@ -193,7 +191,7 @@ module.exports = function(app) {
                         }
 
                         message.data.text = aes.enc(msg.parsed, app.set('serverKey'));
-                        message.data.name = user.name;
+                        message.data.name = user.isSystem() ? '$' : user.name;
                         message.data.time = currentTime;
 
                         return app.set('events').emit('userSend', user, channel, msg);
@@ -229,8 +227,8 @@ module.exports = function(app) {
                         var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, matches[1]);
                         if (result.error) return message.error = result.error;
 
-                        if (!result.update) {
-                            var subscriptionsCount = app.Subscription.count.sync(app.Subscription, { channelId: matches[1]});
+                        if (!result.update && !user.isSystem()) {
+                            var subscriptionsCount = app.Subscription.count.sync(app.Subscription, { channelId: matches[1], userId: { $nin: app.set('systemUserIds') } });
 
                             // Execute on other thread (double send bug)
                             setTimeout(function() {
@@ -297,32 +295,36 @@ module.exports = function(app) {
 
                         app.set('events').emit('userUnsubscribe', user, subscription);
 
-                        app.set('faye').bayeux.getClient().publish('/channel-list', {
-                            token: app.set('serverToken'),
-                            action: 'upd',
-                            channels: [
-                                {
-                                    id: subscription.channelId.toHexString(),
-                                    diff: -1,
-                                    count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId })
-                                }
-                            ]
-                        });
+                        if (!user.isSystem()) {
+                            app.set('faye').bayeux.getClient().publish('/channel-list', {
+                                token: app.set('serverToken'),
+                                action: 'upd',
+                                channels: [
+                                    {
+                                        id: subscription.channelId.toHexString(),
+                                        diff: -1,
+                                        count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId, userId: { $nin: app.set('systemUserIds') } })
+                                    }
+                                ]
+                            });
+                        }
 
                         app.set('log').debug('channel list updated');
 
-                        // Execute on other thread (double send bug)
-                        setTimeout(function() {
-                            app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
-                                token: app.set('serverToken'),
-                                action: 'dis',
-                                users: [
-                                    { name: user.name }
-                                ]
-                            });
+                        if (!user.isSystem()) {
+                            // Execute on other thread (double send bug)
+                            setTimeout(function() {
+                                app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
+                                    token: app.set('serverToken'),
+                                    action: 'dis',
+                                    users: [
+                                        { name: user.name }
+                                    ]
+                                });
 
-                            app.set('log').debug('user list updated');
-                        }, 100);
+                                app.set('log').debug('user list updated');
+                            }, 100);
+                        }
                     }
 
                     // Connecting

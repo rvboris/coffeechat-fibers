@@ -37,7 +37,7 @@ module.exports = function(app) {
             user.save.sync(user);
             app.set('log').debug('the user is saved');
 
-            if (!pubTrigger || app.set('systemUserIds').indexOf(user.id) >= 0) return;
+            if (!pubTrigger || user.isSystem()) return;
 
             var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.session.user.id }, ['channelId']);
 
