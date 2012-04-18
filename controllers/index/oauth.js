@@ -3,7 +3,7 @@ var sync   = require('sync');
 var rbytes = require('rbytes');
 var get    = require('get');
 
-module.exports = function(app) {
+module.exports = function (app) {
     function successLogin (channels, user) {
         for (var i = 0, newSubscriptions = [], userChannels = [], result; i < channels.length; i++) {
             result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
@@ -24,8 +24,11 @@ module.exports = function(app) {
         return { user: user, newSubscriptions: newSubscriptions, userChannels: userChannels };
     }
 
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
         if (!req.body.token || !req.body.channels) {
             app.set('log').debug('token or channels not found');
@@ -34,7 +37,7 @@ module.exports = function(app) {
 
         var request = new get({ uri: 'http://ulogin.ru/token.php?token=' + req.body.token + '&host=' + app.set('host') });
 
-        sync(function() {
+        sync(function () {
             var response = request.asString.sync(request); // [data,headers]
             var userData = JSON.parse(response[0]);
 
@@ -72,12 +75,10 @@ module.exports = function(app) {
             newUser.oauth.provider = userData.network;
 
             newUser.save.sync(newUser);
-
             app.set('syncServer').task('user', 'start');
-
             req.session.user = { id: newUser.id };
             return successLogin(req.body.channels, newUser);
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
@@ -89,17 +90,24 @@ module.exports = function(app) {
                     result.error = 'Недопустимые данные для входа/регистрации';
                 } else {
                     app.set('log').error(err.stack);
-                    return res.send(500);
+                    res.send(500);
+                    return;
                 }
             }
 
-            if (!result) return res.send(500);
-            if (result.error) return res.send({ error: result.error });
+            if (!result) {
+                res.send(500);
+                return;
+            }
+
+            if (result.error) {
+                return res.send({ error: result.error });
+            }
 
             res.send(app.set('helpers').user.createPrivate(result.user));
 
             if (result.newSubscriptions.length) {
-                setTimeout(function() {
+                setTimeout(function () {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
                         token: app.set('serverToken'),
                         action: 'upd',
@@ -108,8 +116,8 @@ module.exports = function(app) {
                 }, 100);
 
                 for (var i = 0; i < result.newSubscriptions.length; i++) {
-                    (function(i) {
-                        setTimeout(function() {
+                    (function (i) {
+                        setTimeout(function () {
                             app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
                                 token: app.set('serverToken'),
                                 action: 'con',

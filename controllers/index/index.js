@@ -1,12 +1,20 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        sync(function() {
-            var user = req.session.user.id !== '0' ? app.User.findById.sync(app.User, req.session.user.id) : req.session.user;
+module.exports = function (app) {
+    return function (req, res) {
+        sync(function () {
+            var user;
+
+            if (req.session.user.id !== '0') {
+                user = app.User.findById.sync(app.User, req.session.user.id);
+            } else {
+                user = req.session.user
+            }
+
             if (!user) {
                 app.set('log').debug('user not found');
-                return res.send(401);
+                res.send(401);
+                return;
             }
 
             res.render(req.mobile ? 'mobile' : 'web', {
@@ -24,11 +32,11 @@ module.exports = function(app) {
                 csrf: req.session._csrf,
                 errors: null
             });
-        }, function(err) {
-            if (err) {
-                app.set('log').error(err.stack);
-                res.send(500);
-            }
+        }, function (err) {
+            if (!err) return;
+
+            app.set('log').error(err.stack);
+            res.send(500);
         });
     }
 };

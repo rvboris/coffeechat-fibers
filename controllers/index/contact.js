@@ -4,65 +4,72 @@ var nconf          = require('nconf');
 var sync           = require('sync');
 var recaptchaAsync = require('recaptcha-async');
 
-module.exports = function(app) {
+module.exports = function (app) {
     var vdr = new Validator();
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
     nodemailer.SMTP = nconf.get('smtp');
 
-    return function(req, res) {
+    return function (req, res) {
         var recaptcha = new recaptchaAsync.reCaptcha();
 
         if (req.isXMLHttpRequest) {
-            recaptcha.on('data', function(result) {
+            recaptcha.on('data', function (result) {
                 if (result.is_valid) {
                     if (!req.body.contact.name || !req.body.contact.email || !req.body.contact.message) {
-                        return res.send({ error: 'Все поля обязательны для заполнения' });
+                        res.send({ error: 'Все поля обязательны для заполнения' });
+                        return;
                     }
 
                     try {
                         vdr.check(req.body.contact.name).regex(/^[А-Яа-яЁёA-Za-z0-9\s]+$/);
                     } catch (e) {
-                        return res.send({ error: 'Имя содержит недопустимые символы' });
+                        res.send({ error: 'Имя содержит недопустимые символы' });
+                        return;
                     }
 
                     try {
                         vdr.check(req.body.contact.email).isEmail();
                     } catch (e) {
-                        return res.send({ error: 'Введите корректный email адрес' });
+                        res.send({ error: 'Введите корректный email адрес' });
+                        return;
                     }
 
                     try {
                         vdr.check(req.body.contact.message).regex(/^[А-Яа-яЁёA-Za-z0-9\s]+$/);
                     } catch (e) {
-                        return res.send({ error: 'Текст сообщения содержит недопустимые символы' });
+                        res.send({ error: 'Текст сообщения содержит недопустимые символы' });
+                        return;
                     }
 
-                    sync(function() {
+                    sync(function () {
                         return nodemailer.send_mail.sync(nodemailer, {
                             sender: req.body.contact.email,
                             to: 'rv.boris@gmail.com',
                             subject: 'Новое сообщение от ' + req.body.contact.name + ' (' + req.body.contact.email + ') // ' + nconf.get('sitename'),
                             html: req.body.contact.message
                         });
-                    }, function(err, result) {
+                    }, function (err, result) {
                         if (err) {
                             app.set('log').error(err.stack);
-                            return res.send(500);
+                            res.send(500);
+                            return;
                         }
 
                         if (result) {
-                            return res.send({ result: 'Сообщение успешно отправлено' });
+                            res.send({ result: 'Сообщение успешно отправлено' });
+                            return;
                         }
 
-                        return res.send({ error: 'Ошибка при отправке сообщения' });
+                        res.send({ error: 'Ошибка при отправке сообщения' });
                     });
                 } else {
-                    return res.send({ error: 'Код введен не верно' });
+                    res.send({ error: 'Код введен не верно' });
                 }
             });
 
             if (!req.body.contact.recaptcha_challenge_field || !req.body.contact.recaptcha_response_field) {
-                return res.send({ error: 'Код подверждения не заполен' });
+                res.send({ error: 'Код подверждения не заполен' });
+                return;
             }
 
             recaptcha.checkAnswer(nconf.get('recaptcha').privateKey, app.set('helpers').utils.getIp(req), req.body.contact.recaptcha_challenge_field, req.body.contact.recaptcha_response_field);

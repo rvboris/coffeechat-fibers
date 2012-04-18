@@ -4,54 +4,69 @@ var nodemailer     = require('nodemailer');
 var nconf          = require('nconf');
 var recaptchaAsync = require('recaptcha-async');
 
-module.exports = function(app) {
+module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
     nodemailer.SMTP = nconf.get('smtp');
 
-    return function(req, res) {
+    return function (req, res) {
         if (!req.params.key) {
             app.set('log').debug('recovery key not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var recovery = app.PasswordRecovery.findOne.sync(app.PasswordRecovery, { key: req.params.key });
             var user = recovery ? app.User.findById.sync(app.User, recovery.userId) : false;
-
             return user ? { user: user, recovery: recovery } : false;
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
 
-            if (!result) return res.send(404);
+            if (!result) {
+                res.send(404);
+                return;
+            }
 
             var user = result.user;
             var recovery = result.recovery;
             var recaptcha = new recaptchaAsync.reCaptcha();
 
-            recaptcha.on('data', function(result) {
-                if (!result.is_valid)
-                    return res.send({ error: 'Код введен не верно' });
+            recaptcha.on('data', function (result) {
+                if (!result.is_valid) {
+                    res.send({ error: 'Код введен не верно' });
+                    return;
+                }
 
-                if (!req.body.user.password1)
-                    return res.send({ error: 'Первое поле не заполнено' });
-                if (!req.body.user.password2)
-                    return res.send({ error: 'Второе поле не заполнено' });
-                if (req.body.user.password1 !== req.body.user.password2)
-                    return res.send({ error: 'Пароли не совпадают' });
+                if (!req.body.user.password1) {
+                    res.send({ error: 'Первое поле не заполнено' });
+                    return;
+                }
+
+                if (!req.body.user.password2) {
+                    res.send({ error: 'Второе поле не заполнено' });
+                    return;
+                }
+
+                if (req.body.user.password1 !== req.body.user.password2) {
+                    res.send({ error: 'Пароли не совпадают' });
+                    return;
+                }
 
                 try {
                     check(req.body.user.password1).len(6, 30);
                     check(req.body.user.password2).len(6, 30);
                 } catch (e) {
-                    return res.send({ error: 'Пароль должен быть в пределах 6-30 символов' });
+                    res.send({ error: 'Пароль должен быть в пределах 6-30 символов' });
+                    return;
                 }
 
                 user.secret = req.body.user.password1;
 
-                sync(function() {
+                sync(function () {
                     user.save.sync(user);
                     recovery.remove.sync(recovery);
 
@@ -65,10 +80,11 @@ module.exports = function(app) {
                     }
 
                     return { error: 'Ошибка отправки' };
-                }, function(err, result) {
+                }, function (err, result) {
                     if (err) {
                         app.set('log').error(err.stack);
-                        return res.send(500);
+                        res.send(500);
+                        return;
                     }
 
                     res.send(result);
@@ -77,14 +93,16 @@ module.exports = function(app) {
 
             if (req.isXMLHttpRequest && req.body) {
                 if (!req.body.user.recaptcha_challenge_field || !req.body.user.recaptcha_response_field) {
-                    return res.send({ error: 'Код подверждения не заполен' });
+                    res.send({ error: 'Код подверждения не заполен' });
+                    return;
                 }
 
-                return recaptcha.checkAnswer(nconf.get('recaptcha').privateKey, app.set('helpers').utils.getIp(req), req.body.user.recaptcha_challenge_field, req.body.user.recaptcha_response_field);
+                recaptcha.checkAnswer(nconf.get('recaptcha').privateKey, app.set('helpers').utils.getIp(req), req.body.user.recaptcha_challenge_field, req.body.user.recaptcha_response_field);
+                return;
             }
 
             try {
-                return res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
+                res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
                     user: app.set('helpers').user.createPrivate(result),
                     serverKey: app.set('serverKey'),
                     session: app.session,
@@ -95,9 +113,8 @@ module.exports = function(app) {
                 });
             } catch (err) {
                 app.set('log').error(err.stack);
+                res.send(500);
             }
-
-            res.send(500);
         });
     }
 };

@@ -1,20 +1,31 @@
-var sync   = require('sync');
-var nconf  = require('nconf');
+var sync  = require('sync');
+var nconf = require('nconf');
 
-module.exports = function(app) {
-    nconf.use('file', { file:__dirname + '/../../../config/' + app.set('argv').env + '.json' });
+module.exports = function (app) {
+    nconf.use('file', { file: __dirname + '/../../../config/' + app.set('argv').env + '.json' });
 
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
-        if (!req.haveAccess) return res.send(403);
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
-        sync(function() {
-            if (req.session.user.id === req.body.uid) return res.send({ error: 'Вы не можете удалить самого себя' });
+        if (!req.haveAccess) {
+            res.send(403);
+            return;
+        }
+
+        sync(function () {
+            if (req.session.user.id === req.body.uid) {
+                res.send({ error: 'Вы не можете удалить самого себя' });
+                return;
+            }
 
             var userToDelete = app.User.findById.sync(app.User, req.body.uid);
 
             if (!userToDelete) {
-                return res.send({ error: 'Пользователь не найден' });
+                res.send({ error: 'Пользователь не найден' });
+                return;
             }
 
             app.Subscription.remove.sync(app.Subscription, { userId: userToDelete.id });
@@ -29,22 +40,22 @@ module.exports = function(app) {
             }
 
             if (req.body.withMessages === 'true') {
-                app.Message.remove.sync(app.Message, { userId:userToDelete.id });
+                app.Message.remove.sync(app.Message, { userId: userToDelete.id });
                 app.set('helpers').elastic.sync(app.set('helpers'), 'deleteByQuery', nconf.get('elasticsearch').index, 'message', {
-                    term:{ userId:userToDelete.id }
+                    term: { userId: userToDelete.id }
                 });
             } else {
-                app.Message.update.sync(app.Message, { userId:userToDelete.id }, { userId:app.set('users')['deleted'].id }, null);
+                app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, null);
             }
 
             userToDelete.remove.sync(userToDelete);
 
             res.send(200);
-        }, function(err) {
-            if (err) {
-                app.set('log').error(err.stack);
-                res.send(500);
-            }
+        }, function (err) {
+            if (!err) return;
+
+            app.set('log').error(err.stack);
+            res.send(500);
         });
-    }
+    };
 };
