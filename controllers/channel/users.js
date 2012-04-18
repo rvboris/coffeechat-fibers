@@ -1,37 +1,46 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
         if (!req.params.channel) {
             app.set('log').debug('channel param not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var subscriptions = app.Subscription.find.sync(app.Subscription, {
                 time: { $lt: new Date(new Date().getTime() - ((app.set('faye').timeout) * 1000) * 2) }
             });
 
-            for (var i = 0; i < subscriptions.length; i++) subscriptions[i].remove.sync(subscriptions[i]);
+            for (var i = 0; i < subscriptions.length; i++) {
+                subscriptions[i].remove.sync(subscriptions[i]);
+            }
 
             subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel, userId: { $nin: app.set('systemUserIds') } }, ['userId']);
             if (!subscriptions) return;
 
-            var userList = [];
-            for (i = 0; i < subscriptions.length; i++) {
-                userList.push(app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscriptions[i].userId.toHexString(), ['name', 'gender', 'status'])));
-            }
-
-            return userList;
-        }, function(err, userList) {
+            return subscriptions.map(function (subscription) {
+                return app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscription.userId.toHexString(), ['name', 'gender', 'status']));
+            });
+        }, function (err, list) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
-            if (userList) return res.send(userList);
+
+            if (list) {
+                res.send(list);
+                return;
+            }
+
             res.send(200);
         });
-    }
+    };
 };

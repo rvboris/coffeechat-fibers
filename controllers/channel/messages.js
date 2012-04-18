@@ -1,44 +1,51 @@
 var sync  = require('sync');
 var nconf = require('nconf');
 
-module.exports = function(app) {
+module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
 
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
         if (!req.params.channel) {
             app.set('log').debug('channel param not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(nconf.get('messages').historyPreload).sort('time', -1);
             var messages = query.execFind.sync(query);
             if (!messages) return;
 
-            for (var i = 0, messageList = []; i < messages.length; i++) {
-                var user = app.User.findById.sync(app.User, messages[i].userId.toHexString(), ['name']);
-                var archive = typeof app.set('users')[user.name] !== 'undefined';
-                messageList.push({
-                    name: archive ? '$ Архив' : user.name,
-                    time: messages[i].time,
-                    text: messages[i].text,
-                    id: messages[i].id,
-                    archive: archive
-                });
-            }
+            return messages.map(function (message) {
+                var user = app.User.findById.sync(app.User, message.userId.toHexString(), ['name']);
+                var archive = user.name === 'deleted';
 
-            return messageList;
-        }, function(err, messageList) {
+                return {
+                    name: archive ? '$ Архив' : user.name,
+                    time: message.time,
+                    text: message.text,
+                    id: message.id,
+                    archive: archive
+                };
+            });
+        }, function (err, list) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
 
-            if (messageList) return res.send(messageList);
+            if (list) {
+                res.send(list);
+                return;
+            }
 
             res.send(200);
         });
-    }
+    };
 };

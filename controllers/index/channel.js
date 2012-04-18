@@ -1,23 +1,40 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
+module.exports = function (app) {
+    return function (req, res) {
         if (!req.params.channel) {
             app.set('log').debug('channel param not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
-            var user = req.session.user.id !== '0' ? app.User.findById.sync(app.User, req.session.user.id) : req.session.user;
-            if (!user) throw new Error('user not found');
+        sync(function () {
+            var user;
 
-            var channel = app.Channel.findOne.sync(app.Channel, { url: req.params.channel }, ['name', 'url', 'private']);
-            if (!channel) {
-                app.set('log').debug('channel not found');
-                return res.send(404);
+            if (req.session.user.id !== '0') {
+                user = app.User.findById.sync(app.User, req.session.user.id)
+            } else {
+                user = req.session.user;
             }
 
-            if (channel['private']) return res.send(401);
+            if (!user) {
+                throw new Error('user not found');
+            }
+
+            var channel = app.Channel.findOne.sync(app.Channel, {
+                url: req.params.channel
+            }, ['name', 'url', 'private']);
+
+            if (!channel) {
+                app.set('log').debug('channel not found');
+                res.send(404);
+                return;
+            }
+
+            if (channel['private']) {
+                res.send(401);
+                return;
+            }
 
             res.render(req.mobile ? 'mobile' : 'web', {
                 user: app.set('helpers').user.createPrivate(user),
@@ -39,11 +56,11 @@ module.exports = function(app) {
                 csrf: req.session._csrf,
                 errors: null
             });
-        }, function(err) {
-            if (err) {
-                app.set('log').error(err.stack);
-                res.send(500);
-            }
+        }, function (err) {
+            if (!err) return;
+
+            app.set('log').error(err.stack);
+            res.send(500);
         });
-    }
+    };
 };

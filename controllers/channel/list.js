@@ -1,24 +1,37 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
-        sync(function() {
+        sync(function () {
             var channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url']);
-            if (!channels) throw new Error('channels not found');
 
-            for (var i = 0, channelList = []; i < channels.length; i++) {
-                channelList.push({ id: channels[i].id, name: channels[i].name, url: channels[i].url, count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i].id, userId: { $nin: app.set('systemUserIds') } }) });
+            if (!channels) {
+                throw new Error('channels not found');
             }
 
-            return channelList;
-        }, function(err, channelList) {
+            return channels.map(function (channel) {
+                return {
+                    id: channel.id,
+                    name: channel.name,
+                    url: channel.url,
+                    count: app.Subscription.count.sync(app.Subscription, {
+                        channelId: channel.id,
+                        userId: { $nin: app.set('systemUserIds') }
+                    })
+                };
+            });
+        }, function (err, list) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
-            res.send(channelList);
+            res.send(list);
         });
-    }
+    };
 };

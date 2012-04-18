@@ -1,10 +1,10 @@
 var sync   = require('sync');
 var moment = require('moment');
 
-module.exports = function(app) {
+module.exports = function (app) {
     moment.lang('ru');
 
-    return function(req, res) {
+    return function (req, res) {
         var channelsPerPage = 30;
         var messagesPerPage = 300;
         var channels;
@@ -27,7 +27,7 @@ module.exports = function(app) {
         var usersArray;
         var i;
 
-        sync(function() {
+        sync(function () {
             if (!req.params.channel) {
                 channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
             } else if (req.params.channel === 'p' && req.params.monthyear && app.set('helpers').utils.isInt(parseInt(req.params.monthyear))) {
@@ -72,7 +72,7 @@ module.exports = function(app) {
                 function reduceMonthYear (key, values) {
                     var result = { count: 0 };
 
-                    values.forEach(function(value) {
+                    values.forEach(function (value) {
                         result.count += value.count;
                     });
 
@@ -128,7 +128,7 @@ module.exports = function(app) {
                 function reduceMonthYearDay (key, values) {
                     var result = { count: 0 };
 
-                    values.forEach(function(value) {
+                    values.forEach(function (value) {
                         result.count += value.count;
                     });
 
@@ -235,13 +235,17 @@ module.exports = function(app) {
                     }
                 };
             }
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
 
-            if (!result) res.send(404);
+            if (!result) {
+                res.send(404);
+                return;
+            }
 
             try {
                 res.render((req.mobile ? 'mobile' : 'web') + '/archive/' + result.type, {
@@ -256,5 +260,5 @@ module.exports = function(app) {
                 res.send(500);
             }
         });
-    }
+    };
 };

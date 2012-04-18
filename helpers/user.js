@@ -55,7 +55,7 @@ module.exports = function(app) {
                     return next();
                 }
 
-                req.haveAccess = user.role === 'R';
+                req.haveAccess = user.isSystem() && user.role === 'R';
 
                 next();
             });
