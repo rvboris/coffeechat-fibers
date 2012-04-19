@@ -3,7 +3,7 @@ var nodemailer = require('nodemailer');
 var nconf      = require('nconf');
 var moment     = require('moment');
 
-module.exports = function(app) {
+module.exports = function (app) {
     var name = 'user';
 
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
@@ -12,9 +12,14 @@ module.exports = function(app) {
     return {
         name: name,
         interval: 86400, // 1 day
-        callback: function(recipient, stop, interval) {
-            sync(function() {
-                var usersToRemove = app.User.find.sync(app.User, { '_id': { $nin: app.set('systemUserIds') }, 'stats.lastaccess': { $lte: new Date(new Date().getTime() - interval * 21 * 1000) } }, ['name', 'email']);
+        callback: function (recipient, stop, interval) {
+            sync(function () {
+                var usersToRemove = app.User.find.sync(app.User, {
+                    '_id': { $nin: app.set('systemUserIds') },
+                    'stats.lastaccess': {
+                        $lte: new Date(new Date().getTime() - interval * 21 * 1000)
+                    }
+                }, ['name', 'email']);
 
                 app.set('log').debug('%s innactive users to remove', usersToRemove.length);
 
@@ -41,7 +46,13 @@ module.exports = function(app) {
                     usersToRemove[i].remove.sync(usersToRemove[i]);
                 }
 
-                var usersToNotify = app.User.find.sync(app.User, { '_id': { $nin: app.set('systemUserIds') }, 'stats.lastaccess': { $lt: new Date(new Date().getTime() - interval * 14 * 1000) }, 'email': { $exists: true } }, ['email']);
+                var usersToNotify = app.User.find.sync(app.User, {
+                    '_id': { $nin: app.set('systemUserIds') },
+                    'stats.lastaccess': {
+                        $lt: new Date(new Date().getTime() - interval * 14 * 1000)
+                    },
+                    'email': { $exists: true }
+                }, ['email']);
 
                 app.set('log').debug('%s innactive users to notify', usersToNotify.length);
 
@@ -56,17 +67,17 @@ module.exports = function(app) {
 
                 if (app.User.count.sync(app.User, { '_id': { $nin: app.set('systemUserIds') } }) === 0) {
                     app.set('log').debug('no users');
-                    return stop();
+                    stop();
                 }
-            }, function(err) {
-                if (err) {
-                    app.set('log').error(err.stack);
-                    return stop();
-                }
+            }, function (err) {
+                if (!err) return;
+
+                app.set('log').error(err.stack);
+                stop();
             });
         },
         syncObject: {
-            start: function(recipient) {
+            start: function (recipient) {
                 app.set('tasks')[name].start(recipient);
             }
         }

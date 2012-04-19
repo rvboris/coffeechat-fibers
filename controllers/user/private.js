@@ -1,15 +1,19 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
+            res.send(401);
+            return;
+        }
 
         if (!req.body.toUser || !req.body.action) {
             app.set('log').debug('toUser or action param not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } }, ['name']);
             var fromUser = app.User.findById.sync(app.User, req.session.user.id, ['name']);
 
@@ -75,17 +79,29 @@ module.exports = function(app) {
                         toUser: { name: toUser.name }
                     });
             }
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return
             }
 
-            if (!result) return res.send(200);
-            if (result.error) return res.send(result);
-            if (result.data) return res.send(result.data);
+            if (!result) {
+                res.send(200);
+                return;
+            }
+
+            if (result.error) {
+                res.send(result);
+                return;
+            }
+
+            if (result.data) {
+                res.send(result.data);
+                return;
+            }
 
             res.send(500);
         });
-    }
+    };
 };

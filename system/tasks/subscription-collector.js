@@ -1,15 +1,15 @@
 var sync = require('sync');
 
-module.exports = function(app) {
+module.exports = function (app) {
     var name = 'collector';
 
     return {
         name: name,
         interval: 10, // 10 seconds
-        callback: function(recipient, stop, interval) {
+        callback: function (recipient, stop, interval) {
             app.set('log').debug('find outdated subscriptions');
 
-            sync(function() {
+            sync(function () {
                 if (app.Subscription.count.sync(app.Subscription, {}) === 0) return stop();
 
                 var subscriptions = app.Subscription.find.sync(app.Subscription, {
@@ -35,7 +35,9 @@ module.exports = function(app) {
                     subscriptionsChannels.push(subscriptions[i].channelId.toHexString());
 
                     if (!subscriptionsCount[subscriptions[i].channelId]) {
-                        subscriptionsCount[subscriptions[i].channelId] = app.Subscription.count.sync(app.Subscription, { channelId: subscriptions[i].channelId });
+                        subscriptionsCount[subscriptions[i].channelId] = app.Subscription.count.sync(app.Subscription, {
+                            channelId: subscriptions[i].channelId
+                        });
                     }
 
                     recipient.event('system', 'userUnsubscribe', user.id, subscriptions[i].id);
@@ -44,8 +46,8 @@ module.exports = function(app) {
                 subscriptionsChannels = app.set('helpers').channel.group(subscriptionsChannels);
 
                 for (i = 0; i < subscriptionsChannels.length; i++) {
-                    (function(i) {
-                        setTimeout(function() {
+                    (function (i) {
+                        setTimeout(function () {
                             recipient.publish('/channel/' + subscriptionsChannels[i].id + '/users', {
                                 action: 'dis',
                                 users: usersChannels[subscriptionsChannels[i].id]
@@ -67,15 +69,15 @@ module.exports = function(app) {
                 });
 
                 app.set('log').debug('%s channels in list updated', subscriptionsChannels.length);
-            }, function(err) {
-                if (err) {
-                    app.set('log').error(err.stack);
-                    return stop();
-                }
+            }, function (err) {
+                if (!err) return;
+
+                app.set('log').error(err.stack);
+                stop();
             });
         },
         syncObject: {
-            start: function(recipient) {
+            start: function (recipient) {
                 app.set('tasks')[name].start(recipient);
             }
         }

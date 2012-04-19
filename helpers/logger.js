@@ -14,39 +14,39 @@ var levels = {
 
 var level = levels.DEBUG;
 
-function log(levelStr, args) {
+function log (levelStr, args) {
     if (levels[levelStr] > level || !args[0]) return;
     var i = 1;
-    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + ( args[0].replace ? args[0].replace(/%s/g, function() { return args[i++] }) : args[0]) + '\n';
+    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + ( args[0].replace ? args[0].replace(/%s/g, function () { return args[i++] }) : args[0]) + '\n';
     process.stdout.write(msg);
 }
 
-module.exports = function(lvl) {
+module.exports = function (lvl) {
     if ('string' === typeof lvl) level = levels[lvl.toUpperCase()] || levels.DEBUG;
 
     return {
-        emergency: function(msg) {
+        emergency: function (msg) {
             log('EMERGENCY', arguments);
         },
-        alert: function(msg) {
+        alert: function (msg) {
             log('ALERT', arguments);
         },
-        critical: function(msg) {
+        critical: function (msg) {
             log('CRITICAL', arguments);
         },
-        error: function(msg) {
+        error: function (msg) {
             log('ERROR', arguments);
         },
-        warning: function(msg) {
+        warning: function (msg) {
             log('WARNING', arguments);
         },
-        notice: function(msg) {
+        notice: function (msg) {
             log('NOTICE', arguments);
         },
-        info: function(msg) {
+        info: function (msg) {
             log('INFO', arguments);
         },
-        debug: function(msg) {
+        debug: function (msg) {
             log('DEBUG', arguments);
         }
     }

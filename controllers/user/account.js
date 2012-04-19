@@ -1,12 +1,18 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
+            res.send(401);
+            return;
+        }
 
-        sync(function() {
+        sync(function () {
             var user = app.User.findById.sync(app.User, req.session.user.id);
-            if (!user) return { error: 'Пользователь не найден' };
+
+            if (!user) {
+                return { error: 'Пользователь не найден' };
+            }
 
             var pubTrigger = false;
 
@@ -48,25 +54,30 @@ module.exports = function(app) {
                     user: { name: user.name, gender: user.gender }
                 });
             }
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
-                        return res.send({ error: 'Имя не должно содержать специальные символы' });
+                        res.send({ error: 'Имя не должно содержать специальные символы' });
+                        return;
                     }
                     if (err.errors.password) {
-                        return res.send({ error: 'Пароль должен быть от 6 до 30 символов' });
+                        res.send({ error: 'Пароль должен быть от 6 до 30 символов' });
+                        return;
                     }
                     if (err.errors.email) {
-                        return res.send({ error: 'Не верный email адрес' });
+                        res.send({ error: 'Не верный email адрес' });
+                        return;
                     }
-                    return res.send({ error: 'Недопустимые данные аккаунта' });
+                    res.send({ error: 'Недопустимые данные аккаунта' });
+                    return;
                 }
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return
             }
             if (result && result.error) return res.send(result);
             res.send(200);
         });
-    }
+    };
 };

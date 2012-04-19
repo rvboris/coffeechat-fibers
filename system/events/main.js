@@ -2,21 +2,21 @@ var moment = require('moment');
 var sync   = require('sync');
 var nconf  = require('nconf');
 
-module.exports = function(app) {
+module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
 
     return {
         name: 'system',
-        userSubscribe: function(user) {
+        userSubscribe: function (user) {
             app.set('log').debug('user "%s" subscribe', user.name);
             process.send({ cmd: 'event', msg: 'userSubscribe' });
         },
-        guestSubscribe: function() {
+        guestSubscribe: function () {
             app.set('log').debug('guest subscribe');
             process.send({ cmd: 'event', msg: 'guestSubscribe' });
         },
-        userUnsubscribe: function(user, subscription) {
-            sync(function() {
+        userUnsubscribe: function (user, subscription) {
+            sync(function () {
                 var channelId = subscription.channelId.toHexString();
 
                 app.set('log').debug('subscription to remove - time: %s, current: %s, diff: %s s.', moment(subscription.time).format('mm:ss'), moment().format('mm:ss'), ((new Date() - subscription.time) / 1000));
@@ -49,12 +49,12 @@ module.exports = function(app) {
                     app.set('log').debug('remove channel "%s"', channel.name);
                     channel.remove.sync(channel);
                 }
-            }, function(err) {
+            }, function (err) {
                 if (err) app.set('log').error(err.stack);
             });
         },
-        userConnect: function(user, message) {
-            sync(function() {
+        userConnect: function (user, message) {
+            sync(function () {
                 var subscriptions = app.Subscription.find.sync(app.Subscription, {
                     userId: user.id,
                     channelId: {
@@ -70,35 +70,47 @@ module.exports = function(app) {
                 user.stats.fulltime += Math.round((new Date().getTime() - user.stats.lastaccess.getTime()) / 1000);
                 user.stats.lastaccess = new Date();
                 user.save.sync(user);
+            }, function (err) {
+                if (err) {
+                    app.set('log').error(err.stack);
+                    return;
+                }
 
-            }, function(err) {
-                if (err) return app.set('log').error(err.stack);
                 app.set('log').debug('"%s" user subscriptions updated', user.name);
                 process.send({ cmd: 'event', msg: 'userConnect' });
             });
         },
-        userSend: function(user, channel, message) {
+        userSend: function (user, channel, message) {
             app.set('log').debug('user "%s" send message', user.name);
 
-            sync(function() {
+            sync(function () {
                 if (!channel['private'] && !user.isSystem()) {
                     app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
                         id: message.id,
                         userId: user.id,
                         text: message.text
                     });
+                    app.set('log').debug('add message ID %s to ES index', message.id);
                 }
-            }, function(err) {
-                if (err) return app.set('log').error(err.stack);
+            }, function (err) {
+                if (err) {
+                    app.set('log').error(err.stack);
+                    return;
+                }
+
                 process.send({ cmd: 'event', msg: 'sendMessage' });
             });
         },
         syncObject: {
-            userUnsubscribe: function(userId, subscriptionId) {
-                sync(function() {
+            userUnsubscribe: function (userId, subscriptionId) {
+                sync(function () {
                     app.set('events').emit('userUnsubscribe', app.User.findById.future(app.User, userId).result, app.Subscription.findById.future(app.Subscription, subscriptionId).result);
-                }, function(err) {
-                    if (err) return app.set('log').error(err.stack);
+                }, function (err) {
+                    if (err) {
+                        app.set('log').error(err.stack);
+                        return;
+                    }
+
                     process.send({ cmd: 'event', msg: 'userUnsubscribe' });
                 });
             }

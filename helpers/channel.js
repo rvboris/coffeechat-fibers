@@ -1,8 +1,8 @@
 var sync = require('sync');
 
-module.exports = function(app) {
+module.exports = function (app) {
     return {
-        create: function(params) {
+        create: function (params) {
             var channel = app.Channel.findOne.sync(app.Channel, { name: params.name });
 
             if (channel) {
@@ -20,7 +20,7 @@ module.exports = function(app) {
 
             return channel;
         }.async(),
-        subscribe: function(user, channelId) {
+        subscribe: function (user, channelId) {
             var channel = app.Channel.findById.sync(app.Channel, channelId);
             var subscription = app.Subscription.findOne.sync(app.Subscription, { userId: user.id, channelId: channelId });
 
@@ -59,17 +59,17 @@ module.exports = function(app) {
 
             return { channel: channel, subscription: newSubscription, update: false };
         }.async(),
-        getChannelObjects: function(channels) {
+        getChannelObjects: function (channels) {
             for (var i = 0, channelObjects = {}; i < channels.length; i++) {
                 channelObjects[channels[i].name] = app.Channel.findById.sync(app.Channel, channels[i].channelId);
                 channelObjects[channels[i].name].params = channels[i];
             }
             return channelObjects;
         }.async(),
-        getToken: function(message) {
+        getToken: function (message) {
             return message.token ? message.token : message.data && message.data.token ? message.data.token : false;
         },
-        group: function(original) {
+        group: function (original) {
             var grouped = [];
             var copy = original.slice(0);
 
@@ -90,5 +90,5 @@ module.exports = function(app) {
             }
             return grouped;
         }
-    }
+    };
 };

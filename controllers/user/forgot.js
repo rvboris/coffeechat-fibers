@@ -6,30 +6,36 @@ var nodemailer = require('nodemailer');
 var check      = require('validator').check;
 var nconf      = require('nconf');
 
-module.exports = function(app) {
+module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
     nodemailer.SMTP = nconf.get('smtp');
 
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
         if (!req.body.user) {
             app.set('log').debug('invalid user');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
         if (!req.body.user.email) {
             app.set('log').debug('email not found');
-            return res.send({ error: 'Вы не ввели email адрес' });
+            res.send({ error: 'Вы не ввели email адрес' });
+            return;
         }
 
         try {
             check(req.body.user.email).isEmail();
         } catch (e) {
-            return res.send({ error: 'Не верный email адрес' });
+            res.send({ error: 'Не верный email адрес' });
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var user = app.User.findOne.sync(app.User, { email: req.body.user.email, '_id': { $nin: app.set('systemUserIds') } });
 
             if (!user) {
@@ -57,21 +63,24 @@ module.exports = function(app) {
             }
 
             return false;
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
 
             if (result) {
                 if (result.error) {
-                    return res.send(result);
+                    res.send(result);
+                    return;
                 } else {
-                    return res.send(200);
+                    res.send(200);
+                    return;
                 }
             }
 
             res.send(500);
         });
-    }
+    };
 };
