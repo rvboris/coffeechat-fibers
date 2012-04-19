@@ -1,14 +1,19 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
+            res.send(401);
+            return;
+        }
 
-        sync(function() {
+        sync(function () {
             var user = app.User.findById.sync(app.User, req.session.user.id);
+
             if (!user) {
                 app.set('log').debug('user not found');
-                return res.send(404);
+                res.send(404);
+                return;
             }
 
             if (req.body.user) {
@@ -50,10 +55,11 @@ module.exports = function(app) {
             app.set('log').debug('user settings saved');
 
             res.send(user.settings);
-        }, function(err) {
+        }, function (err) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
-                    return res.send({ error: 'Недопустимые данные настроек' });
+                    res.send({ error: 'Недопустимые данные настроек' });
+                    return;
                 }
                 app.set('log').error(err.stack);
                 res.send(500);

@@ -1,11 +1,11 @@
-module.exports = function(app) {
+module.exports = function (app) {
     app.use(app.router);
 
-    app.use(function(req, res) {
+    app.use(function (req, res) {
         res.send(404);
     });
 
-    app.error(function(err) {
+    app.error(function (err) {
         app.set('log').critical(err.stack);
         process.exit(1);
     });
@@ -15,7 +15,7 @@ module.exports = function(app) {
         var httpProxy = require('http-proxy');
         var proxy = new httpProxy.RoutingProxy();
 
-        app.get(/\.[js|css|gif|png|jpg|mp3|ogg|eot|svg|ttf|woff|swf|ico]+$/, function(req, res) {
+        app.get(/\.[js|css|gif|png|jpg|mp3|ogg|eot|svg|ttf|woff|swf|ico]+$/, function (req, res) {
             proxy.proxyRequest(req, res, {
                 host: '127.0.0.1',
                 port: 4000

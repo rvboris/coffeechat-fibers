@@ -1,28 +1,41 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
+            res.send(401);
+            return;
+        }
 
         if (!req.body.status) {
             app.set('log').debug('status param not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
-        sync(function() {
+        sync(function () {
             var user = app.User.findById.sync(app.User, req.session.user.id);
+
             if (!user) {
                 app.set('log').debug('user not found');
-                return res.send(404);
+                res.send(404);
+                return;
             }
 
             user.status = req.body.status;
             user.save.sync(user);
 
-            if (user.isSystem()) return res.send(200);
+            if (user.isSystem()) {
+                res.send(200);
+                return;
+            }
 
             var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: user.id }, ['channelId']);
-            if (!subscriptions) return res.send(200);
+
+            if (!subscriptions) {
+                res.send(200);
+                return;
+            }
 
             for (var i = 0; i < subscriptions.length; i++) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {
@@ -33,10 +46,11 @@ module.exports = function(app) {
             }
 
             res.send(200);
-        }, function(err) {
+        }, function (err) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
-                    return res.send({ error: 'Недопустимые данные статуса' });
+                    res.send({ error: 'Недопустимые данные статуса' });
+                    return;
                 }
                 app.set('log').error(err.stack);
                 res.send(500);

@@ -14,7 +14,7 @@ function flatten (array) {
     return flat;
 }
 
-module.exports = function(systemPath, pluginsPath, mask) {
+module.exports = function (systemPath, pluginsPath, mask) {
     var files = file.walk.sync(file, systemPath);
     var plugins = fs.readdir.sync(fs, pluginsPath);
     var result = [];

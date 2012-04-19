@@ -1,18 +1,22 @@
 var sync = require('sync');
 
-module.exports = function(app) {
-    return function(req, res) {
-        if (!req.isXMLHttpRequest) return res.send(401);
+module.exports = function (app) {
+    return function (req, res) {
+        if (!req.isXMLHttpRequest) {
+            res.send(401);
+            return;
+        }
 
         if (!req.body.user || !req.body.channels) {
             app.set('log').debug('user or channels not found');
-            return res.send(404);
+            res.send(404);
+            return;
         }
 
         var auth = req.body.user;
         var channels = req.body.channels;
 
-        sync(function() {
+        sync(function () {
             var user;
             var result;
 
@@ -29,7 +33,7 @@ module.exports = function(app) {
                 }
             }
 
-            user = app.User.findOne.sync(app.User, { name: auth.name /*, '_id': { $nin: app.set('systemUserIds') } */ });
+            user = app.User.findOne.sync(app.User, { name: auth.name });
 
             if (user) {
                 if (!user.authenticate(auth.password)) {
@@ -43,6 +47,7 @@ module.exports = function(app) {
 
                 user = new app.User({ name: auth.name, secret: auth.password });
                 user.save.sync(user);
+
                 app.set('syncServer').task('user', 'start');
                 app.set('log').debug('new user is saved');
             }
@@ -57,7 +62,10 @@ module.exports = function(app) {
                     newSubscriptions.push({
                         id: channels[i],
                         diff: 1,
-                        count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i], userId: { $nin: app.set('systemUserIds') } })
+                        count: app.Subscription.count.sync(app.Subscription, {
+                            channelId: channels[i],
+                            userId: { $nin: app.set('systemUserIds') }
+                        })
                     });
                     if (!userChannels[channels[i]]) userChannels[channels[i]] = [];
                     userChannels[channels[i]].push({ name: user.name, gender: user.gender, status: user.status });
@@ -65,28 +73,38 @@ module.exports = function(app) {
             }
 
             return { user: user, newSubscriptions: newSubscriptions, userChannels: userChannels };
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
-                        return res.send({ error: 'Имя должно быть от 3 до 15 знаков. Допускаются только русские и латинские буквы и цифры.' });
+                        res.send({ error: 'Имя должно быть от 3 до 15 знаков. Допускаются только русские и латинские буквы и цифры.' });
+                        return;
                     }
                     if (err.errors.password) {
-                        return res.send({ error: 'Пароль должен быть от 6 до 30 символов' });
+                        res.send({ error: 'Пароль должен быть от 6 до 30 символов' });
+                        return;
                     }
-                    return res.send({ error: 'Недопустимые данные для входа/регистрации' });
+                    res.send({ error: 'Недопустимые данные для входа/регистрации' });
+                    return;
                 }
 
                 app.set('log').error(err.stack);
-                return res.send(500);
+                res.send(500);
+                return;
             }
 
-            if (!result) return res.send(500);
+            if (!result) {
+                res.send(500);
+                return;
+            }
 
-            if (result.error) return res.send(result);
+            if (result.error) {
+                res.send(result);
+                return;
+            }
 
             if (result.newSubscriptions) {
-                setTimeout(function() {
+                setTimeout(function () {
                     app.set('faye').bayeux.getClient().publish('/channel-list', {
                         token: app.set('serverToken'),
                         action: 'upd',
@@ -95,8 +113,8 @@ module.exports = function(app) {
                 }, 100);
 
                 for (var i = 0; i < result.newSubscriptions.length; i++) {
-                    (function(i) {
-                        setTimeout(function() {
+                    (function (i) {
+                        setTimeout(function () {
                             app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
                                 token: app.set('serverToken'),
                                 action: 'con',
@@ -107,9 +125,12 @@ module.exports = function(app) {
                 }
             }
 
-            if (result.user) return res.send(app.set('helpers').user.createPrivate(result.user));
+            if (result.user) {
+                res.send(app.set('helpers').user.createPrivate(result.user));
+                return;
+            }
 
             res.send(500);
         });
-    }
+    };
 };

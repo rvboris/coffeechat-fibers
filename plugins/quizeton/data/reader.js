@@ -1,7 +1,7 @@
 var fs   = require('fs');
 var sync = require('sync');
 
-module.exports = function(filename, bufferSize) {
+module.exports = function (filename, bufferSize) {
     if (!bufferSize) bufferSize = 1024;
 
     function random (from, to) {
@@ -10,7 +10,7 @@ module.exports = function(filename, bufferSize) {
 
     var fileSize = 0;
 
-    var readQuizLine = function() {
+    var readQuizLine = function () {
         if (fileSize == 0) fileSize = fs.stat.sync(fs, filename).size;
         var fd = fs.open.sync(fs, filename, 'r');
         var line = null;
@@ -23,7 +23,7 @@ module.exports = function(filename, bufferSize) {
     }.async();
 
     return {
-        getQuiz: function() {
+        getQuiz: function () {
             var line = readQuizLine.sync(this);
             var splitter = line.lastIndexOf('|');
             return {
