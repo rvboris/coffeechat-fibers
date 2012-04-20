@@ -25,11 +25,6 @@ module.exports = function (app) {
     }
 
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.token || !req.body.channels) {
             app.set('log').debug('token or channels not found');
             return { error: 'Ошибка получения данных' };

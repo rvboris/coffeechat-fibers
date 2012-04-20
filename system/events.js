@@ -4,7 +4,11 @@ var eventer = new events.EventEmitter();
 var path    = require('path');
 
 module.exports = function (app) {
-    var eventFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/events'), path.normalize(__dirname + '/../plugins'), /(events\/|\/events.js)/);
+    var eventFiles = app.set('helpers').plugins.sync(
+        app.set('helpers').plugins,
+        path.normalize(__dirname + '/events'),
+        path.normalize(__dirname + '/../plugins'), /(events\/|\/events.js)/);
+
     var events = [];
 
     for (var i = 0; i < eventFiles.length; i++) {

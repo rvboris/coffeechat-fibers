@@ -2,11 +2,6 @@ var aes = require('../../helpers/aes.js');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.haveAccess) {
-            res.send(403);
-            return;
-        }
-
         res.render('admin/index', {
             env: app.set('argv').env,
             csrf: req.session._csrf,

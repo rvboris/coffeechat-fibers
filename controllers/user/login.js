@@ -2,11 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.user || !req.body.channels) {
             app.set('log').debug('user or channels not found');
             res.send(404);
@@ -20,17 +15,14 @@ module.exports = function (app) {
             var user;
             var result;
 
-            if (req.session.user && req.session.user.id !== '0') {
-                user = app.User.findById.sync(app.User, req.session.user.id);
-                if (user) {
-                    app.set('faye').bayeux.getClient().publish('/user/' + user.id, {
-                        token: app.set('serverToken'),
-                        action: 're-entry'
-                    });
-                    return {
-                        error: 'Вы уже вошли под именем "' + user.name + '", закройте предыдущую сессию'
-                    };
-                }
+            if (req.user.id !== '0') {
+                app.set('faye').bayeux.getClient().publish('/user/' + req.user.id, {
+                    token: app.set('serverToken'),
+                    action: 're-entry'
+                });
+                return {
+                    error: 'Вы уже вошли под именем "' + req.user.name + '", закройте предыдущую сессию'
+                };
             }
 
             user = app.User.findOne.sync(app.User, { name: auth.name });

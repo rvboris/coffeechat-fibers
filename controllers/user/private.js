@@ -2,11 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.toUser || !req.body.action) {
             app.set('log').debug('toUser or action param not found');
             res.send(404);
@@ -14,14 +9,16 @@ module.exports = function (app) {
         }
 
         sync(function () {
-            var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } }, ['name']);
-            var fromUser = app.User.findById.sync(app.User, req.session.user.id, ['name']);
+            var toUser = app.User.findOne.sync(app.User, {
+                name: req.body.toUser,
+                '_id': { $nin: app.set('systemUserIds') }
+            }, ['name']);
 
-            if (fromUser.isSystem()) return;
+            if (req.user.isSystem()) return;
 
             switch (req.body.action) {
                 case 'request':
-                    var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: fromUser.id }, ['channelId']);
+                    var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
                     for (var i = 0; i < subscriptions.length; i++) {
                         var channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId, ['name', 'url', 'private']);
                         if (!channel || !channel['private']) continue;
@@ -30,7 +27,7 @@ module.exports = function (app) {
                         app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
                             token: app.set('serverToken'),
                             action: 'private.reopen',
-                            fromUser: { name: fromUser.name },
+                            fromUser: { name: req.user.name },
                             toUser: { name: toUser.name },
                             privateChannel: {
                                 id: channel.id,
@@ -43,7 +40,7 @@ module.exports = function (app) {
                     app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
                         token: app.set('serverToken'),
                         action: 'private.request',
-                        fromUser: { name: fromUser.name },
+                        fromUser: { name: req.user.name },
                         toUser: { name: toUser.name }
                     });
                     break;
@@ -62,7 +59,7 @@ module.exports = function (app) {
                     app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
                         token: app.set('serverToken'),
                         action: 'private.yes',
-                        fromUser: { name: fromUser.name },
+                        fromUser: { name: req.user.name },
                         toUser: { name: toUser.name },
                         privateChannel: {
                             id: channel.id,
@@ -75,7 +72,7 @@ module.exports = function (app) {
                     app.set('faye').bayeux.getClient().publish('/user/' + toUser.id, {
                         token: app.set('serverToken'),
                         action: 'private.no',
-                        fromUser: { name: fromUser.name },
+                        fromUser: { name: req.user.name },
                         toUser: { name: toUser.name }
                     });
             }

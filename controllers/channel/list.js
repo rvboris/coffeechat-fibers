@@ -2,11 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
         sync(function () {
             var channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url']);
 

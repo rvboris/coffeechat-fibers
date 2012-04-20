@@ -9,11 +9,6 @@ module.exports = function (app) {
     var messagesPerPage = nconf.get('admin').messagesPerPage;
 
     return function (req, res) {
-        if (!req.haveAccess) {
-            res.send(403);
-            return;
-        }
-
         sync(function () {
             var params = {
                 query: req.params.text || '*',

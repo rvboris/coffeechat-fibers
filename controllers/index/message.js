@@ -5,12 +5,6 @@ module.exports = function (app) {
     moment.lang('ru');
 
     return function (req, res) {
-        if (!req.params.message) {
-            app.set('log').debug('message param not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
             var message = app.Message.findById.sync(app.Message, req.params.message, ['time', 'text', 'userId']);
 

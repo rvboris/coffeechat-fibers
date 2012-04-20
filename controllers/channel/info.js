@@ -2,20 +2,9 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
-            res.send(401);
-            return;
-        }
-
-        if (!req.params.channel) {
-            app.set('log').debug('channel param not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
             var subsription = app.Subscription.count.sync(app.Subscription, {
-                userId: req.session.user.id,
+                userId: req.user.id,
                 channelId: req.params.channel
             });
 

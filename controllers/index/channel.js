@@ -2,25 +2,7 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.params.channel) {
-            app.set('log').debug('channel param not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
-            var user;
-
-            if (req.session.user.id !== '0') {
-                user = app.User.findById.sync(app.User, req.session.user.id)
-            } else {
-                user = req.session.user;
-            }
-
-            if (!user) {
-                throw new Error('user not found');
-            }
-
             var channel = app.Channel.findOne.sync(app.Channel, {
                 url: req.params.channel
             }, ['name', 'url', 'private']);
@@ -37,7 +19,7 @@ module.exports = function (app) {
             }
 
             res.render(req.mobile ? 'mobile' : 'web', {
-                user: app.set('helpers').user.createPrivate(user),
+                user: app.set('helpers').user.createPrivate(req.user),
                 channels: {
                     main: {
                         id: app.set('channels').main.id,

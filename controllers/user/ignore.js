@@ -2,11 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.toUser || !req.body.action) {
             app.set('log').debug('toUser or action param not found');
             res.send(404);
@@ -15,16 +10,15 @@ module.exports = function (app) {
 
         sync(function () {
             var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } });
-            var fromUser = app.User.findById.sync(app.User, req.session.user.id);
 
-            if (fromUser.isSystem()) return;
+            if (req.user.isSystem()) return;
 
-            var idx = fromUser.ignore.indexOf(toUser.name);
+            var idx = req.user.ignore.indexOf(toUser.name);
 
             if (req.body.action === 'add') {
                 if (idx < 0) {
-                    fromUser.ignore.push(toUser.name);
-                    fromUser.save.sync(fromUser);
+                    req.user.ignore.push(toUser.name);
+                    req.user.save.sync(req.user);
                     app.set('log').debug('user ignored');
                 } else {
                     app.set('log').debug('user alredy ignored');
@@ -33,12 +27,12 @@ module.exports = function (app) {
                 if (idx < 0) {
                     app.set('log').debug('user not ingored');
                 } else {
-                    fromUser.ignore = fromUser.ignore.splice(idx, 1);
-                    fromUser.save.sync(fromUser);
+                    req.user.ignore = req.user.ignore.splice(idx, 1);
+                    req.user.save.sync(req.user);
                 }
             }
 
-            return fromUser.ignore;
+            return req.user.ignore;
         }, function (err, result) {
             if (err) {
                 app.set('log').error(err.stack);

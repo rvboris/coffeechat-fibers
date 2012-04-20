@@ -11,11 +11,6 @@ module.exports = function (app) {
     nodemailer.SMTP = nconf.get('smtp');
 
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.user) {
             app.set('log').debug('invalid user');
             res.send(404);
