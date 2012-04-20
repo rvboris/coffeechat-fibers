@@ -1,11 +1,11 @@
 var aes  = require('../helpers/aes.js');
 var sync = require('sync');
 
-module.exports = function(app) {
+module.exports = function (app) {
     app.set('log').debug('bayeux core loaded');
 
     return {
-        incoming: function(message, callback) {
+        incoming: function (message, callback) {
             var token = app.set('helpers').channel.getToken(message);
             var currentTime = new Date();
 
@@ -15,12 +15,14 @@ module.exports = function(app) {
                     case '/meta/handshake':
                     case '/meta/connect':
                     case '/meta/disconnect':
-                        return callback(message);
+                        callback(message);
+                        return;
                 }
                 // Other require token
                 message.error = 'Доступ запрещен';
                 app.set('log').debug('access denied');
-                return callback(message);
+                callback(message);
+                return;
             }
 
             if (message.token) delete message.token;
@@ -35,10 +37,11 @@ module.exports = function(app) {
                     message.data.time = currentTime;
                 }
 
-                return callback(message);
+                callback(message);
+                return;
             }
 
-            sync(function() {
+            sync(function () {
                 var matches;
                 var channel;
 
@@ -49,7 +52,8 @@ module.exports = function(app) {
                     // Send message
                     if (message.data) {
                         app.set('log').debug('guests can not send messages');
-                        return message.error = 'Гости не могут отправлять сообщения';
+                        message.error = 'Гости не могут отправлять сообщения';
+                        return;
                     }
 
                     // Subscribe
@@ -64,19 +68,22 @@ module.exports = function(app) {
 
                         if (matches === null || matches.length < 2) {
                             app.set('log').debug('unknown channel');
-                            return message.error = 'Комната не найдена';
+                            message.error = 'Комната не найдена';
+                            return;
                         }
 
                         channel = app.Channel.findById.sync(app.Channel, matches[1]);
 
                         if (!channel) {
                             app.set('log').debug('channel not found');
-                            return message.error = 'Комната не найдена';
+                            message.error = 'Комната не найдена';
+                            return;
                         }
 
                         if (channel['private']) {
                             app.set('log').debug('guests have access only to the main chat');
-                            return message.error = 'Гости имеют доступ только к публичным комнатам';
+                            message.error = 'Гости имеют доступ только к публичным комнатам';
+                            return;
                         }
 
                         app.set('events').emit('guestSubscribe', message);
@@ -86,7 +93,8 @@ module.exports = function(app) {
 
                     if (!user) {
                         app.set('log').debug('invalid user token "%s"', token);
-                        return message.error = 'Ключ не верный';
+                        message.error = 'Ключ не верный';
+                        return;
                     }
 
                     app.set('log').debug('user login through the token');
@@ -100,22 +108,28 @@ module.exports = function(app) {
 
                         if (matches === null || matches.length < 2) {
                             app.set('log').debug('unknown channel');
-                            return message.error = 'Комната не найдена';
+                            message.error = 'Комната не найдена';
+                            return;
                         }
 
                         channelId = matches[1];
-                        subscription = app.Subscription.count.sync(app.Subscription, { userId: token, channelId: channelId });
+                        subscription = app.Subscription.count.sync(app.Subscription, {
+                            userId: token,
+                            channelId: channelId
+                        });
 
                         if (subscription === 0) {
                             app.set('log').debug('not subscribe on this channel');
-                            return message.error = 'Доступ запрещен';
+                            message.error = 'Доступ запрещен';
+                            return;
                         }
 
                         channel = app.Channel.findById.sync(app.Channel, channelId, ['url', 'private']);
 
                         if (!channel) {
                             app.set('log').debug('channel not found');
-                            return message.error = 'Ошибка отправки, комната не найдена';
+                            message.error = 'Ошибка отправки, комната не найдена';
+                            return;
                         }
 
                         if (message.data.action) {
@@ -124,7 +138,8 @@ module.exports = function(app) {
                                     matches = message.channel.match(/(?:^\/channel\/)([0-9a-z]+)(?:\/private)$/);
                                     if (!channel['private'] || matches === null || matches.length < 2) {
                                         app.set('log').debug('type action on public channel');
-                                        return message.error = 'Ошибка отправки';
+                                        message.error = 'Ошибка отправки';
+                                        return;
                                     }
                                     message.data.name = user.name;
                             }
@@ -133,14 +148,16 @@ module.exports = function(app) {
 
                         if (!message.data.text) {
                             app.set('log').debug('message is empty');
-                            return message.error = 'Ошибка отправки, сообщение пустое';
+                            message.error = 'Ошибка отправки, сообщение пустое';
+                            return;
                         }
 
                         try {
                             var decodedText = aes.dec(message.data.text, app.set('serverKey') + user.id);
                         } catch (e) {
                             app.set('log').debug('message decoding error');
-                            return message.error = 'Ошибка декодирования сообщения';
+                            message.error = 'Ошибка декодирования сообщения';
+                            return;
                         }
 
                         if (!user.isSystem()) {
@@ -148,7 +165,8 @@ module.exports = function(app) {
                             var lastMessage = query.execFind.sync(query);
 
                             if (lastMessage.length > 0 && new Date().getTime() - lastMessage[0].time.getTime() <= 3000) {
-                                return message.error = 'Сообщения можно отправлять не чаще чем раз в 3 секунды';
+                                message.error = 'Сообщения можно отправлять не чаще чем раз в 3 секунды';
+                                return;
                             }
                         }
 
@@ -172,7 +190,8 @@ module.exports = function(app) {
 
                             if (users.length !== message.data.to.length) {
                                 app.set('log').debug('users in the message is not found');
-                                return message.error = 'Кому вы отправляете?';
+                                message.error = 'Кому вы отправляете?';
+                                return;
                             }
                         }
 
@@ -194,7 +213,8 @@ module.exports = function(app) {
                         message.data.name = user.isSystem() ? '$' : user.name;
                         message.data.time = currentTime;
 
-                        return app.set('events').emit('userSend', user, channel, msg);
+                        app.set('events').emit('userSend', user, channel, msg);
+                        return;
                     }
 
                     // Subscribe
@@ -211,27 +231,36 @@ module.exports = function(app) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
                             if (matches === null || matches.length < 2) {
                                 app.set('log').debug('unknown channel');
-                                return message.error = 'Комната не найдена';
+                                message.error = 'Комната не найдена';
+                                return;
                             }
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
                             if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
                                 if (!channel || !channel['private']) {
                                     app.set('log').debug('try to subscribe to private sub channel of public or not exists channel');
-                                    return message.error = 'Ошибка подписки';
+                                    message.error = 'Ошибка подписки';
+                                    return;
                                 }
                             }
                             return;
                         }
 
                         var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, matches[1]);
-                        if (result.error) return message.error = result.error;
+
+                        if (result.error) {
+                            message.error = result.error;
+                            return;
+                        }
 
                         if (!result.update && !user.isSystem()) {
-                            var subscriptionsCount = app.Subscription.count.sync(app.Subscription, { channelId: matches[1], userId: { $nin: app.set('systemUserIds') } });
+                            var subscriptionsCount = app.Subscription.count.sync(app.Subscription, {
+                                channelId: matches[1],
+                                userId: { $nin: app.set('systemUserIds') }
+                            });
 
                             // Execute on other thread (double send bug)
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 app.set('faye').bayeux.getClient().publish('/channel-list', {
                                     token: app.set('serverToken'),
                                     action: 'upd',
@@ -254,7 +283,8 @@ module.exports = function(app) {
                             }, 100);
                         }
 
-                        return app.set('events').emit('userSubscribe', user, result.channel, result.subscription);
+                        app.set('events').emit('userSubscribe', user, result.channel, result.subscription);
+                        return;
                     }
 
                     // Unsubscribe
@@ -271,14 +301,16 @@ module.exports = function(app) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
                             if (matches === null || matches.length < 2) {
                                 app.set('log').debug('unknown channel');
-                                return message.error = 'Комната не найдена';
+                                message.error = 'Комната не найдена';
+                                return;
                             }
                             matches = message.subscription.match(/(?:^\/(channel)\/)([0-9a-z]+)(?:\/private)$/);
                             if (matches !== null && matches.length >= 2) {
                                 channel = app.Channel.findById.sync(app.Channel, matches[2]);
                                 if (!channel || !channel['private']) {
                                     app.set('log').debug('try to unsubscribe from private sub channel of public or not exists channel');
-                                    return message.error = 'Ошибка отписки';
+                                    message.error = 'Ошибка отписки';
+                                    return;
                                 }
                             }
                             return;
@@ -286,11 +318,15 @@ module.exports = function(app) {
 
                         channelId = matches[1];
 
-                        subscription = app.Subscription.findOne.sync(app.Subscription, { channelId: channelId, userId: user.id });
+                        subscription = app.Subscription.findOne.sync(app.Subscription, {
+                            channelId: channelId,
+                            userId: user.id
+                        });
 
                         if (!subscription) {
                             app.set('log').debug('subscription not found');
-                            return message.error = 'Комната не найдена';
+                            message.error = 'Комната не найдена';
+                            return;
                         }
 
                         app.set('events').emit('userUnsubscribe', user, subscription);
@@ -303,7 +339,10 @@ module.exports = function(app) {
                                     {
                                         id: subscription.channelId.toHexString(),
                                         diff: -1,
-                                        count: app.Subscription.count.sync(app.Subscription, { channelId: subscription.channelId, userId: { $nin: app.set('systemUserIds') } })
+                                        count: app.Subscription.count.sync(app.Subscription, {
+                                            channelId: subscription.channelId,
+                                            userId: { $nin: app.set('systemUserIds') }
+                                        })
                                     }
                                 ]
                             });
@@ -313,7 +352,7 @@ module.exports = function(app) {
 
                         if (!user.isSystem()) {
                             // Execute on other thread (double send bug)
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
                                     token: app.set('serverToken'),
                                     action: 'dis',
@@ -334,11 +373,10 @@ module.exports = function(app) {
                         if (!message.activeChannels || message.activeChannels.length === 0) return;
 
                         app.set('syncServer').task('collector', 'start');
-
-                        return app.set('events').emit('userConnect', user, message);
+                        app.set('events').emit('userConnect', user, message);
                     }
                 }
-            }, function(err) {
+            }, function (err) {
                 if (err) {
                     if (err.name && err.name === 'ValidationError') {
                         if (err.errors.text) {

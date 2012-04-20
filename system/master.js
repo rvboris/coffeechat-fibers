@@ -13,14 +13,14 @@ var app       = express.createServer();
 var aes       = require('../helpers/aes.js');
 var task      = require('./task.js');
 
-module.exports = function(argv) {
-    sync(function() {
-        var Loader = function() {
+module.exports = function (argv) {
+    sync(function () {
+        var Loader = function () {
             this.preInit();
             return this.init();
         };
 
-        Loader.prototype.preInit = function() {
+        Loader.prototype.preInit = function () {
             app.set('argv', argv);
             app.set('salt', bcrypt.genSaltSync(10));
             app.set('serverToken', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
@@ -32,7 +32,7 @@ module.exports = function(argv) {
             nconf.use('file', { file: __dirname + '/../config/' + app.set('argv').env + '.json' });
         };
 
-        Loader.prototype.init = function() {
+        Loader.prototype.init = function () {
             switch (app.set('argv').env) {
                 case 'production':
                     app.set('log', logger('INFO'));
@@ -47,7 +47,7 @@ module.exports = function(argv) {
             this.mongo();
             this.helpers();
 
-            function isOpen(port) {
+            function isOpen (port) {
                 var isClosed = app.set('helpers').utils.checkPort.sync(app.set('helpers').utils, port, nconf.get('hostname'));
                 if (isClosed) {
                     app.set('log').critical('port %s in use', port);
@@ -62,16 +62,16 @@ module.exports = function(argv) {
             return this.plugins();
         };
 
-        Loader.prototype.exceptions = function() {
+        Loader.prototype.exceptions = function () {
             app.set('log').debug('handle exceptions');
             app.use(express.errorHandler({ dumpExceptions: true }));
-            process.on('uncaughtException', function(err) {
+            process.on('uncaughtException', function (err) {
                 app.set('log').error(err.stack);
                 process.exit(1);
             });
         };
 
-        Loader.prototype.mongo = function() {
+        Loader.prototype.mongo = function () {
             app.set('log').debug('setup mongo');
 
             mongoose.connect(nconf.get('mongodb'));
@@ -93,8 +93,9 @@ module.exports = function(argv) {
             app.Subscription.remove.sync(app.Subscription, {});
         };
 
-        Loader.prototype.helpers = function() {
+        Loader.prototype.helpers = function () {
             app.set('log').debug('setup helpers');
+
             app.set('helpers', {
                 channel: require('../helpers/channel.js')(app),
                 user: require('../helpers/user.js')(app),
@@ -104,11 +105,29 @@ module.exports = function(argv) {
             });
         };
 
-        Loader.prototype.plugins = function() {
+        Loader.prototype.plugins = function () {
             app.set('log').debug('setup plugins');
-            var taskFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/tasks'), path.normalize(__dirname + '/../plugins'), /(tasks\/|\/tasks.js)/);
-            var channelFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/channels'), path.normalize(__dirname + '/../plugins'), /(channels\/|\/channel.js)/);
-            var userFiles = app.set('helpers').plugins.sync(app.set('helpers').plugins, path.normalize(__dirname + '/users'), path.normalize(__dirname + '/../plugins'), /(users\/|\/user.js)/);
+
+            var taskFiles = app.set('helpers').plugins.sync(
+                app.set('helpers').plugins,
+                path.normalize(__dirname + '/tasks'),
+                path.normalize(__dirname + '/../plugins'),
+                /(tasks\/|\/tasks.js)/
+            );
+
+            var channelFiles = app.set('helpers').plugins.sync(
+                app.set('helpers').plugins,
+                path.normalize(__dirname + '/channels'),
+                path.normalize(__dirname + '/../plugins'),
+                /(channels\/|\/channel.js)/
+            );
+
+            var userFiles = app.set('helpers').plugins.sync(
+                app.set('helpers').plugins,
+                path.normalize(__dirname + '/users'),
+                path.normalize(__dirname + '/../plugins'),
+                /(users\/|\/user.js)/
+            );
 
             app.set('tasks', []);
 
@@ -121,7 +140,11 @@ module.exports = function(argv) {
 
             for (i = 0; i < userFiles.length; i++) {
                 users.push(require(userFiles[i]));
-                users[i].userId = app.set('helpers').user.create.sync(app.set('helpers').user, users[i].name, users[i].password, users[i].role || 'U').id;
+                users[i].userId = app.set('helpers').user.create.sync(
+                    app.set('helpers').user,
+                    users[i].name,
+                    users[i].password,
+                    users[i].role || 'U').id;
             }
 
             app.set('users', app.set('helpers').user.getUserObjects.sync(app.set('helpers').user, users));
@@ -149,61 +172,64 @@ module.exports = function(argv) {
         };
 
         return new Loader();
-    }, function(err, plugins) {
-        if (err) return console.log(err.stack);
+    }, function (err, plugins) {
+        if (err) {
+            console.log(err.stack);
+            return;
+        }
 
         var clients = [];
 
-        dnode(function(client, conn) {
-            conn.on('ready', function() {
+        dnode(function (client, conn) {
+            conn.on('ready', function () {
                 clients[conn.id] = client;
                 app.set('log').debug('client connected');
             });
 
-            conn.on('end', function() {
+            conn.on('end', function () {
                 delete clients[conn.id];
                 app.set('log').debug('client disconnected');
             });
 
             this.keys = {
-                getServerToken: function(tKey, callback) {
+                getServerToken: function (tKey, callback) {
                     callback(aes.enc(app.set('serverToken'), tKey));
                 },
-                getServerKey: function(tKey, callback) {
+                getServerKey: function (tKey, callback) {
                     callback(aes.enc(app.set('serverKey'), tKey));
                 },
-                getSessionKey: function(tKey, callback) {
+                getSessionKey: function (tKey, callback) {
                     callback(aes.enc(app.set('sessionKey'), tKey));
                 }
             };
 
-            this.getChannels = function(callback) {
+            this.getChannels = function (callback) {
                 callback(plugins.channels);
             };
 
-            this.getUsers = function(callback) {
+            this.getUsers = function (callback) {
                 callback(plugins.users);
             };
 
-            this.task = function(plugin, command) {
+            this.task = function (plugin, command) {
                 var args = Array.prototype.slice.call(arguments);
                 args.shift();
                 args.shift();
                 args.unshift(clients[conn.id]);
 
                 if (app.set('tasks')[plugin] && app.set('tasks')[plugin].task.syncObject && typeof app.set('tasks')[plugin].task.syncObject[command] === 'function') {
-                    if (typeof args[args.length - 1] === 'function') {
-                        args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
-                    } else {
-                        app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
+                        if (typeof args[args.length - 1] === 'function') {
+                            args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
+                        } else {
+                            app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
+                        }
                     }
-                }
-            };
+                };
         }).listen(app.set('argv').sync, '127.0.0.1');
 
         app.set('log').info('master server start listening on port %s', app.set('argv').sync);
 
-        (function() {
+        (function () {
             app.set('log').debug('setup assets');
 
             var paths = {
@@ -242,7 +268,7 @@ module.exports = function(argv) {
         for (var i = 0, workers = []; i < argv.workers; i++) {
             try {
                 workers[i] = cluster.fork();
-                workers[i].on('message', function(msg) {
+                workers[i].on('message', function (msg) {
                     if (!msg.cmd || !logserver) return;
                     if (msg.cmd === 'log') return logserver.log(msg.msg);
                     if (msg.cmd === 'event') return logserver.event(msg.msg);
@@ -257,12 +283,12 @@ module.exports = function(argv) {
 
         app.set('helpers').utils.hook(stdout);
 
-        stdout.hook('write', function(string, encoding, fd, write) {
+        stdout.hook('write', function (string, encoding, fd, write) {
             write(string);
             logserver.log(string);
         });
 
-        cluster.on('death', function(worker) {
+        cluster.on('death', function (worker) {
             for (var i in workers) {
                 if (workers[i].pid !== worker.pid) continue;
                 app.set('log').debug('worker %s died. restart...', worker.pid);
@@ -278,7 +304,7 @@ module.exports = function(argv) {
         var signals = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
 
         for (i in signals) {
-            process.on(signals[i], function() {
+            process.on(signals[i], function () {
                 for (var j in workers) workers[j].kill();
                 process.exit(1);
             });

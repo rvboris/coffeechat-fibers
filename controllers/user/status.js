@@ -2,11 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
-            res.send(401);
-            return;
-        }
-
         if (!req.body.status) {
             app.set('log').debug('status param not found');
             res.send(404);
@@ -14,23 +9,15 @@ module.exports = function (app) {
         }
 
         sync(function () {
-            var user = app.User.findById.sync(app.User, req.session.user.id);
+            req.user.status = req.body.status;
+            req.user.save.sync(req.user);
 
-            if (!user) {
-                app.set('log').debug('user not found');
-                res.send(404);
-                return;
-            }
-
-            user.status = req.body.status;
-            user.save.sync(user);
-
-            if (user.isSystem()) {
+            if (req.user.isSystem()) {
                 res.send(200);
                 return;
             }
 
-            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: user.id }, ['channelId']);
+            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
 
             if (!subscriptions) {
                 res.send(200);
@@ -41,7 +28,7 @@ module.exports = function (app) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {
                     token: app.set('serverToken'),
                     action: 'update',
-                    user: { name: user.name, status: user.status }
+                    user: { name: req.user.name, status: req.user.status }
                 });
             }
 

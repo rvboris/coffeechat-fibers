@@ -33,27 +33,24 @@ module.exports = function (app) {
                         return;
                     }
                     req.session.user = { id: user ? user.id : '0' };
-                    req.user = user || null;
+                    req.user = user || { id: '0' };
                     app.set('log').debug('login through the session');
                     next();
                 });
             } else {
-                req.session.user = { id: '0' };
-                req.user = null;
+                req.session.user = req.user = { id: '0' };
                 app.set('log').debug('login through the session');
                 next();
             }
         },
         rootAccess: function (req, res, next) {
-            req.haveAccess = false;
-
-            if (req.user && req.user !== null) {
-                if (req.user.isSystem() && req.user.role === 'R') {
-                    req.haveAccess = true;
-                }
-            }
-
-            next();
+            req.user.isSystem() && req.user.role === 'R' ? next() : res.send(403);
+        },
+        userAccess: function (req, res, next) {
+            req.user && req.user.id !== '0' ? next() : res.send(403);
+        },
+        xhrAccess: function (req, res, next) {
+            req.isXMLHttpRequest ? next() : res.send(401);
         },
         createPublic: function (user) {
             return {

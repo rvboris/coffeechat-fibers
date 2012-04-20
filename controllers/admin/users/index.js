@@ -9,11 +9,6 @@ module.exports = function (app) {
     var usersPerPage = nconf.get('admin').usersPerPage;
 
     return function (req, res) {
-        if (!req.haveAccess) {
-            res.send(403);
-            return;
-        }
-
         sync(function () {
             var name = req.params.name || '*';
             var page = parseInt(req.params.page || 0);

@@ -5,17 +5,6 @@ module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
 
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
-        if (!req.params.channel) {
-            app.set('log').debug('channel param not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
             var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(nconf.get('messages').historyPreload).sort('time', -1);
             var messages = query.execFind.sync(query);

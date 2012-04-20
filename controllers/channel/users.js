@@ -2,17 +2,6 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
-        if (!req.params.channel) {
-            app.set('log').debug('channel param not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
             var subscriptions = app.Subscription.find.sync(app.Subscription, {
                 time: { $lt: new Date(new Date().getTime() - ((app.set('faye').timeout) * 1000) * 2) }

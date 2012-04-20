@@ -9,12 +9,6 @@ module.exports = function (app) {
     nodemailer.SMTP = nconf.get('smtp');
 
     return function (req, res) {
-        if (!req.params.key) {
-            app.set('log').debug('recovery key not found');
-            res.send(404);
-            return;
-        }
-
         sync(function () {
             var recovery = app.PasswordRecovery.findOne.sync(app.PasswordRecovery, { key: req.params.key });
             var user = recovery ? app.User.findById.sync(app.User, recovery.userId) : false;

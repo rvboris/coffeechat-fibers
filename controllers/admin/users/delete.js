@@ -5,18 +5,8 @@ module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../../config/' + app.set('argv').env + '.json' });
 
     return function (req, res) {
-        if (!req.isXMLHttpRequest) {
-            res.send(401);
-            return;
-        }
-
-        if (!req.haveAccess) {
-            res.send(403);
-            return;
-        }
-
         sync(function () {
-            if (req.session.user.id === req.body.uid) {
+            if (req.user.id === req.body.uid) {
                 res.send({ error: 'Вы не можете удалить самого себя' });
                 return;
             }
@@ -46,6 +36,7 @@ module.exports = function (app) {
                 });
             } else {
                 app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, null);
+                // TODO: Update ES index (bulk?)
             }
 
             userToDelete.remove.sync(userToDelete);

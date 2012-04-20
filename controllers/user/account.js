@@ -2,56 +2,45 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
-        if (!req.isXMLHttpRequest || req.session.user.id === '0') {
-            res.send(401);
-            return;
-        }
-
         sync(function () {
-            var user = app.User.findById.sync(app.User, req.session.user.id);
-
-            if (!user) {
-                return { error: 'Пользователь не найден' };
-            }
-
             var pubTrigger = false;
 
             if (req.body.user.gender) {
                 if (req.body.user.gender.male) {
-                    user.gender = 'M';
+                    req.user.gender = 'M';
                     pubTrigger = true;
                 } else if (req.body.user.gender.female) {
-                    user.gender = 'W';
+                    req.user.gender = 'W';
                     pubTrigger = true;
                 }
             } else {
-                user.gender = 'N';
+                req.user.gender = 'N';
                 pubTrigger = true;
             }
 
             if (req.body.user.email && req.body.user.email !== '') {
-                user.email = req.body.user.email;
+                req.user.email = req.body.user.email;
             }
 
             if (req.body.user.password && req.body.user.password !== '') {
                 if (req.body.user.password.length < 6 || req.body.user.password.length > 30) {
                     return { error: 'Недопустимый размер пароля' };
                 }
-                user.secret = req.body.user.password;
+                req.user.secret = req.body.user.password;
             }
 
-            user.save.sync(user);
+            req.user.save.sync(req.user);
             app.set('log').debug('the user is saved');
 
-            if (!pubTrigger || user.isSystem()) return;
+            if (!pubTrigger || req.user.isSystem()) return;
 
-            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.session.user.id }, ['channelId']);
+            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
 
             for (var i = 0; i < subscriptions.length; i++) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {
                     token: app.set('serverToken'),
                     action: 'update',
-                    user: { name: user.name, gender: user.gender }
+                    user: { name: req.user.name, gender: req.user.gender }
                 });
             }
         }, function (err, result) {
