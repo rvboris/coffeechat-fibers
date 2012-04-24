@@ -8,13 +8,20 @@ module.exports = function (app) {
             return;
         }
 
+        if (req.user.isSystem()) {
+            res.send({ error: 'Системные пользователи не могут приглашать в приват' });
+            return;
+        }
+
         sync(function () {
             var toUser = app.User.findOne.sync(app.User, {
                 name: req.body.toUser,
                 '_id': { $nin: app.set('systemUserIds') }
             }, ['name']);
 
-            if (req.user.isSystem()) return;
+            if (!toUser) {
+                return { error: 'Пользователь не найден' };
+            }
 
             switch (req.body.action) {
                 case 'request':

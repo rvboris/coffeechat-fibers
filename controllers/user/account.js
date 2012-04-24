@@ -5,6 +5,10 @@ module.exports = function (app) {
         sync(function () {
             var pubTrigger = false;
 
+            if (req.user.isSystem()) {
+                return { error: 'Системные пользователи не могут изменять аккаунт' }
+            }
+
             if (req.body.user.gender) {
                 if (req.body.user.gender.male) {
                     req.user.gender = 'M';
@@ -32,7 +36,7 @@ module.exports = function (app) {
             req.user.save.sync(req.user);
             app.set('log').debug('the user is saved');
 
-            if (!pubTrigger || req.user.isSystem()) return;
+            if (!pubTrigger) return;
 
             var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
 

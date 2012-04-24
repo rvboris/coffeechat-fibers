@@ -2,6 +2,11 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
+        if (req.user.isSystem()) {
+            res.send({ error: 'Системные пользователи не могут изменять настройки' });
+            return;
+        }
+
         sync(function () {
             if (req.body.user) {
                 var settings = req.body.user.settings;
