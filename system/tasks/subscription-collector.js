@@ -50,7 +50,7 @@ module.exports = function (app) {
                         setTimeout(function () {
                             recipient.publish('/channel/' + subscriptionsChannels[i].id + '/users', {
                                 action: 'dis',
-                                users: usersChannels[subscriptionsChannels[i].id]
+                                users: usersChannels[subscriptionsChannels[i].id] //TODO filter system users
                             });
 
                             app.set('log').debug('%s users in list updated', usersChannels[subscriptionsChannels[i].id].length);

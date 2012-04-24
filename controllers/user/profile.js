@@ -3,7 +3,10 @@ var sync = require('sync');
 module.exports = function (app) {
     return function (req, res) {
         sync(function () {
-            var profileUser = app.User.findOne.sync(app.User, { name: req.params.name, '_id': { $nin: app.set('systemUserIds') } }, ['name', 'pic', 'status', 'gender', 'points']);
+            var profileUser = app.User.findOne.sync(app.User, {
+                name: req.params.name,
+                '_id': { $nin: app.set('systemUserIds') }
+            }, ['name', 'pic', 'status', 'gender', 'points']);
 
             if (!profileUser) {
                 app.set('log').debug('user not found');

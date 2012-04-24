@@ -8,10 +8,17 @@ module.exports = function (app) {
             return;
         }
 
+        if (req.user.isSystem()) {
+            res.send({ error: 'Системные пользователи не могут добавлять в игнор' });
+            return;
+        }
+
         sync(function () {
             var toUser = app.User.findOne.sync(app.User, { name: req.body.toUser, '_id': { $nin: app.set('systemUserIds') } });
 
-            if (req.user.isSystem()) return;
+            if (!toUser) {
+                return { error: 'Пользователь не найден' };
+            }
 
             var idx = req.user.ignore.indexOf(toUser.name);
 

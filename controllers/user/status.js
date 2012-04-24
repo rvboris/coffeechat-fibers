@@ -2,6 +2,11 @@ var sync = require('sync');
 
 module.exports = function (app) {
     return function (req, res) {
+        if (req.user.isSystem()) {
+            res.send({ error: 'Системные пользователи не могут изменять статус' });
+            return;
+        }
+
         if (!req.body.status) {
             app.set('log').debug('status param not found');
             res.send(404);
@@ -11,11 +16,6 @@ module.exports = function (app) {
         sync(function () {
             req.user.status = req.body.status;
             req.user.save.sync(req.user);
-
-            if (req.user.isSystem()) {
-                res.send(200);
-                return;
-            }
 
             var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
 
