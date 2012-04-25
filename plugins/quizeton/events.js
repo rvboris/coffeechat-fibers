@@ -1,6 +1,4 @@
-var moment = require('moment');
-var sync   = require('sync');
-var path   = require('path');
+var path = require('path');
 
 module.exports = function (app) {
     var name = path.basename(__dirname);
@@ -25,7 +23,7 @@ module.exports = function (app) {
             }
         },
         userSend: function (user, channel, message) {
-            if (channel.id === app.set('channels')[name].id) {
+            if (channel.id === app.set('channels')[name].id && !user.isSystem()) {
                 app.set('syncServer').task('quizeton', 'getAnswer', function (answer) {
                     if (message.text.toLowerCase() !== answer.toLowerCase()) return;
                     app.set('syncServer').task('quizeton', 'newQuiz', user.id);

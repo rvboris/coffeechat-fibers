@@ -23,6 +23,7 @@ module.exports = function (app) {
                 var subscriptionsChannels = [];
                 var subscriptionsCount = [];
                 var usersChannels = [];
+                var commands = [];
 
                 for (var i = 0; i < subscriptions.length; i++) {
                     var user = app.User.findById.sync(app.User, subscriptions[i].userId.toHexString());
@@ -31,7 +32,10 @@ module.exports = function (app) {
                         usersChannels[subscriptions[i].channelId] = [];
                     }
 
-                    usersChannels[subscriptions[i].channelId].push({ name: user.name });
+                    if (!user.isSystem()) {
+                        usersChannels[subscriptions[i].channelId].push({ name: user.name });
+                    }
+
                     subscriptionsChannels.push(subscriptions[i].channelId.toHexString());
 
                     if (!subscriptionsCount[subscriptions[i].channelId]) {
@@ -46,16 +50,13 @@ module.exports = function (app) {
                 subscriptionsChannels = app.set('helpers').channel.group(subscriptionsChannels);
 
                 for (i = 0; i < subscriptionsChannels.length; i++) {
-                    (function (i) {
-                        setTimeout(function () {
-                            recipient.publish('/channel/' + subscriptionsChannels[i].id + '/users', {
-                                action: 'dis',
-                                users: usersChannels[subscriptionsChannels[i].id] //TODO filter system users
-                            });
-
-                            app.set('log').debug('%s users in list updated', usersChannels[subscriptionsChannels[i].id].length);
-                        }, 100 + (50 * i));
-                    })(i);
+                    commands.push({
+                        channel: '/channel/' + subscriptionsChannels[i].id + '/users',
+                        data: {
+                            action: 'dis',
+                            users: usersChannels[subscriptionsChannels[i].id]
+                        }
+                    });
 
                     subscriptionsChannels[i].diff *= -1;
                     subscriptionsChannels[i].count = subscriptionsCount[subscriptionsChannels[i].id] + subscriptionsChannels[i].diff;
@@ -63,9 +64,12 @@ module.exports = function (app) {
                     app.set('log').debug('%s users unsubscribed', usersChannels[subscriptionsChannels[i].id].length);
                 }
 
-                recipient.publish('/channel-list', {
-                    action: 'upd',
-                    channels: subscriptionsChannels
+                recipient.publishBulk(commands, {
+                    channel: '/channel-list',
+                    data: {
+                        action: 'upd',
+                        channels: subscriptionsChannels
+                    }
                 });
 
                 app.set('log').debug('%s channels in list updated', subscriptionsChannels.length);

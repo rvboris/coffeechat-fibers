@@ -96,25 +96,28 @@ module.exports = function (app) {
             }
 
             if (result.newSubscriptions) {
-                setTimeout(function () {
-                    app.set('faye').bayeux.getClient().publish('/channel-list', {
+                (function publish (iteration) {
+                    iteration = iteration || 0;
+                    app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', {
                         token: app.set('serverToken'),
-                        action: 'upd',
-                        channels: result.newSubscriptions
-                    });
-                }, 100);
-
-                for (var i = 0; i < result.newSubscriptions.length; i++) {
-                    (function (i) {
-                        setTimeout(function () {
-                            app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[i].id + '/users', {
+                        action: 'con',
+                        users: result.userChannels[result.newSubscriptions[iteration].id]
+                    }).callback(function () {
+                        app.set('log').debug('user list updated');
+                        iteration++;
+                        if (iteration < result.newSubscriptions.length) {
+                            publish(iteration);
+                        } else {
+                            app.set('faye').bayeux.getClient().publish('/channel-list', {
                                 token: app.set('serverToken'),
-                                action: 'con',
-                                users: result.userChannels[result.newSubscriptions[i].id]
+                                action: 'upd',
+                                channels: result.newSubscriptions
+                            }).callback(function () {
+                                app.set('log').debug('channel list updated');
                             });
-                        }, 100 + (10 * i));
-                    })(i);
-                }
+                        }
+                    });
+                })();
             }
 
             if (result.user) {

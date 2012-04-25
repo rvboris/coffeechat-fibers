@@ -1299,7 +1299,7 @@
                 $(this).change();
             });
 
-            $('#channels li').on('click', 'div.info button', function() {
+            $('#channels').on('click', 'li div.info button', function () {
                 var tabButton = $(this).parent().next();
                 var channelId = tabButton.attr('id');
                 channelId = channelId.substr(8, channelId.length);

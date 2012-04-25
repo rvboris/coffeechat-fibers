@@ -7,10 +7,6 @@ module.exports = function (app) {
 
             if (channel) {
                 app.set('log').debug('channel "%s" loaded', params.name);
-
-                /* var messages = app.Message.find.sync(app.Message, { channelId: channel.id }); */
-                /* for (var i = 0; i < messages.length; i++) messages[i].remove.sync(messages[i]); */
-
                 return channel;
             }
 
@@ -52,7 +48,7 @@ module.exports = function (app) {
             if (!user.isSystem()) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
                     token: app.set('serverToken'),
-                    action: 'connect',
+                    action: 'con',
                     user: app.set('helpers').user.createPublic(user)
                 });
             }
