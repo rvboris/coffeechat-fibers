@@ -330,6 +330,22 @@ module.exports = function (argv) {
                     data.token = app.set('serverToken');
                     app.set('faye').bayeux.getClient().publish(channel, data);
                 },
+                publishBulk: function (commands, endCommand) {
+                    (function publish (iteration) {
+                        iteration = iteration || 0;
+                        commands[iteration].data.token = app.set('serverToken');
+                        app.set('faye').bayeux.getClient().publish(commands[iteration].channel, commands[iteration].data)
+                            .callback(function () {
+                                iteration++;
+                                if (iteration < commands.length) {
+                                    publish(iteration);
+                                } else if (endCommand) {
+                                    endCommand.data.token = app.set('serverToken');
+                                    app.set('faye').bayeux.getClient().publish(endCommand.channel, endCommand.data);
+                                }
+                            });
+                    })();
+                },
                 event: function (plugin, command) {
                     var args = Array.prototype.slice.call(arguments);
                     args.unshift('syncEvent');
