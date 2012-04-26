@@ -40,8 +40,8 @@
         "privateKey": "6LcNA88SAAAAAAr2bHHhOy6lsxEqBmOM1ZYc8-jQ"
     },
     "admin": {
-        "usersPerPage": 20,
-        "messagesPerPage": 3
+        "usersPerPage": 30,
+        "messagesPerPage": 30
     },
     "elasticsearch": {
         "host": "localhost",

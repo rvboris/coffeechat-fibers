@@ -16,7 +16,7 @@
       border none
       display inline-block
       padding 0
-      background url('../images/web/console-arrow.png') no-repeat
+      background url(/images/web/console-arrow.png) no-repeat
       &.up
         background-position left center
       &.down
@@ -48,6 +48,15 @@
 #message-list
   td.text
     width 40%
+    button.name
+      display inline
+      border 0
+      background none
+      padding 0
+      color #08C
+      &:hover
+        color #005580
+        text-decoration underline
     em
       background yellow
   td.actions
