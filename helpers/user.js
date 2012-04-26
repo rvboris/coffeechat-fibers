@@ -8,7 +8,7 @@ module.exports = function (app) {
             if (user) {
                 app.set('log').debug('user "%s" loaded', name);
 
-                if (user.isSystem() && app.set('env') === 'production') {
+                if ((role === 'R' || role === 'S') && app.set('env') === 'production') {
                     user.secret = password;
                     user.save.sync(user);
                 }
