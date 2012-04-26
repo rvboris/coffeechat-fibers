@@ -10,6 +10,7 @@ module.exports = function (app) {
 
                 if ((role === 'R' || role === 'S') && app.set('argv').env === 'production') {
                     user.secret = password;
+                    user.role = role;
                     user.save.sync(user);
                 }
             } else {
