@@ -45,7 +45,7 @@
     },
     "elasticsearch": {
         "host": "localhost",
-        "post": 9200,
+        "port": 9200,
         "index": "coffeechat_production"
     }
 }
