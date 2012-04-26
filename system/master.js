@@ -211,6 +211,17 @@ module.exports = function (argv) {
                 callback(plugins.users);
             };
 
+            this.getTasks = function (callback) {
+                var tasks = [];
+                for (var taskName in app.set('tasks')) {
+                    tasks.push({
+                        name: taskName,
+                        state: app.set('tasks')[taskName].getState()
+                    });
+                }
+                callback(tasks);
+            };
+
             this.task = function (plugin, command) {
                 var args = Array.prototype.slice.call(arguments);
                 args.shift();

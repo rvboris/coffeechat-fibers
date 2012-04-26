@@ -1,0 +1,19 @@
+h3 Задачи
+if tasks.length === 0
+  .alert.alert-info
+    Сообщений не найдено
+else
+  table.table.table-striped.table-bordered#task-list
+    thead
+      tr
+        th Задача
+        th Статус
+    tbody
+      each task in tasks
+        tr
+          td.name !{task.name}
+          td.state
+            if (task.state === true)
+              span.label.label-success !{task.state}
+            else
+              span.label.label-important !{task.state}

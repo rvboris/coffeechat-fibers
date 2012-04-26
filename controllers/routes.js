@@ -187,6 +187,13 @@ module.exports = function (app) {
         app.set('helpers').user.rootAccess,
         require('./admin/messages/index.js')(app)
     );
+    app.get(
+        '/admin/tasks',
+        app.set('helpers').user.session,
+        app.set('helpers').user.userAccess,
+        app.set('helpers').user.rootAccess,
+        require('./admin/tasks.js')(app)
+    );
 
     app.post(
         '/admin/users/delete',
