@@ -4,6 +4,9 @@ module.exports = function (app, task) {
 
     return {
         task: task,
+        getState: function () {
+            return run;
+        },
         start: function (recipient) {
             if (run) return;
             run = true;
