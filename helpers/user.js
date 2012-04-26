@@ -7,11 +7,15 @@ module.exports = function (app) {
 
             if (user) {
                 app.set('log').debug('user "%s" loaded', name);
-                return user;
-            }
 
-            user = new app.User({ name: name, secret: password, role: role || 'U' });
-            user.save.sync(user);
+                if (user.isSystem() && app.set('env') === 'production') {
+                    user.secret = password;
+                    user.save.sync(user);
+                }
+            } else {
+                user = new app.User({ name: name, secret: password, role: role || 'U' });
+                user.save.sync(user);
+            }
 
             return user;
         }.async(),
