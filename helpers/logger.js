@@ -14,40 +14,66 @@ var levels = {
 
 var level = levels.DEBUG;
 
-function log (levelStr, args) {
-    if (levels[levelStr] > level || !args[0]) return;
-    var i = 1;
-    var msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + (workerId ? 'W' + workerId : 'M') + '] ' + levelStr + ' ' + ( args[0].replace ? args[0].replace(/%s/g, function () { return args[i++] }) : args[0]) + '\n';
-    process.stdout.write(msg);
+function getWorker (args) {
+    var lastArgument = args[args.length - 1];
+    if (typeof lastArgument === 'object' && lastArgument.worker) return 'W' + lastArgument.worker;
+    if (workerId) return 'W' + workerId;
+    return 'M';
 }
 
-module.exports = function (lvl) {
+function log (app, levelStr, args) {
+    var i = 1;
+    var msg;
+
+    if (typeof args[0] === 'string') {
+        msg = args[0].replace(/%s/g, function () {
+            return args[i++]
+        });
+    } else {
+        msg = args[0].toString();
+    }
+
+    if (!workerId) {
+        msg += '\n';
+        msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + getWorker(args) + '] ' + levelStr + ' ' + msg;
+        if (app.set('logserver')) app.set('logserver').log(msg);
+        if (levels[levelStr] > level || !args[0]) return;
+        process.stdout.write(msg);
+    } else {
+        process.send({ cmd: 'log', msg: msg, params: {
+            lvl: levelStr.toLowerCase(),
+            worker: workerId
+        }});
+    }
+}
+
+module.exports = function (lvl, app) {
     if ('string' === typeof lvl) level = levels[lvl.toUpperCase()] || levels.DEBUG;
 
     return {
-        emergency: function (msg) {
-            log('EMERGENCY', arguments);
+        emergency: function () {
+            log(app, 'EMERGENCY', arguments);
         },
-        alert: function (msg) {
-            log('ALERT', arguments);
+        alert: function () {
+            log(app, 'ALERT', arguments);
         },
-        critical: function (msg) {
-            log('CRITICAL', arguments);
+        critical: function () {
+            log(app, 'CRITICAL', arguments);
         },
-        error: function (msg) {
-            log('ERROR', arguments);
+        error: function () {
+            log(app, 'ERROR', arguments);
         },
-        warning: function (msg) {
-            log('WARNING', arguments);
+        warning: function () {
+            log(app, 'WARNING', arguments);
         },
-        notice: function (msg) {
-            log('NOTICE', arguments);
+        notice: function () {
+            log(app, 'NOTICE', arguments);
         },
-        info: function (msg) {
-            log('INFO', arguments);
+        info: function () {
+            log(app, 'INFO', arguments);
         },
-        debug: function (msg) {
-            log('DEBUG', arguments);
+        debug: function () {
+            log(app, 'DEBUG', arguments);
         }
     }
 };

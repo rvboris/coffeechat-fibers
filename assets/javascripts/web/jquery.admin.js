@@ -202,6 +202,10 @@
                 });
                 return false;
             });
+
+            $('#message-list .text button.name').on('click', function () {
+                window.open('/admin/users/' + encodeURIComponent($(this).text()), '_newtab');
+            });
         }
     };
 

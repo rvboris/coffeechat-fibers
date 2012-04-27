@@ -35,11 +35,11 @@ module.exports = function (argv) {
         Loader.prototype.init = function () {
             switch (app.set('argv').env) {
                 case 'production':
-                    app.set('log', logger('INFO'));
+                    app.set('log', logger('INFO', app));
                     app.set('log').info('production mode');
                     break;
                 case 'development':
-                    app.set('log', logger('DEBUG'));
+                    app.set('log', logger('DEBUG', app));
                     app.set('log').info('development mode');
             }
 
@@ -274,15 +274,21 @@ module.exports = function (argv) {
             require('../helpers/assets.js')(argv.env, paths, options)();
         })();
 
-        logserver = logserver(app);
+        app.set('logserver', logserver(app));
 
         for (var i = 0, workers = []; i < argv.workers; i++) {
             try {
                 workers[i] = cluster.fork();
                 workers[i].on('message', function (msg) {
-                    if (!msg.cmd || !logserver) return;
-                    if (msg.cmd === 'log') return logserver.log(msg.msg);
-                    if (msg.cmd === 'event') return logserver.event(msg.msg);
+                    if (!msg.cmd || !app.set('logserver')) return;
+                    if (msg.cmd === 'log') {
+                        if (msg.params) {
+                            app.set('log')[msg.params.lvl](msg.msg, msg.params);
+                            return;
+                        }
+                        app.set('logserver').log(msg.msg);
+                    }
+                    if (msg.cmd === 'event') app.set('logserver').event(msg.msg);
                 });
             } catch (e) {
                 app.set('log').critical('worker fork error');
@@ -296,7 +302,7 @@ module.exports = function (argv) {
 
         stdout.hook('write', function (string, encoding, fd, write) {
             write(string);
-            logserver.log(string);
+            if (app.set('logserver')) app.set('logserver').log(string);
         });
 
         cluster.on('death', function (worker) {
