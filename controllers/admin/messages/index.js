@@ -31,7 +31,7 @@ module.exports = function (app) {
                 pages = Math.ceil(messages.count / messagesPerPage);
 
                 if (params.query === '*') {
-                    query = app.Message.find({}).skip(params.page * messagesPerPage).limit(messagesPerPage);
+                    query = app.Message.find({}).skip(params.page * messagesPerPage).limit(messagesPerPage).sort('time', -1);
                     messages.objects = query.execFind.sync(query);
 
                     for (i = 0; i < messages.objects.length; i++) {
@@ -63,7 +63,11 @@ module.exports = function (app) {
                         return doc._id
                     });
 
-                    query = app.Message.find({ _id: { $in: messages.ids } }, ['_id', 'channelId', 'time']).skip(params.page * messagesPerPage).limit(messagesPerPage);
+                    query = app.Message.find({ _id: { $in: messages.ids } }, ['_id', 'channelId', 'time'])
+                        .skip(params.page * messagesPerPage)
+                        .limit(messagesPerPage)
+                        .sort('time', -1);
+
                     messages.objects = query.execFind.sync(query);
 
                     for (i = 0; i < messages.objects.length; i++) {

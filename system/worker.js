@@ -61,7 +61,7 @@ module.exports = function (argv) {
         };
 
         Loader.prototype.developmentSetup = function () {
-            app.set('log', logger('DEBUG'));
+            app.set('log', logger('DEBUG', app));
             app.set('log').info('development mode');
 
             app.use(express['static'](__dirname + '/../public/stylesheets'));
@@ -76,7 +76,7 @@ module.exports = function (argv) {
         };
 
         Loader.prototype.productionSetup = function () {
-            app.set('log', logger('INFO'));
+            app.set('log', logger('INFO', app));
             app.set('log').info('production mode');
 
             app.use(express.vhost('hg.*', subServer));
