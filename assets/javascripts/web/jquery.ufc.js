@@ -748,8 +748,10 @@
                                     this.set('content.text', mote.compile($('#mu-ui-channel-qtips-info').html())({
                                         users: data.users,
                                         messages: data.messages,
+                                        owner: data.owner,
                                         date: $.fn.sys().time.date($.fn.sys().time.parse(data.date)),
                                         url: $('#channels li button#channel-' + channelId).data('url'),
+                                        ifOwner: data.owner !== '$',
                                         ifMessages: data.messages > 0
                                     }));
                                 },
@@ -828,39 +830,7 @@
     };
 
     privateMethods.layers = {
-        items: [],
-        add: function(name, layer, showCallback, hideCallback) {
-            if (privateMethods.layers.items[name]) return;
-            privateMethods.layers.items[name] = { layer: layer, callbacks: { show: showCallback, hide: hideCallback} };
-        },
-        toogle: function(name, callback) {
-            if (!privateMethods.layers.items[name]) return;
-            if ($(privateMethods.layers.items[name].layer).is(':visible')) {
-                privateMethods.layers.hide();
-                $('#container').fadeTo('fast', 1);
-                $('#message').focus();
-            } else {
-                privateMethods.layers.hide(function() {
-                    privateMethods.layers.show(name, callback);
-                })
-            }
-        },
-        show: function(name, callback) {
-            $('#container').fadeTo('fast', 0);
-            $(privateMethods.layers.items[name].layer).fadeIn('fast', function() {
-                if (typeof privateMethods.layers.items[name].callbacks.show === 'function') privateMethods.layers.items[name].callbacks.show();
-                if (typeof callback === 'function') callback();
-            });
-        },
-        register: function() {
-            privateMethods.layers.add('account', 'section.account', null, null);
-            privateMethods.layers.add('forgot', 'section.forgot', null, null);
-            privateMethods.layers.add('help', 'section.help', function() {
-                $('#bottom #help').addClass('pressed');
-            }, function() {
-                $('#bottom #help').removeClass('pressed');
-            });
-        }
+        items: []
     };
 
     // Public methods
@@ -1405,6 +1375,43 @@
                     if (typeof callback === 'function') callback();
                 });
             }
+        },
+        add: function(name, layer, showCallback, hideCallback) {
+            if (privateMethods.layers.items[name]) return;
+            privateMethods.layers.items[name] = { layer: layer, callbacks: { show: showCallback, hide: hideCallback} };
+        },
+        toogle: function(name, callback) {
+            if (!privateMethods.layers.items[name]) return;
+            if ($(privateMethods.layers.items[name].layer).is(':visible')) {
+                privateMethods.layers.hide();
+                $('#container').fadeTo('fast', 1);
+                $('#message').focus();
+            } else {
+                privateMethods.layers.hide(function() {
+                    privateMethods.layers.show(name, callback);
+                })
+            }
+        },
+        show: function(name, callback) {
+            $('#container').fadeTo('fast', 0);
+            $(privateMethods.layers.items[name].layer).fadeIn('fast', function() {
+                if (typeof privateMethods.layers.items[name].callbacks.show === 'function') privateMethods.layers.items[name].callbacks.show();
+                if (typeof callback === 'function') callback();
+            });
+        },
+        register: function() {
+            privateMethods.layers.add('account', 'section.account', null, null);
+            privateMethods.layers.add('forgot', 'section.forgot', null, null);
+            privateMethods.layers.add('help', 'section.help', function () {
+                $('#bottom #help').addClass('pressed');
+            }, function () {
+                $('#bottom #help').removeClass('pressed');
+            });
+            privateMethods.layers.add('create', 'section.create-channel', function () {
+                $('#create-channel').addClass('pressed');
+            }, function () {
+                $('#create-channel').removeClass('pressed');
+            });
         }
     };
 

@@ -35,7 +35,7 @@ function log (app, levelStr, args) {
 
     if (!workerId) {
         msg += '\n';
-        msg = '[' + moment().format('DD.MM.YY HH:mm:ss z') + '] [' + getWorker(args) + '] ' + levelStr + ' ' + msg;
+        msg = '[' + moment().format('DD.MM.YY HH:mm:ss Z') + '] [' + getWorker(args) + '] ' + levelStr + ' ' + msg;
         if (app.set('logserver')) app.set('logserver').log(msg);
         if (levels[levelStr] > level || !args[0]) return;
         process.stdout.write(msg);

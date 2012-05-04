@@ -95,6 +95,8 @@ html(lang='ru')
           header Список комнат (
             span.count 0
             )
+          .create-channel-wrap.clearfix
+            button#create-channel Создать комнату
           button.scrollingHotSpotUp ˄ ˄ ˄
           menu
           button.scrollingHotSpotDown ˅ ˅ ˅
@@ -119,6 +121,8 @@ html(lang='ru')
         != partial('partials/web/help')
       section.forgot.clearfix
         != partial('forms/web/forgot', { csrf: csrf })
+      section.create-channel.clearfix
+        != partial('forms/web/create-channel', { csrf: csrf })
       footer#bottom
         div
           button.history.up ˄

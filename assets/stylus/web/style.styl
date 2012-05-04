@@ -239,7 +239,7 @@
   section.account input::-webkit-input-placeholder { color: #B06E5F; }
   section.account input:-moz-placeholder { color: #B06E5F; }
 
-  section.account input, section.forgot input {
+  section.account input, section.forgot input, section.create-channel input {
     background-color: #38130D;
     background-image: -moz-linear-gradient(top, #38130D, #4D1A12);
     background-image: -o-linear-gradient(top, #38130D, #4D1A12);
@@ -248,7 +248,7 @@
     background-image: linear-gradient(top, #38130D, #4D1A12);
   }
 
-  section.account input:focus, section.forgot input:focus {
+  section.account input:focus, section.forgot input:focus, section.create-channel input:focus {
     background-color: #230C08;
     background-image: -moz-linear-gradient(top, #230C08, #38130D);
     background-image: -o-linear-gradient(top, #230C08, #38130D);
@@ -257,7 +257,7 @@
     background-image: linear-gradient(top, #230C08, #38130D);
   }
 
-  section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button {
+  section.account input[type=submit], section.account button, section.account .uploadifyButton, section.account span.gender, section.account span.switch, section.forgot input[type=submit], section.forgot button, section.create-channel input[type=submit], section.create-channel button {
     background-color: #38130D;
     background-image: -moz-linear-gradient(top, #38130D, #30100B);
     background-image: -o-linear-gradient(top, #38130D, #30100B);
@@ -266,7 +266,7 @@
     background-image: linear-gradient(top, #38130D, #30100B);
   }
 
-  section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover {
+  section.account input[type=submit]:hover, section.account span.gender:hover, section.account span.switch:hover, section.account span.gender.checked, section.account span.switch.checked, section.account button:hover, section.account .uploadify:hover .uploadifyButton, section.forgot input[type=submit]:hover, section.forgot button:hover, section.create-channel input[type=submit]:hover, section.create-channel button:hover {
     background-color: #4D1A12;
     background-image: -moz-linear-gradient(top, #4D1A12, #451710);
     background-image: -o-linear-gradient(top, #4D1A12, #451710);
@@ -295,7 +295,7 @@
     background-image: linear-gradient(top, #581539, #4C1132);
   }
 
-  section.account, section.forgot {
+  section.account, section.forgot, section.create-channel {
     background-color: #622117;
     background-image: -moz-linear-gradient(top, #622117, #4D1A12);
     background-image: -o-linear-gradient(top, #622117, #4D1A12);
@@ -319,7 +319,7 @@
   #channel-list input::-webkit-input-placeholder { color: #9E9AAF; }
   #channel-list input:-moz-placeholder { color: #9E9AAF; }
 
-  #channel-list input.filter {
+  #channel-list input.filter, #create-channel {
     background-color: #47425E;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#47425E), to(#373449));
     background-image: -webkit-linear-gradient(top, #47425E, #373449);
@@ -329,7 +329,7 @@
     background-image: linear-gradient(top, #47425E, #373449);
   }
 
-  #channel-list input.filter:focus {
+  #channel-list input.filter:focus, #create-channel:hover, #create-channel.pressed {
     background-color: #3A344B;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#3A344B), to(#292736));
     background-image: -webkit-linear-gradient(top, #3A344B, #292736);
@@ -672,7 +672,7 @@ input, button
       margin 0 auto
       text-align center
       font-size 1.3em
-  section.account, section.help, section.forgot
+  section.account, section.help, section.forgot, section.create-channel
     position absolute
     top top_height - 1px
     left 50%
@@ -950,6 +950,11 @@ input, button
       font-size 1em
     input[type=submit]
       width 120px !important
+  section.create-channel
+    h1
+      cursor default
+      &:hover
+        color #D5AD8C
   #channel-list-holder
     position fixed
     bottom bottom_height + 10px
@@ -1011,7 +1016,7 @@ input, button
       width 100%
     menu
       position absolute
-      top 35px
+      top 70px
       bottom 44px
       left 0
       right 0
@@ -1062,6 +1067,24 @@ input, button
       top 35px
     .scrollingHotSpotDown
       bottom 49px
+    .create-channel-wrap
+      width 100%
+      text-align center
+      #create-channel
+        width 85%
+        line-height 20px
+        padding 1px 5px
+        border 1px solid #625A85
+        box-shadow 1px 1px 0 #23212E
+        border-radius 3px
+        font-size .75em
+        color #9D9BB9
+        text-shadow 1px 1px 0 #201F2C
+        &:hover
+          color #E1E0E9
+        &:active, &.pressed
+          border 1px solid #23212E
+          box-shadow 1px 1px 0 #625A85
 #channels
   position: absolute
   top 10px
