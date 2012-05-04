@@ -134,11 +134,13 @@ exports.define = function (app, mongoose, callback) {
 
     var defineChannelModel = function () {
         var channel = new schema({
-            'name':    { 'type': String, 'required': true, 'unique': true },
-            'url':     { 'type': String, 'required': true, 'unique': true },
-            'private': { 'type': Boolean, 'default': false },
-            'owner':   { 'type': objectId, 'required': true },
-            'date':    { 'type': Date, 'default': new Date() }
+            'name':        { 'type': String, 'required': true, 'unique': true },
+            'description': { 'type': String, 'required': false },
+            'url':         { 'type': String, 'required': true, 'unique': true },
+            'private':     { 'type': Boolean, 'default': false },
+            'owner':       { 'type': objectId, 'required': true },
+            'date':        { 'type': Date, 'default': new Date() },
+            'password':    { 'type': String, 'required': false }
         });
 
         channel.statics.params = {};

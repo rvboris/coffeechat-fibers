@@ -206,6 +206,8 @@
             $('#message-list .text button.name').on('click', function () {
                 window.open('/admin/users/' + encodeURIComponent($(this).text()), '_newtab');
             });
+
+            $('#message-list .text').html($().emoticon($('#message-list .text').html()));
         }
     };
 

@@ -40,6 +40,11 @@ script(type='text/html')#mu-ui-channel-qtips-info
     li
       span.param Дата создания:
       span.value {{date}}
+    | {{#ifOwner}}
+    li
+      span.param Владелец:
+      span.value {{owner}}
+    | {{/ifOwner}}
     li
       span.param Ссылка на чат:
       span.value.link

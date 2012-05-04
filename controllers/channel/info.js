@@ -12,7 +12,7 @@ module.exports = function (app) {
                 throw new Error('subscription not found');
             }
 
-            var channel = app.Channel.findById.sync(app.Channel, req.params.channel, ['private', 'date']);
+            var channel = app.Channel.findById.sync(app.Channel, req.params.channel, ['private', 'date', 'owner']);
 
             if (!channel) {
                 throw new Error('channel "' + req.params.channel + '" not found');
@@ -22,10 +22,13 @@ module.exports = function (app) {
                 throw new Error('access denied');
             }
 
+            var channelOwner = app.User.findById.sync(app.User, channel.owner, ['name', 'role']);
+
             return {
                 users: app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: { $nin: app.set('systemUserIds') } }),
                 messages: app.Message.count.sync(app.Message, { channelId: channel.id }),
-                date: channel.date
+                date: channel.date,
+                owner: channelOwner.isSystem() ? '$' : channelOwner.name
             };
         }, function (err, channelInfo) {
             if (err) {
