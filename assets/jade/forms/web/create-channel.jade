@@ -4,5 +4,22 @@ form(method='POST').create-channel.clearfix.expand
   div.clearfix
     label(for='name') Имя команты
     input(type='text', name='channel[name]', required='true')
+  div.clearfix
+    label(for='url') URL адрес
+    input(type='text', name='channel[url]', required='false')
+  div.clearfix.description
+    label(for='description')
+      | Краткое описание (
+      span.chars 0
+      | )
+    textarea(name='channel[description]')
+  div.crearfix
+    label(for='password') Пароль
+    input(type='password', name='channel[password]', required='false')
+  div.clearfix
+    label(for='password') Скрывать чат
+    span.hidden-container
+      input(type='checkbox', name='channel[hidden]', value='1')#channel-hidden
+      span.channel-hidden.switch off
   input(type='submit', value='Создать')
   button.cancel Отмена

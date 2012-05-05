@@ -239,7 +239,7 @@
   section.account input::-webkit-input-placeholder { color: #B06E5F; }
   section.account input:-moz-placeholder { color: #B06E5F; }
 
-  section.account input, section.forgot input, section.create-channel input {
+  section.account input, section.forgot input, section.create-channel input, section.create-channel textarea {
     background-color: #38130D;
     background-image: -moz-linear-gradient(top, #38130D, #4D1A12);
     background-image: -o-linear-gradient(top, #38130D, #4D1A12);
@@ -248,7 +248,7 @@
     background-image: linear-gradient(top, #38130D, #4D1A12);
   }
 
-  section.account input:focus, section.forgot input:focus, section.create-channel input:focus {
+  section.account input:focus, section.forgot input:focus, section.create-channel input:focus, section.create-channel textarea:focus {
     background-color: #230C08;
     background-image: -moz-linear-gradient(top, #230C08, #38130D);
     background-image: -o-linear-gradient(top, #230C08, #38130D);
@@ -713,9 +713,9 @@ input, button
         font-size 0.9em
         color #D5AD8C
         text-shadow 1px 1px 1px #2B110E
-      input, span, button
+      input, span, button, textarea
         float right
-      input, button
+      input, button, textarea
         border 1px solid #2B110E
         box-shadow 1px 1px 0 #963B31
         padding 2px 5px
@@ -726,7 +726,7 @@ input, button
         width 150px
         color #B06E5F
         font-size 0.8em
-      input:focus
+      input:focus, textarea:focus
         color #D1B9A3
       input[type=radio]
         width 20px
@@ -806,7 +806,7 @@ input, button
               font-size 0.8em
         #userpic_queue
           display none
-    form.audio-settings, form.interface-settings
+    form.audio-settings, form.interface-settings, form.create-channel
       label
         width 250px
       input[type=checkbox]
@@ -817,6 +817,22 @@ input, button
         font-size 0.8em
         margin 0
         float right
+    form.create-channel
+      label
+        width 140px
+      span.hidden-container
+        float left
+        margin-left 16px
+        span.switch
+          margin 4px 2px 3px 2px
+      div.clearfix.description
+        height 98px !important
+        span.chars
+          float none
+        textarea
+          clear both
+          width 310px
+          height 50px
   section.help
     width 600px
     height 430px
@@ -1080,6 +1096,7 @@ input, button
         font-size .75em
         color #9D9BB9
         text-shadow 1px 1px 0 #201F2C
+        cursor pointer
         &:hover
           color #E1E0E9
         &:active, &.pressed
