@@ -64,6 +64,13 @@ module.exports = function (app) {
         require('./index/oauth.js')(app)
     );
     app.post(
+        '/create',
+        app.set('helpers').user.xhrAccess,
+        app.set('helpers').user.session,
+        app.set('helpers').user.userAccess,
+        require('./index/create.js')(app)
+    );
+    app.post(
         '/channel/list',
         app.set('helpers').user.xhrAccess,
         require('./channel/list.js')(app)
@@ -108,6 +115,11 @@ module.exports = function (app) {
         app.set('helpers').user.session,
         app.set('helpers').user.userAccess,
         require('./channel/info.js')(app)
+    );
+    app.post(
+        '/channel/:channel/description',
+        app.set('helpers').user.xhrAccess,
+        require('./channel/description.js')(app)
     );
     app.post(
         '/user/:name/profile',
