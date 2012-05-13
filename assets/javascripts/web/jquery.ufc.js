@@ -1276,11 +1276,22 @@
                 if ($.fn.sys().options.currentUser.id === '0' || $(tabButton).data('private') || $(this).hasClass('disabled') || $.fn.sys().actions.popup) return;
                 privateMethods.channel.qtips.info.tooltip($(this), $(this).parent().next().find('span.name').text(), channelId);
             });
+
+            privateMethods.channels.create();
         },
-        showChannelList: function(remember) {
+        create:function () {
+            var limit = 100;
+            $('form.create-channel textarea').keyup(function () {
+                if (this.value.length >= limit) {
+                    this.value = this.value.substring(0, limit);
+                }
+                $('form.create-channel span.chars').text(limit - this.value.length);
+            });
+        },
+        showChannelList:function (remember) {
             if (parseInt($('#channel-list').css('left')) < 0 || !$('#channel-list').is(':visible')) {
-                privateMethods.channels.show(function() {
-                    $('#channel-list menu').prop({ scrollTop: 0 });
+                privateMethods.channels.show(function () {
+                    $('#channel-list menu').prop({ scrollTop:0 });
                     if (remember) $.jStorage.set('channel-list', true);
                 });
             } else {
