@@ -64,11 +64,11 @@ module.exports = function (app) {
         require('./index/oauth.js')(app)
     );
     app.post(
-        '/create',
+        '/channel/create',
         app.set('helpers').user.xhrAccess,
         app.set('helpers').user.session,
         app.set('helpers').user.userAccess,
-        require('./index/create.js')(app)
+        require('./channel/create.js')(app)
     );
     app.post(
         '/channel/list',

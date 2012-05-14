@@ -1277,15 +1277,35 @@
                 privateMethods.channel.qtips.info.tooltip($(this), $(this).parent().next().find('span.name').text(), channelId);
             });
 
-            privateMethods.channels.create();
-        },
-        create:function () {
+            setTimeout(function () {
+                $('#channel-list menu li').sortElements(function (a, b) {
+                    return parseInt($(a).find('span.count').text()) > parseInt($(b).find('span.count').text()) ? -1 : 1;
+                });
+            }, 60000);
+
             var limit = 100;
-            $('form.create-channel textarea').keyup(function () {
-                if (this.value.length >= limit) {
-                    this.value = this.value.substring(0, limit);
+
+            $('form.create-channel #channel-description').keyup(function () {
+                if ($(this).val().length >= limit) {
+                    $(this).val($(this).val().substring(0, limit));
                 }
-                $('form.create-channel span.chars').text(limit - this.value.length);
+                $('form.create-channel span.chars').text(limit - $(this).val().length);
+            });
+
+            $('form.create-channel #channel-name').keyup(function (e) {
+                if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 || e.keyCode <= 122)) {
+                    $('form.create-channel #channel-url').val($.fn.sys().translit.goRu2En($(this).val()));
+                }
+            });
+
+            $('section.create-channel span.channel-hidden').on('click', function () {
+                if ($(this).prev().prop('checked')) {
+                    $(this).removeClass('checked').html('off');
+                    $(this).prev().prop('checked', false);
+                } else {
+                    $(this).addClass('checked').html('on');
+                    $(this).prev().prop('checked', true);
+                }
             });
         },
         showChannelList:function (remember) {
@@ -1394,7 +1414,7 @@
         toogle: function(name, callback) {
             if (!privateMethods.layers.items[name]) return;
             if ($(privateMethods.layers.items[name].layer).is(':visible')) {
-                privateMethods.layers.hide();
+                privateMethods.layers.hide(callback);
                 $('#container').fadeTo('fast', 1);
                 $('#message').focus();
             } else {

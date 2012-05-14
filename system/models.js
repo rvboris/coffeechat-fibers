@@ -13,9 +13,17 @@ exports.define = function (app, mongoose, callback) {
     };
 
     var validators = {
-        isValidName: function (name) {
+        isValidUserName: function (name) {
             try {
                 vdr.check(name).len(3, 15).regex(regexp.alphabet);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        },
+        isValidUserEmail: function (email) {
+            try {
+                vdr.check(email).len(6, 64).isEmail();
             } catch (e) {
                 return false;
             }
@@ -29,17 +37,33 @@ exports.define = function (app, mongoose, callback) {
             }
             return true;
         },
-        isValidEmail: function (email) {
+        isValidMessage: function (message) {
             try {
-                vdr.check(email).len(6, 64).isEmail();
+                vdr.check(message).notEmpty();
             } catch (e) {
                 return false;
             }
             return true;
         },
-        isValidMessage: function (message) {
+        isValidChannelName: function (name) {
             try {
-                vdr.check(message).notEmpty();
+                vdr.check(name).len(4, 30).regex(regexp.alphabet);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        },
+        isValidChannelUrl: function (name) {
+            try {
+                vdr.check(name).len(3, 15).isAlphanumeric()
+            } catch (e) {
+                return false;
+            }
+            return true;
+        },
+        isValidChannelDescription: function (name) {
+            try {
+                vdr.check(name).len(10, 100).regex(regexp.alphabet);
             } catch (e) {
                 return false;
             }
@@ -58,11 +82,11 @@ exports.define = function (app, mongoose, callback) {
 
     var defineUserModel = function () {
         var user = new schema({
-            'name':     { 'type': String, 'index': true, 'required': true, 'unique': true, 'set': setters.stringSetter, 'validate': [validators.isValidName, 'invalid name'] },
+            'name':     { 'type': String, 'index': true, 'required': true, 'unique': true, 'set': setters.stringSetter, 'validate': [validators.isValidUserName, 'invalid name'] },
             'password': { 'type': String, 'required': true, 'validate': [ validators.isValidPassword, 'invalid password'] },
             'role':     { 'type': String, 'default': 'U', 'enum': ['U', 'R', 'S'] }, // U - User, R - Root, S - System
             'salt':     { 'type': String, 'required': true },
-            'email':    { 'type': String, 'set': setters.stringSetter, 'validate': [validators.isValidEmail, 'invalid email'] },
+            'email':    { 'type': String, 'set': setters.stringSetter, 'validate': [validators.isValidUserEmail, 'invalid email'] },
             'gender':   { 'type': String, 'default': 'N', 'enum': ['N', 'W', 'M'] }, // N - Neutral, W - Woman, M - Man
             'status':   { 'type': String, 'default': 'O', 'enum': ['O', 'F', 'A', 'U']}, // O - Online, F - Offline, A - Away, U - Unavailable
             'date':     { 'type': Date, 'default': new Date() },
@@ -121,7 +145,7 @@ exports.define = function (app, mongoose, callback) {
         });
 
         user.pre('save', function (next) {
-            if (this.password.length < 30 && this.password.length > 5)
+            if (this.password.length <= 30 && this.password.length >= 6)
                 this.password = this.encryptPassword(this.password);
 
             next();
@@ -134,19 +158,41 @@ exports.define = function (app, mongoose, callback) {
 
     var defineChannelModel = function () {
         var channel = new schema({
-            'name':        { 'type': String, 'required': true, 'unique': true },
-            'description': { 'type': String, 'required': false },
-            'url':         { 'type': String, 'required': true, 'unique': true },
+            'name':        { 'type': String, 'required': true, 'unique': true, 'validate': [validators.isValidChannelName, 'invalid channel name'] },
+            'description': { 'type': String, 'required': false, 'validate': [validators.isValidChannelDescription, 'invalid channel description'] },
+            'url':         { 'type': String, 'required': true, 'unique': true, 'validate': [validators.isValidChannelUrl, 'invalid channel url'] },
             'private':     { 'type': Boolean, 'default': false },
+            'hidden':      { 'type': Boolean, 'default': false },
             'owner':       { 'type': objectId, 'required': true },
             'date':        { 'type': Date, 'default': new Date() },
-            'password':    { 'type': String, 'required': false }
+            'password':    { 'type': String, 'required': false, 'validate': [ validators.isValidPassword, 'invalid password'] },
+            'salt':        { 'type': String, 'required': false }
         });
 
         channel.statics.params = {};
 
         channel.virtual('id').get(function () {
             return this._id.toHexString();
+        });
+
+        channel.virtual('secret').set(function (password) {
+            this.set('password', password);
+            this.set('salt', this.makeSalt());
+        });
+
+        channel.method('makeSalt', function () {
+            return Math.round((new Date().valueOf() * Math.random())) + '';
+        });
+
+        channel.method('encryptPassword', function (password) {
+            return crypto.createHmac('sha512', this.salt).update(password).digest('hex') + '@h';
+        });
+
+        channel.pre('save', function (next) {
+            if (this.password && this.password.length <= 30 && this.password.length >= 6)
+                this.password = this.encryptPassword(this.password);
+
+            next();
         });
 
         app.set('log').debug('channel model is loaded');
