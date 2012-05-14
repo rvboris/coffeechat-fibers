@@ -86,6 +86,14 @@ module.exports = function (app) {
                             return;
                         }
 
+                        if (channel['password']) {
+                            if (!message.password) {
+                                app.set('log').debug('subscribe error, password not found');
+                                message.error = 'Для доступа к этой комнате требуется пароль';
+                                return;
+                            }
+                        }
+
                         app.set('events').emit('guestSubscribe', message);
                     }
                 } else { // Is user

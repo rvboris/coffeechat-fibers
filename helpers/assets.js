@@ -45,6 +45,7 @@ module.exports = function(env, paths, options) {
                 paths.js.jqueryPlugins + '/jquery.emoticons.js',
                 paths.js.jqueryPlugins + '/jquery.serialize.js',
                 paths.js.jqueryPlugins + '/jquery.autoresize.js',
+                paths.js.jqueryPlugins + '/jquery.sortElements.js',
                 paths.js.library + '/audio-fx.js',
                 paths.js.library + '/faye.js'
             ])

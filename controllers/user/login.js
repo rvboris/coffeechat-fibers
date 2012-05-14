@@ -33,10 +33,6 @@ module.exports = function (app) {
                     return { error: 'Неверный логин или пароль' };
                 }
             } else {
-                if (auth.password && (auth.password.length < 6 || auth.password.length > 30)) {
-                    return { error: 'Недопустимый размер пароля' };
-                }
-
                 user = new app.User({ name: auth.name, secret: auth.password });
                 user.save.sync(user);
 

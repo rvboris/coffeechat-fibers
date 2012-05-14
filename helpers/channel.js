@@ -49,7 +49,7 @@ module.exports = function (app) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
                     token: app.set('serverToken'),
                     action: 'con',
-                    user: app.set('helpers').user.createPublic(user)
+                    users: [ app.set('helpers').user.createPublic(user) ]
                 });
             }
 
