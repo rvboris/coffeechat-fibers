@@ -117,9 +117,9 @@ module.exports = function (app) {
         require('./channel/info.js')(app)
     );
     app.post(
-        '/channel/:channel/description',
+        '/channel/:channel/params',
         app.set('helpers').user.xhrAccess,
-        require('./channel/description.js')(app)
+        require('./channel/params.js')(app)
     );
     app.post(
         '/user/:name/profile',

@@ -60,7 +60,12 @@ module.exports = function (app) {
                 }
             }
 
-            return { user: user, newSubscriptions: newSubscriptions, userChannels: userChannels };
+            return {
+                user: user,
+                newSubscriptions: newSubscriptions,
+                userChannels: userChannels,
+                channelsOwner: app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id'])
+            };
         }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
@@ -117,7 +122,11 @@ module.exports = function (app) {
             }
 
             if (result.user) {
-                res.send(app.set('helpers').user.createPrivate(result.user));
+                var privateData = app.set('helpers').user.createPrivate(result.user);
+                privateData.channelsOwner = result.channelsOwner ? result.channelsOwner.map(function (channel) {
+                    return channel.id;
+                }) : [];
+                res.send(privateData);
                 return;
             }
 

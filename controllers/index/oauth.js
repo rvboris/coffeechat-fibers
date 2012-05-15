@@ -21,7 +21,14 @@ module.exports = function (app) {
             }
         }
 
-        return { user: user, newSubscriptions: newSubscriptions, userChannels: userChannels };
+
+
+        return {
+            user: user,
+            newSubscriptions: newSubscriptions,
+            userChannels: userChannels,
+            channelsOwner: app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id'])
+        };
     }
 
     return function (req, res) {
@@ -99,7 +106,11 @@ module.exports = function (app) {
                 return res.send({ error: result.error });
             }
 
-            res.send(app.set('helpers').user.createPrivate(result.user));
+            var privateData = app.set('helpers').user.createPrivate(result.user);
+            privateData.channelsOwner = result.channelsOwner ? result.channelsOwner.map(function (channel) {
+                return channel.id;
+            }) : [];
+            res.send(privateData);
 
             if (result.newSubscriptions.length) {
                 (function publish (iteration) {
