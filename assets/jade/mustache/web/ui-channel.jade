@@ -10,6 +10,13 @@ script(type='text/html')#mu-ui-channel-qtips-private
     button(data-name='{{name}}', onclick='$.fn.sys().actions.private.yes("{{name}}")').yes Да
     button(data-name='{{name}}', onclick='$.fn.sys().actions.private.no("{{name}}")').no Нет
 
+script(type='text/html')#mu-ui-channel-qtips-password
+  span Пароль:
+  input(type='password').channel-password
+  div.actions.yesno.clearfix
+    button(onclick='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val())').send Отправить
+    button(onclick='$.fn.ufc().channel.qtips.passwordCallback(false)').cancel Отмена
+
 script(type='text/html')#mu-ui-channel-qtips-profile
   img(src='{{pic}}', height='60', width='60').pic
   ul.clearfix.profile

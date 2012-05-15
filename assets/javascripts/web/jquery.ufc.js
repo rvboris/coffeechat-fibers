@@ -1373,7 +1373,7 @@
             }
         },
         qtips: {
-            'private': function(name) {
+            'private': function (name) {
                 $(window).qtip($.extend(true, {}, privateMethods.channel.qtips.modalParams, {
                     id: 'privateModal',
                     content: {
@@ -1385,7 +1385,31 @@
                         }
                     }
                 }));
-            }
+            },
+            'password': function (channelName, channelId, params, callback) {
+                privateMethods.channel.qtips.passwordCallbackParams = arguments;
+
+                $(window).qtip($.extend(true, {}, privateMethods.channel.qtips.modalParams, {
+                    id: 'passwordModal',
+                    content: {
+                        text: mote.compile($('#mu-ui-channel-qtips-password').html())(),
+                        title: 'Комната защищена паролем'
+                    }
+                }));
+            },
+            'passwordCallback': function (result) {
+                if (result === false) {
+                    $(window).qtip('api').hide();
+                    return;
+                }
+                if (privateMethods.channel.qtips.passwordCallbackParams[2] === null) {
+                    privateMethods.channel.qtips.passwordCallbackParams[2] = {};
+                }
+                privateMethods.channel.qtips.passwordCallbackParams[2].password = result;
+                $.fn.sys().channel.subscribe.apply(null, privateMethods.channel.qtips.passwordCallbackParams);
+                privateMethods.channel.qtips.passwordCallbackParams = null;
+            },
+            'passwordCallbackParams': null
         },
         format: function(channel) {
             return mote.compile($('#mu-ui-channel-format').html())({ channel: channel });

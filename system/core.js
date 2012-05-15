@@ -80,18 +80,10 @@ module.exports = function (app) {
                             return;
                         }
 
-                        if (channel['private']) {
-                            app.set('log').debug('guests have access only to the main chat');
+                        if (channel['private'] || channel['password']) {
+                            app.set('log').debug('guests have access only to the public channels');
                             message.error = 'Гости имеют доступ только к публичным комнатам';
                             return;
-                        }
-
-                        if (channel['password']) {
-                            if (!message.password) {
-                                app.set('log').debug('subscribe error, password not found');
-                                message.error = 'Для доступа к этой комнате требуется пароль';
-                                return;
-                            }
                         }
 
                         app.set('events').emit('guestSubscribe', message);
@@ -252,6 +244,22 @@ module.exports = function (app) {
                                 }
                             }
                             return;
+                        }
+
+                        if (!channel) {
+                            channel = app.Channel.findById.sync(app.Channel, matches[1]);
+                        }
+
+                        if (channel.password && channel.owner.toHexString() !== user.id) {
+                            if (!message.password) {
+                                app.set('log').debug('access denied, password not found');
+                                message.error = 'Для этой комнаты требуется пароль';
+                                return;
+                            } else if (!channel.authenticate(message.password)) {
+                                app.set('log').debug('access denied, wrong password');
+                                message.error = 'Доступ запрещен, неверный пароль';
+                                return;
+                            }
                         }
 
                         var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, matches[1]);

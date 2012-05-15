@@ -188,6 +188,10 @@ exports.define = function (app, mongoose, callback) {
             return crypto.createHmac('sha512', this.salt).update(password).digest('hex') + '@h';
         });
 
+        channel.method('authenticate', function (txt) {
+            return txt.length > 30 ? false : this.encryptPassword(txt) === this.password;
+        });
+
         channel.pre('save', function (next) {
             if (this.password && this.password.length <= 30 && this.password.length >= 6)
                 this.password = this.encryptPassword(this.password);
