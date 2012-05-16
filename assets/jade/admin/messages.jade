@@ -27,7 +27,7 @@ else
   .row-fluid
     .span4
       form(method='GET', action='/admin/messages/').form-search#message-search
-        input(type='text', name='text').input-medium.search-query
+        input(type='text', name='text', maxlength='50').input-medium.search-query
         button(type='submit').btn
           i.icon-search
           |  Поиск

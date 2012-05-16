@@ -9,7 +9,8 @@ exports.define = function (app, mongoose, callback) {
 
     var regexp = {
         url: /([a-zA-Z]+):\/\/([^:\/?#\s]+)+(:\d+)?(\/[^?#\s]+)?(\?[^#\s]+)?(#[^\s]+)?/,
-        alphabet: /^[А-Яа-яЁёA-Za-z0-9\s]+$/
+        alphabet: /^[А-Яа-яЁёA-Za-z0-9\s]+$/,
+        channelUrl: /^[A-Za-z0-9\-]+$/
     };
 
     var validators = {
@@ -55,7 +56,7 @@ exports.define = function (app, mongoose, callback) {
         },
         isValidChannelUrl: function (name) {
             try {
-                vdr.check(name).len(3, 15).isAlphanumeric()
+                vdr.check(name).len(3, 40).regex(regexp.channelUrl);
             } catch (e) {
                 return false;
             }
@@ -77,6 +78,9 @@ exports.define = function (app, mongoose, callback) {
         },
         md5Setter: function (value) {
             return crypto.createHash('md5').update(value).digest('hex');
+        },
+        channelUrlSetter: function (value) {
+            return filter(value.toLowerCase()).trim();
         }
     };
 
@@ -158,9 +162,9 @@ exports.define = function (app, mongoose, callback) {
 
     var defineChannelModel = function () {
         var channel = new schema({
-            'name':        { 'type': String, 'required': true, 'unique': true, 'validate': [validators.isValidChannelName, 'invalid channel name'] },
-            'description': { 'type': String, 'required': false, 'validate': [validators.isValidChannelDescription, 'invalid channel description'] },
-            'url':         { 'type': String, 'required': true, 'unique': true, 'validate': [validators.isValidChannelUrl, 'invalid channel url'] },
+            'name':        { 'type': String, 'required': true, 'unique': true, 'set': setters.stringSetter, 'validate': [validators.isValidChannelName, 'invalid channel name'] },
+            'description': { 'type': String, 'required': false, 'set': setters.stringSetter, 'validate': [validators.isValidChannelDescription, 'invalid channel description'] },
+            'url':         { 'type': String, 'required': true, 'set': setters.channelUrlSetter, 'unique': true, 'validate': [validators.isValidChannelUrl, 'invalid channel url'] },
             'private':     { 'type': Boolean, 'default': false },
             'hidden':      { 'type': Boolean, 'default': false },
             'owner':       { 'type': objectId, 'required': true },

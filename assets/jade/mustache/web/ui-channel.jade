@@ -11,9 +11,9 @@ script(type='text/html')#mu-ui-channel-qtips-private
     button(data-name='{{name}}', onclick='$.fn.sys().actions.private.no("{{name}}")').no Нет
 
 script(type='text/html')#mu-ui-channel-qtips-password
-  span Пароль:
-  input(type='password').channel-password
-  div.actions.yesno.clearfix
+  span.channel-password Пароль:
+  input(type='password', maxlength='30').channel-password
+  div.actions.channel-password.clearfix
     button(onclick='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val())').send Отправить
     button(onclick='$.fn.ufc().channel.qtips.passwordCallback(false)').cancel Отмена
 

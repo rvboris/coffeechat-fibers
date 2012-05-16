@@ -262,7 +262,7 @@ module.exports = function (app) {
                             }
                         }
 
-                        var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, matches[1]);
+                        var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channel.id);
 
                         if (result.error) {
                             message.error = result.error;
@@ -271,24 +271,26 @@ module.exports = function (app) {
 
                         if (!result.update && !user.isSystem()) {
                             var subscriptionsCount = app.Subscription.count.sync(app.Subscription, {
-                                channelId: matches[1],
+                                channelId: channel.id,
                                 userId: { $nin: app.set('systemUserIds') }
                             });
 
-                            app.set('faye').bayeux.getClient().publish('/channel/' + matches[1] + '/users', {
+                            app.set('faye').bayeux.getClient().publish('/channel/' + channel.id + '/users', {
                                 token: app.set('serverToken'),
                                 action: 'con',
                                 users: [
                                     { name: user.name, gender: user.gender, status: user.status }
                                 ]
                             }).callback(function () {
-                                app.set('faye').bayeux.getClient().publish('/channel-list', {
-                                    token: app.set('serverToken'),
-                                    action: 'upd',
-                                    channels: [
-                                        { id: matches[1], diff: 1, count: subscriptionsCount }
-                                    ]
-                                })
+                                if (!channel.hidden) {
+                                    app.set('faye').bayeux.getClient().publish('/channel-list', {
+                                        token: app.set('serverToken'),
+                                        action: 'upd',
+                                        channels: [
+                                            { id: channel.id, diff: 1, count: subscriptionsCount }
+                                        ]
+                                    });
+                                }
                             });
                         }
 
@@ -327,6 +329,10 @@ module.exports = function (app) {
 
                         channelId = matches[1];
 
+                        if (!channel) {
+                            channel = app.Channel.findById.sync(app.Channel, channelId);
+                        }
+
                         subscription = app.Subscription.findOne.sync(app.Subscription, {
                             channelId: channelId,
                             userId: user.id
@@ -349,22 +355,25 @@ module.exports = function (app) {
                                 ]
                             }).callback(function () {
                                 app.set('log').debug('user list updated');
-                                app.set('faye').bayeux.getClient().publish('/channel-list', {
-                                    token: app.set('serverToken'),
-                                    action: 'upd',
-                                    channels: [
-                                        {
-                                            id: subscription.channelId.toHexString(),
-                                            diff: -1,
-                                            count: app.Subscription.count.sync(app.Subscription, {
-                                                channelId: subscription.channelId,
-                                                userId: { $nin: app.set('systemUserIds') }
-                                            })
-                                        }
-                                    ]
-                                }).callback(function () {
-                                    app.set('log').debug('channel list updated');
-                                });
+
+                                if (!channel.hidden) {
+                                    app.set('faye').bayeux.getClient().publish('/channel-list', {
+                                        token: app.set('serverToken'),
+                                        action: 'upd',
+                                        channels: [
+                                            {
+                                                id: subscription.channelId.toHexString(),
+                                                diff: -1,
+                                                count: app.Subscription.count.sync(app.Subscription, {
+                                                    channelId: subscription.channelId,
+                                                    userId: { $nin: app.set('systemUserIds') }
+                                                })
+                                            }
+                                        ]
+                                    }).callback(function () {
+                                        app.set('log').debug('channel list updated');
+                                    });
+                                }
                             });
                         }
                     }
