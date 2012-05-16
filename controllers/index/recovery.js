@@ -95,7 +95,7 @@ module.exports = function (app) {
                 return;
             }
 
-            try {
+            sync(function () {
                 res.render(req.mobile ? 'mobile/recovery' : 'web/recovery', {
                     user: app.set('helpers').user.createPrivate(result),
                     serverKey: app.set('serverKey'),
@@ -105,10 +105,12 @@ module.exports = function (app) {
                     csrf: req.session._csrf,
                     recaptcha: recaptcha.getCaptchaHtml(nconf.get('recaptcha').publicKey, res.error)
                 });
-            } catch (err) {
-                app.set('log').error(err.stack);
-                res.send(500);
-            }
+            }, function (err) {
+                if (err) {
+                    app.set('log').error(err.stack);
+                    res.send(500);
+                }
+            });
         });
     }
 };

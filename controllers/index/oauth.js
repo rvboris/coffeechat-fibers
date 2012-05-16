@@ -4,7 +4,7 @@ var rbytes = require('rbytes');
 var get    = require('get');
 
 module.exports = function (app) {
-    function successLogin (channels, user) {
+    var successLogin = function (channels, user) {
         for (var i = 0, newSubscriptions = [], userChannels = [], result; i < channels.length; i++) {
             result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channels[i]);
             if (result.error) return result;
@@ -12,7 +12,8 @@ module.exports = function (app) {
                 newSubscriptions.push({
                     id: channels[i],
                     diff: 1,
-                    count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i], userId: { $nin: app.set('systemUserIds') } })
+                    count: app.Subscription.count.sync(app.Subscription, { channelId: channels[i], userId: { $nin: app.set('systemUserIds') } }),
+                    hidden: result.channel.hidden
                 });
                 if (!userChannels[channels[i]]) {
                     userChannels[channels[i]] = [];
@@ -21,15 +22,12 @@ module.exports = function (app) {
             }
         }
 
-
-
         return {
-            user: user,
+            user: app.set('helpers').user.createPrivate.sync(app.set('helpers').user, user),
             newSubscriptions: newSubscriptions,
-            userChannels: userChannels,
-            channelsOwner: app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id'])
+            userChannels: userChannels
         };
-    }
+    }.async();
 
     return function (req, res) {
         if (!req.body.token || !req.body.channels) {
@@ -61,7 +59,7 @@ module.exports = function (app) {
                 });
                 if (oauthUser) {
                     req.session.user = { id: oauthUser.id };
-                    return successLogin(req.body.channels, oauthUser);
+                    return successLogin.sync(this, req.body.channels, oauthUser);
                 }
                 app.set('log').debug('this name is already taken');
                 return { error: 'Такое имя уже занято' };
@@ -79,7 +77,7 @@ module.exports = function (app) {
             newUser.save.sync(newUser);
             app.set('syncServer').task('user', 'start');
             req.session.user = { id: newUser.id };
-            return successLogin(req.body.channels, newUser);
+            return successLogin.sync(this, req.body.channels, newUser);
         }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
@@ -106,11 +104,7 @@ module.exports = function (app) {
                 return res.send({ error: result.error });
             }
 
-            var privateData = app.set('helpers').user.createPrivate(result.user);
-            privateData.channelsOwner = result.channelsOwner ? result.channelsOwner.map(function (channel) {
-                return channel.id;
-            }) : [];
-            res.send(privateData);
+            res.send(result.user);
 
             if (result.newSubscriptions.length) {
                 (function publish (iteration) {
@@ -128,7 +122,12 @@ module.exports = function (app) {
                             app.set('faye').bayeux.getClient().publish('/channel-list', {
                                 token: app.set('serverToken'),
                                 action: 'upd',
-                                channels: result.newSubscriptions
+                                channels: result.newSubscriptions.map(function (channel) {
+                                    if (!channel.hidden) {
+                                        delete channel.hidden;
+                                        return channel;
+                                    }
+                                })
                             }).callback(function () {
                                 app.set('log').debug('channel list updated');
                             });

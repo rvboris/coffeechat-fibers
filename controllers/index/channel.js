@@ -19,7 +19,7 @@ module.exports = function (app) {
             }
 
             res.render(req.mobile ? 'mobile' : 'web', {
-                user: app.set('helpers').user.createPrivate(req.user),
+                user: app.set('helpers').user.createPrivate.sync(app.set('helpers').user, req.user),
                 channels: {
                     main: {
                         id: app.set('channels').main.id,

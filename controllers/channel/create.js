@@ -85,18 +85,22 @@ module.exports = function (app) {
                 }
             }
 
-            app.set('faye').bayeux.getClient().publish('/channel-list', {
-                token: app.set('serverToken'),
-                action: 'add',
-                channel: {
-                    id: channel.id,
-                    name: channel.name,
-                    url: channel.url,
-                    count: 0
-                }
-            }).callback(function() {
-                res.send({ id: channel.id });
-            });
+            if (!channel.hidden) {
+                app.set('faye').bayeux.getClient().publish('/channel-list', {
+                    token: app.set('serverToken'),
+                    action: 'add',
+                    channel: {
+                        id: channel.id,
+                        name: channel.name,
+                        url: channel.url,
+                        count: 0
+                    }
+                }).callback(function () {
+                    res.send({ id: channel.id, url: channel.url });
+                });
+            } else {
+                res.send({ id: channel.id, url: channel.url });
+            }
         });
     };
 };

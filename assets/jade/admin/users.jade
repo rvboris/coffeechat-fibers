@@ -32,7 +32,7 @@ else
   .row-fluid
     .span4
       form(method='GET', action='/admin/users/').form-search#user-search
-        input(type='text', name='name').input-medium.search-query
+        input(type='text', name='name', maxlength='15').input-medium.search-query
         button(type='submit').btn
           i.icon-search
           |  Поиск по имени

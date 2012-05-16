@@ -750,8 +750,8 @@
                                         messages: data.messages,
                                         owner: data.owner,
                                         date: $.fn.sys().time.date($.fn.sys().time.parse(data.date)),
-                                        url: $('#channels li button#channel-' + channelId).data('url'),
-                                        ifOwner: data.owner !== '$',
+                                        url: data.url,
+                                        ifOwner: (data.owner !== '$') && (data.owner !== $.fn.sys().options.currentUser.name),
                                         ifMessages: data.messages > 0
                                     }));
                                 },
@@ -1294,7 +1294,7 @@
 
             $('form.create-channel #channel-name').keyup(function (e) {
                 if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 || e.keyCode <= 122)) {
-                    $('form.create-channel #channel-url').val($.fn.sys().translit.goRu2En($(this).val()));
+                    $('form.create-channel #channel-url').val($.fn.sys().translit.goRu2En($(this).val()).split(' ').join('-'));
                 }
             });
 

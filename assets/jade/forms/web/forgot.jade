@@ -4,6 +4,6 @@ form(method='POST').forgot.clearfix.expand
   input(type='hidden', name='_csrf', value='#{csrf}')
   div.clearfix
     label(for='name') Ваш Email
-    input(type='text', name='user[email]', required='true')
+    input(type='text', name='user[email]', required='true', maxlength='64')
   input(type='submit', value='Восстановить')
   button.cancel Отмена

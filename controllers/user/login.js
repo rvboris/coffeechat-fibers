@@ -53,7 +53,8 @@ module.exports = function (app) {
                         count: app.Subscription.count.sync(app.Subscription, {
                             channelId: channels[i],
                             userId: { $nin: app.set('systemUserIds') }
-                        })
+                        }),
+                        hidden: result.channel.hidden
                     });
                     if (!userChannels[channels[i]]) userChannels[channels[i]] = [];
                     userChannels[channels[i]].push({ name: user.name, gender: user.gender, status: user.status });
@@ -61,10 +62,9 @@ module.exports = function (app) {
             }
 
             return {
-                user: user,
+                user: app.set('helpers').user.createPrivate.sync(app.set('helpers').user, user),
                 newSubscriptions: newSubscriptions,
-                userChannels: userChannels,
-                channelsOwner: app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id'])
+                userChannels: userChannels
             };
         }, function (err, result) {
             if (err) {
@@ -112,7 +112,12 @@ module.exports = function (app) {
                             app.set('faye').bayeux.getClient().publish('/channel-list', {
                                 token: app.set('serverToken'),
                                 action: 'upd',
-                                channels: result.newSubscriptions
+                                channels: result.newSubscriptions.map(function (channel) {
+                                    if (!channel.hidden) {
+                                        delete channel.hidden;
+                                        return channel;
+                                    }
+                                })
                             }).callback(function () {
                                 app.set('log').debug('channel list updated');
                             });
@@ -122,11 +127,7 @@ module.exports = function (app) {
             }
 
             if (result.user) {
-                var privateData = app.set('helpers').user.createPrivate(result.user);
-                privateData.channelsOwner = result.channelsOwner ? result.channelsOwner.map(function (channel) {
-                    return channel.id;
-                }) : [];
-                res.send(privateData);
+                res.send(result.user);
                 return;
             }
 

@@ -74,8 +74,11 @@ module.exports = function (app) {
                 status: user.status,
                 ignore: user.ignore,
                 settings: user.settings,
-                role: user.role
+                role: user.role,
+                channelsOwner: user.id === '0' ? [] : app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id']).map(function (channel) {
+                    return channel.id;
+                }) || []
             };
-        }
+        }.async()
     };
 };

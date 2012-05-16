@@ -3,19 +3,19 @@ form(method='POST').create-channel.clearfix.expand
   input(type='hidden', name='_csrf', value='#{csrf}')
   div.clearfix
     label(for='name') Имя команты
-    input(type='text', name='channel[name]', required='true')#channel-name
+    input(type='text', name='channel[name]', required='true', maxlength='30')#channel-name
   div.clearfix
     label(for='url') URL адрес
-    input(type='text', name='channel[url]', required='false')#channel-url
+    input(type='text', name='channel[url]', required='false', maxlength='40')#channel-url
   div.clearfix.description
     label(for='description')
       | Краткое описание (
-      span.chars 0
+      span.chars 100
       | )
-    textarea(name='channel[description]')#channel-description
+    textarea(name='channel[description]', maxlength='100')#channel-description
   div.crearfix
     label(for='password') Пароль
-    input(type='password', name='channel[password]', required='false')#channel-password
+    input(type='password', name='channel[password]', required='false', maxlength='30')#channel-password
   div.clearfix
     label(for='password') Скрывать чат
     span.hidden-container

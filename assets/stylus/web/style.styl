@@ -339,6 +339,16 @@
     background-image: linear-gradient(top, #3A344B, #292736);
   }
 
+  #create-channel.disabled, #create-channel.disabled:hover, #create-channel.disabled.pressed {
+    background-color: #5c5c5e;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#5c5c5e), to(#454545));
+    background-image: -webkit-linear-gradient(top, #5c5c5e, #454545);
+    background-image: -moz-linear-gradient(top, #5c5c5e, #454545);
+    background-image: -ms-linear-gradient(top, #5c5c5e, #454545);
+    background-image: -o-linear-gradient(top, #5c5c5e, #454545);
+    background-image: linear-gradient(to bottom, #5c5c5e, #454545);
+  }
+
   aside.sidebar input::-webkit-input-placeholder { color: #95A6AA; }
   aside.sidebar input:-moz-placeholder { color: #95A6AA; }
 
@@ -1104,6 +1114,11 @@ input, textarea, button
         &:active, &.pressed
           border 1px solid #23212E
           box-shadow 1px 1px 0 #625A85
+        &.disabled
+          cursor default
+          border 1px solid #6b6b6b
+          box-shadow 1px 1px 0 #333
+          color #BDBDBD
 #channels
   position: absolute
   top 10px
@@ -1665,6 +1680,26 @@ input, textarea, button
     width 50px
     margin 0 5px
     float right
+.qtip
+  div.actions.channel-password
+    margin-bottom 5px
+    button
+      width 80px
+      margin 0 5px
+      float right
+  span.channel-password
+    margin 8px 0 0 30px
+    float left
+  input[type=password].channel-password
+    width 158px
+    float right
+    border 2px solid #97AEB3
+    border-radius 5px
+    outline none
+    padding 2px 4px
+    margin 5px 5px 10px 0
+    &:focus
+      border-color #6EB1DB
 .qtip .channelinfo
     width 200px
     margin 0
