@@ -59,8 +59,11 @@ script(type='text/html')#mu-ui-channel-qtips-info
   .actions.channelinfo.clearfix
     button(onclick='window.print()') Печать
     | {{#ifMessages}}
-    a(href='/archive/{{url}}', target='_blank') Архив сообщений
+    a(href='/archive/{{url}}', target='_blank') Архив
     | {{/ifMessages}}
+    | {{#ifRemove}}
+    button(onclick='$.fn.sys().channel.remove("{{channelId}}")') Удалить
+    | {{/ifRemove}}
 
 script(type='text/html')#mu-ui-channel-type-private
   li(style='{{isHidden}}') {{name}}

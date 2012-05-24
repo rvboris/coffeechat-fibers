@@ -202,7 +202,7 @@ module.exports = function (app) {
                                 } else {
                                     msg.validate.sync(msg);
                                 }
-                            } else if (!channel['private']) {
+                            } else if (!channel['private'] && !channel['password']) {
                                 msg.save.sync(msg);
                             } else {
                                 msg.validate.sync(msg);
