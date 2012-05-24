@@ -751,8 +751,10 @@
                                         owner: data.owner,
                                         date: $.fn.sys().time.date($.fn.sys().time.parse(data.date)),
                                         url: data.url,
+                                        channelId: channelId,
                                         ifOwner: (data.owner !== '$') && (data.owner !== $.fn.sys().options.currentUser.name),
-                                        ifMessages: data.messages > 0
+                                        ifMessages: data.messages > 0,
+                                        ifRemove: data.owner === $.fn.sys().options.currentUser.name
                                     }));
                                 },
                                 data: { _csrf: privateMethods.options.csrf }
