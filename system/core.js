@@ -340,11 +340,13 @@ module.exports = function (app) {
 
                         if (!subscription) {
                             app.set('log').debug('subscription not found');
-                            message.error = 'Комната не найдена';
+                            message.error = 'Ошибка отписки';
                             return;
                         }
 
                         app.set('events').emit('userUnsubscribe', user, subscription);
+
+                        if (!channel) return;
 
                         if (!user.isSystem()) {
                             app.set('faye').bayeux.getClient().publish('/channel/' + subscription.channelId.toHexString() + '/users', {
