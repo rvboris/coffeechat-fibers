@@ -53,8 +53,11 @@ module.exports = function (app) {
 
             channel.save.sync(channel);
 
-            return channel;
-        }, function (err, channel) {
+            return {
+                channel: channel,
+                count: app.Channel.count.sync(app.Channel, { hidden: false, private: false })
+            };
+        }, function (err, result) {
             if (err) {
                 if (err.name && err.name === 'ValidationError') {
                     if (err.errors.name) {
@@ -85,21 +88,21 @@ module.exports = function (app) {
                 }
             }
 
-            if (!channel.hidden) {
+            if (!result.channel.hidden) {
                 app.set('faye').bayeux.getClient().publish('/channel-list', {
                     token: app.set('serverToken'),
                     action: 'add',
                     channel: {
-                        id: channel.id,
-                        name: channel.name,
-                        url: channel.url,
-                        count: 0
-                    }
+                        id: result.channel.id,
+                        name: result.channel.name,
+                        url: result.channel.url
+                    },
+                    count: result.count
                 }).callback(function () {
-                    res.send({ id: channel.id, url: channel.url });
+                    res.send({ id: result.channel.id, url: result.channel.url });
                 });
             } else {
-                res.send({ id: channel.id, url: channel.url });
+                res.send({ id: result.channel.id, url: result.channel.url });
             }
         });
     };
