@@ -124,7 +124,7 @@ module.exports = function (app) {
                             return;
                         }
 
-                        channel = app.Channel.findById.sync(app.Channel, channelId, ['url', 'private']);
+                        channel = app.Channel.findById.sync(app.Channel, channelId);
 
                         if (!channel) {
                             app.set('log').debug('channel not found');
@@ -202,7 +202,7 @@ module.exports = function (app) {
                                 } else {
                                     msg.validate.sync(msg);
                                 }
-                            } else if (!channel['private'] && !channel['password']) {
+                            } else if (!channel['private']) {
                                 msg.save.sync(msg);
                             } else {
                                 msg.validate.sync(msg);
@@ -340,7 +340,6 @@ module.exports = function (app) {
 
                         if (!subscription) {
                             app.set('log').debug('subscription not found');
-                            message.error = 'Ошибка отписки';
                             return;
                         }
 

@@ -84,14 +84,19 @@ module.exports = function (app) {
             app.set('log').debug('user "%s" send message', user.name);
 
             sync(function () {
-                if (!channel['private'] && !user.isSystem()) {
-                    app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
-                        id: message.id,
-                        userId: user.id,
-                        text: message.text
-                    });
-                    app.set('log').debug('add message ID %s to ES index', message.id);
-                }
+                if (channel.private)  return;
+                if (channel.hidden)   return;
+                if (channel.password) return;
+                if (user.isSystem())  return;
+
+                app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
+                    id: message.id,
+                    userId: user.id,
+                    channelId: channel.id,
+                    text: message.text
+                });
+
+                app.set('log').debug('add message ID %s to ES index', message.id);
             }, function (err) {
                 if (err) {
                     app.set('log').error(err.stack);

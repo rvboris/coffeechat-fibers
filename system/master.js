@@ -159,11 +159,12 @@ module.exports = function (argv) {
             for (i = 0; i < channelFiles.length; i++) {
                 channels.push(require(channelFiles[i]));
                 channels[i].channelId = app.set('helpers').channel.create.sync(app.set('helpers').channel, {
-                    'name': channels[i].channel,
-                    'description': channels[i].description,
-                    'url': channels[i].name,
-                    'private': false,
-                    'owner': app.set('users').root.id
+                    name: channels[i].channel,
+                    description: channels[i].description,
+                    url: channels[i].name,
+                    private: channels[i].private || false,
+                    hidden: channels[i].hidden || false,
+                    owner: app.set('users').root.id
                 }).id;
             }
 

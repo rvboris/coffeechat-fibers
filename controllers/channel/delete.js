@@ -1,7 +1,19 @@
-var sync = require('sync');
+var sync  = require('sync');
+var nconf = require('nconf');
 
 module.exports = function (app) {
+    nconf.use('file', { file: __dirname + '/../../config/' + app.set('argv').env + '.json' });
+
     var removeChannel = function (channel, res) {
+        if (app.Message.count.sync(app.Message, { channelId: channel.id }) > 0 && !channel.hidden && !channel.password) {
+            app.set('log').debug('remove messages from ES index');
+            app.set('helpers').elastic.sync(app.set('helpers'), 'deleteByQuery', nconf.get('elasticsearch').index, 'message', {
+                term: { channelId: channel.id }
+            });
+            app.set('log').debug('move messages to "deleted" channel');
+            app.Message.update.sync(app.Message, { channelId: channel.id }, { channelId: app.set('channels')['deleted'].id }, null);
+        }
+
         channel.remove.sync(channel);
 
         if (!channel.hidden) {

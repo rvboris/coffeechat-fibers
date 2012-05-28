@@ -739,7 +739,7 @@
                     $(button).removeData('qtip').qtip($.extend(true, {}, privateMethods.channel.qtips.floatParams, {
                         content: {
                             title: {
-                                text: 'Информация о чате "' + channelName + '"'
+                                text: 'Информация о чате'
                             },
                             text: 'Загрузка...',
                             ajax: {
@@ -753,7 +753,7 @@
                                         url: data.url,
                                         channelId: channelId,
                                         ifOwner: (data.owner !== '$') && (data.owner !== $.fn.sys().options.currentUser.name),
-                                        ifMessages: data.messages > 0,
+                                        ifMessages: data.messages > 0 && !data.hidden && !data.password,
                                         ifRemove: data.owner === $.fn.sys().options.currentUser.name
                                     }));
                                 },
