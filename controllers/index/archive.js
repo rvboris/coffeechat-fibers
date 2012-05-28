@@ -29,16 +29,28 @@ module.exports = function (app) {
 
         sync(function () {
             if (!req.params.channel) {
-                channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
+                channels = app.Channel.find.sync(app.Channel, {
+                    private: false,
+                    hidden: false,
+                    password: { $exists : false }
+                }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
             } else if (req.params.channel === 'p' && req.params.monthyear && app.set('helpers').utils.isInt(parseInt(req.params.monthyear))) {
-                channels = app.Channel.find.sync(app.Channel, { 'private': false }, ['name', 'url'], { skip: req.params.monthyear * channelsPerPage, limit: channelsPerPage });
+                channels = app.Channel.find.sync(app.Channel, {
+                    private: false,
+                    hidden: false,
+                    password: { $exists : false }
+                }, ['name', 'url'], { skip: req.params.monthyear * channelsPerPage, limit: channelsPerPage });
             }
 
             if (channels && channels.length > 0) {
                 title = 'Архив';
 
                 if (channels.length >= channelsPerPage) {
-                    pages = Math.floor(app.Channel.count.sync(app.Channel, { 'private': false }) / channelsPerPage);
+                    pages = Math.floor(app.Channel.count.sync(app.Channel, {
+                        private: false,
+                        hidden: false,
+                        password: { $exists: false }
+                    }) / channelsPerPage);
                 }
 
                 for (i = 0; i < channels.length; i++) {
@@ -63,7 +75,12 @@ module.exports = function (app) {
                 };
             }
 
-            channel = app.Channel.findOne.sync(app.Channel, { 'url': req.params.channel, 'private': false }, ['name', 'url']);
+            channel = app.Channel.findOne.sync(app.Channel, {
+                url: req.params.channel,
+                private: false,
+                hidden: false,
+                password: { $exists: false }
+            }, ['name', 'url']);
             if (!channel) return;
 
             title = 'Архив - ' + channel.name;
@@ -122,8 +139,8 @@ module.exports = function (app) {
 
                 if (!month || !year) return;
 
-                startDate = moment(new Date(year, month, 1, 0, 0, 0))['native']();
-                endDate = moment(new Date(year, month, 1, 0, 0, 0)).add('months', 1)['native']();
+                startDate = moment(new Date(year, month, 1, 0, 0, 0)).toDate();
+                endDate = moment(new Date(year, month, 1, 0, 0, 0)).add('months', 1).toDate();
 
                 function reduceMonthYearDay (key, values) {
                     var result = { count: 0 };
@@ -186,8 +203,8 @@ module.exports = function (app) {
 
                 if (!month || !year) return;
 
-                startDate = moment(new Date(year, month, req.params.day, 0, 0, 0))['native']();
-                endDate = moment(new Date(year, month, req.params.day, 0, 0, 0)).add('days', 1)['native']();
+                startDate = moment(new Date(year, month, req.params.day, 0, 0, 0)).toDate();
+                endDate = moment(new Date(year, month, req.params.day, 0, 0, 0)).add('days', 1).toDate();
 
                 page = req.params.page || 0;
                 pages = Math.floor(app.Message.count.sync(app.Message, {

@@ -71,11 +71,11 @@ module.exports = function (app) {
         require('./channel/create.js')(app)
     );
     app.post(
-        '/channel/remove/:channel',
+        '/channel/delete/:channel',
         app.set('helpers').user.xhrAccess,
         app.set('helpers').user.session,
         app.set('helpers').user.userAccess,
-        require('./channel/remove.js')(app)
+        require('./channel/delete.js')(app)
     );
     app.post(
         '/channel/list',
