@@ -8,7 +8,7 @@ module.exports = function (app) {
 
     return {
         name: name,
-        interval: 86400, // 24 hours
+        interval: 60, // 24 hours
         callback: function (recipient, stop, interval) {
             app.set('log').debug('find inactive channels');
 
@@ -16,7 +16,7 @@ module.exports = function (app) {
                 if (app.Channel.count.sync(app.Channel, { private: false }) === 0) return stop();
 
                 var channels = app.Channel.find.sync(app.Channel, {
-                    time: { $lt: new Date(new Date().getTime() - (interval) * 1000) }
+                    lastaccess: { $lt: new Date(new Date().getTime() - (interval) * 1000) }
                 });
 
                 if (!channels || channels.length === 0) return;
@@ -26,7 +26,9 @@ module.exports = function (app) {
                 // Remove messages from ES index and channels
 
                 for (var i = 0, commands = []; i < channels.length; i++) {
-                    if (app.Message.count.sync(app.Message, { channelId: channel.id }) > 0) {
+                    if (app.set('channels')[channels[i].url]) continue;
+
+                    if (app.Message.count.sync(app.Message, { channelId: channels[i].id }) > 0 && !channels[i].hidden && !channels[i].password) {
                         app.set('log').debug('remove messages from ES index');
                         app.set('helpers').elastic.sync(app.set('helpers'), 'deleteByQuery', nconf.get('elasticsearch').index, 'message', {
                             term: { channelId: channels[i].id }
@@ -36,7 +38,8 @@ module.exports = function (app) {
                         app.Message.update.sync(app.Message, { channelId: channels[i].id }, { channelId: app.set('channels')['deleted'].id }, null);
                     }
 
-                    app.set('log').debug('remove channel "%"', channels[i].name);
+                    app.set('log').debug('remove channel "%s"', channels[i].name);
+
                     commands.push({
                         channel: '/channel-list',
                         data: {
@@ -44,6 +47,7 @@ module.exports = function (app) {
                             channel: { id: channels[i].id }
                         }
                     });
+
                     channels[i].remove.sync(channels[i]);
                 }
 

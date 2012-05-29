@@ -86,7 +86,7 @@ module.exports = function (app) {
                             return;
                         }
 
-                        app.set('events').emit('guestSubscribe', message);
+                        app.set('events').emit('guestSubscribe', message, channel);
                     }
                 } else { // Is user
                     var user = app.User.findById.sync(app.User, token);

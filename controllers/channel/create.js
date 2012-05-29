@@ -88,6 +88,8 @@ module.exports = function (app) {
                 }
             }
 
+            app.set('syncServer').task('channel', 'start');
+
             if (!result.channel.hidden) {
                 app.set('faye').bayeux.getClient().publish('/channel-list', {
                     token: app.set('serverToken'),

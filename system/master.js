@@ -231,13 +231,13 @@ module.exports = function (argv) {
                 args.unshift(clients[conn.id]);
 
                 if (app.set('tasks')[plugin] && app.set('tasks')[plugin].task.syncObject && typeof app.set('tasks')[plugin].task.syncObject[command] === 'function') {
-                        if (typeof args[args.length - 1] === 'function') {
-                            args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
-                        } else {
-                            app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
-                        }
+                    if (typeof args[args.length - 1] === 'function') {
+                        args[args.length - 1](app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args));
+                    } else {
+                        app.set('tasks')[plugin].task.syncObject[command].apply(app.set('tasks')[plugin].task.syncObject[command], args);
                     }
-                };
+                }
+            };
         }).listen(app.set('argv').sync, '127.0.0.1');
 
         app.set('log').info('master server start listening on port %s', app.set('argv').sync);
