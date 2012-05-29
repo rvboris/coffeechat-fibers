@@ -55,17 +55,14 @@ module.exports = function (app) {
         },
         userConnect: function (user, message) {
             sync(function () {
-                var subscriptions = app.Subscription.find.sync(app.Subscription, {
+                app.Subscription.update.sync(app.Subscription, {
                     userId: user.id,
                     channelId: {
                         $in: message.activeChannels
                     }
-                });
+                }, { time: new Date() }, null);
 
-                for (var i = 0; i < subscriptions.length; i++) {
-                    subscriptions[i].time = new Date();
-                    subscriptions[i].save.sync(subscriptions[i]);
-                }
+                app.Channel.update.sync(app.Channel, { _id: { $in: message.activeChannels }}, { lastaccess: new Date() }, null);
 
                 user.stats.fulltime += Math.round((new Date().getTime() - user.stats.lastaccess.getTime()) / 1000);
                 user.stats.lastaccess = new Date();

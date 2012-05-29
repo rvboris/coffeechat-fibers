@@ -169,6 +169,7 @@ exports.define = function (app, mongoose, callback) {
             'hidden':      { 'type': Boolean, 'default': false },
             'owner':       { 'type': objectId, 'required': true },
             'date':        { 'type': Date, 'default': new Date() },
+            'lastaccess':  { 'type': Date, 'default': new Date() },
             'password':    { 'type': String, 'required': false, 'validate': [ validators.isValidPassword, 'invalid password'] },
             'salt':        { 'type': String, 'required': false }
         });
