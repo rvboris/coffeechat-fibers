@@ -1,4 +1,4 @@
-var sync  = require('sync');
+var sync = require('sync');
 var nconf = require('nconf');
 
 module.exports = function (app) {
@@ -13,17 +13,13 @@ module.exports = function (app) {
             app.set('log').debug('find inactive channels');
 
             sync(function () {
-                if (app.Channel.count.sync(app.Channel, { private: false }) === 0) return stop();
+                if (app.Channel.count.sync(app.Channel, { 'private': false }) === 0) return stop();
 
                 var channels = app.Channel.find.sync(app.Channel, {
                     lastaccess: { $lt: new Date(new Date().getTime() - (interval) * 1000) }
                 });
 
                 if (!channels || channels.length === 0) return;
-
-                app.set('log').debug('%s results found inactive channels', channels.length);
-
-                // Remove messages from ES index and channels
 
                 for (var i = 0, commands = []; i < channels.length; i++) {
                     if (app.set('channels')[channels[i].url]) continue;
@@ -51,9 +47,11 @@ module.exports = function (app) {
                     channels[i].remove.sync(channels[i]);
                 }
 
-                recipient.publishBulk(commands);
+                if (commands.length === 0) return;
 
-                app.set('log').debug('%s channels in list updated', channels.length);
+                app.set('log').debug('%s results found inactive channels', commands.length);
+                recipient.publishBulk(commands);
+                app.set('log').debug('%s channels in list updated', commands.length);
             }, function (err) {
                 if (!err) return;
 

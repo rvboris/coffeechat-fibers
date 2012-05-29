@@ -55,14 +55,22 @@ module.exports = function (app) {
         },
         userConnect: function (user, message) {
             sync(function () {
-                app.Subscription.update.sync(app.Subscription, {
+                var subscriptions = app.Subscription.find.sync(app.Subscription, {
                     userId: user.id,
                     channelId: {
                         $in: message.activeChannels
                     }
-                }, { time: new Date() }, null);
+                });
 
-                app.Channel.update.sync(app.Channel, { _id: { $in: message.activeChannels }}, { lastaccess: new Date() }, null);
+                for (var i = 0, channel; i < subscriptions.length; i++) {
+                    subscriptions[i].time = new Date();
+                    subscriptions[i].save.sync(subscriptions[i]);
+                    channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId);
+                    if (channel) {
+                        channel.lastaccess = subscriptions[i].time;
+                        channel.save.sync(channel);
+                    }
+                }
 
                 user.stats.fulltime += Math.round((new Date().getTime() - user.stats.lastaccess.getTime()) / 1000);
                 user.stats.lastaccess = new Date();
@@ -81,10 +89,10 @@ module.exports = function (app) {
             app.set('log').debug('user "%s" send message', user.name);
 
             sync(function () {
-                if (channel.private)  return;
-                if (channel.hidden)   return;
+                if (channel['private']) return;
+                if (channel.hidden) return;
                 if (channel.password) return;
-                if (user.isSystem())  return;
+                if (user.isSystem()) return;
 
                 app.set('helpers').elastic.sync(app.set('helpers'), 'index', nconf.get('elasticsearch').index, 'message', {
                     id: message.id,
