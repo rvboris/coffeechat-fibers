@@ -40,7 +40,14 @@ module.exports = function (app) {
                     term: { userId: userToDelete.id }
                 });
             } else {
-                app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, false, true);
+                app.Message.update.sync(app.Message, {
+                    userId: userToDelete.id
+                }, {
+                    $set: { userId: app.set('users')['deleted'].id }
+                }, {
+                    upsert: false,
+                    multi: true
+                });
                 // TODO: Update ES index (bulk?)
             }
 

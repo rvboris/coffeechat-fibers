@@ -11,7 +11,14 @@ module.exports = function (app) {
                 term: { channelId: channel.id }
             });
             app.set('log').debug('move messages to "deleted" channel');
-            app.Message.update.sync(app.Message, { channelId: channel.id }, { channelId: app.set('channels')['deleted'].id }, false, true);
+            app.Message.update.sync(app.Message, {
+                channelId: channel.id
+            }, {
+                $set: { channelId: app.set('channels')['deleted'].id }
+            }, {
+                upsert: false,
+                multi: true
+            });
         }
 
         channel.remove.sync(channel);
@@ -21,7 +28,7 @@ module.exports = function (app) {
                 token: app.set('serverToken'),
                 action: 'rem',
                 channel: { id: channel.id },
-                count: app.Channel.count.sync(app.Channel, { hidden: false, private: false })
+                count: app.Channel.count.sync(app.Channel, { 'hidden': false, 'private': false })
             });
         }
 
@@ -51,7 +58,7 @@ module.exports = function (app) {
                         token: app.set('serverToken'),
                         action: 'channel.unsubscribe',
                         channel: { id: channel.id },
-                        fromUser: { name: req.user.name }
+                        fromUser: { name: req.user.name, bySystem: req.user.isSystem() }
                     }).callback(function () {
                         app.set('log').debug('user force to unsubscribe');
                         iteration++;

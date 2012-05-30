@@ -151,7 +151,11 @@
             $('.dropdown-toggle').dropdown();
             $('#user-list .actions button.delete, #user-list .actions .dropdown-menu a').on('click', function () {
                 var uid = $(this).parents('tr').attr('id');
+
+                if ($(this).hasClass('disabled') || $('#' + uid + ' button').hasClass('disabled')) return;
+
                 var withMessages = $(this)[0].tagName.toLowerCase() === 'a';
+
                 bootbox.confirm('Вы уверены что хотите удалить пользователя' + (withMessages ? ' и его сообщения' : '') + '?', function (confirmed) {
                     if (!confirmed) return;
                     $.post('/admin/users/delete', {
@@ -185,6 +189,8 @@
         },
         tableActions: function () {
             $('#message-list .actions button.delete').on('click', function () {
+                if ($(this).hasClass('disabled')) return;
+
                 var mid = $(this).parents('tr').attr('id');
                 bootbox.confirm('Вы уверены что хотите удалить сообщение?', function (confirmed) {
                     if (!confirmed) return;
