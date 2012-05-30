@@ -31,7 +31,15 @@ module.exports = function (app) {
                         });
 
                         app.set('log').debug('move messages to "deleted" channel');
-                        app.Message.update.sync(app.Message, { channelId: channels[i].id }, { channelId: app.set('channels')['deleted'].id }, null);
+
+                        app.Message.update.sync(app.Message, {
+                            channelId: channels[i].id
+                        }, {
+                            $set: { channelId: app.set('channels')['deleted'].id }
+                        }, {
+                            upsert: false,
+                            multi: true
+                        });
                     }
 
                     app.set('log').debug('remove channel "%s"', channels[i].name);

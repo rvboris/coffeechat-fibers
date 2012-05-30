@@ -54,25 +54,30 @@ module.exports = function (app) {
             });
         },
         userConnect: function (user, message) {
+            var currentTime = new Date();
+
             sync(function () {
-                var subscriptions = app.Subscription.find.sync(app.Subscription, {
+                app.Subscription.update.sync(app.Subscription, {
                     userId: user.id,
-                    channelId: {
-                        $in: message.activeChannels
-                    }
+                    channelId: { $in: message.activeChannels }
+                }, {
+                    $set: { time: currentTime }
+                }, {
+                    upsert: false,
+                    multi: true
                 });
 
-                for (var i = 0, channel; i < subscriptions.length; i++) {
-                    subscriptions[i].time = new Date();
-                    subscriptions[i].save.sync(subscriptions[i]);
-                    channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId);
-                    if (!channel) continue;
-                    channel.lastaccess = subscriptions[i].time;
-                    channel.save.sync(channel);
-                }
+                app.Channel.update.sync(app.Channel, {
+                    _id: { $in: message.activeChannels }
+                }, {
+                    $set: { lastaccess: currentTime }
+                }, {
+                    upsert: false,
+                    multi: true
+                });
 
-                user.stats.fulltime += Math.round((new Date().getTime() - user.stats.lastaccess.getTime()) / 1000);
-                user.stats.lastaccess = new Date();
+                user.stats.fulltime += Math.round((currentTime.getTime() - user.stats.lastaccess.getTime()) / 1000);
+                user.stats.lastaccess = currentTime;
                 user.save.sync(user);
             }, function (err) {
                 if (err) {
@@ -85,14 +90,16 @@ module.exports = function (app) {
             });
         },
         guestConnect: function (message) {
-            sync(function() {
-                for (var i = 0, channel; i < message.activeChannels; i++) {
-                    channel = app.Channel.findById.sync(app.Channel, message.activeChannels[i]);
-                    if (!channel) continue;
-                    channel.lastaccess = new Date();
-                    channel.save.sync(channel);
-                }
-            }, function(err) {
+            sync(function () {
+                app.Channel.update.sync(app.Channel, {
+                    _id: { $in: message.activeChannels }
+                }, {
+                    $set: { lastaccess: new Date() }
+                }, {
+                    upsert: false,
+                    multi: true
+                });
+            }, function (err) {
                 if (err) {
                     app.set('log').error(err.stack);
                     return;
