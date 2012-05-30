@@ -1,17 +1,17 @@
-(function($, window) {
+(function ($, window) {
     'use strict';
 
     var privateMethods = {};
     var instance;
 
-    function Admin(options) {
+    function Admin (options) {
         this.options = options;
         this.socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + options.logServer + '/logs');
         return privateMethods.init(this);
     }
 
     privateMethods.helpers = {
-        browserCheck: function() {
+        browserCheck: function () {
             return ($.browser.name === 'firefox' && $.browser.versionNumber >= 4)   ||
                    ($.browser.name === 'msie'    && $.browser.versionNumber >= 9)   ||
                    ($.browser.name === 'chrome'  && $.browser.versionNumber >= 10)  ||
@@ -52,13 +52,13 @@
     };
 
     privateMethods.charts = {
-        init: function() {
+        init: function () {
             privateMethods.charts.messagesPerSecond.init();
             privateMethods.charts.connectionsActivity.init();
         },
         messagesPerSecond: {
             stack: 0,
-            init: function() {
+            init: function () {
                 var series = new Rickshaw.Series.FixedDuration([
                     { name: 'messages', x: 0, y: 0 }
                 ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
@@ -79,25 +79,25 @@
                 new Rickshaw.Graph.Axis.Time({ graph: chart });
                 new Rickshaw.Graph.Axis.Y({ graph: chart });
 
-                chart.onUpdate(function() {
+                chart.onUpdate(function () {
                     privateMethods.charts.messagesPerSecond.stack = 0;
                 });
 
                 chart.render();
 
-                setInterval(function() {
+                setInterval(function () {
                     series.addData({ messages: privateMethods.charts.messagesPerSecond.stack });
                     chart.update();
                 }, 1000);
 
-                privateMethods.socket.on('sendMessage', function() {
+                privateMethods.socket.on('sendMessage', function () {
                     privateMethods.charts.messagesPerSecond.stack++;
                 });
             }
         },
         connectionsActivity: {
             stack: 0,
-            init: function() {
+            init: function () {
                 var series = new Rickshaw.Series.FixedDuration([
                     { name: 'connections', x: 0, y: 0 }
                 ], new Rickshaw.Color.Palette({ scheme: 'spectrum14' }), {
@@ -118,18 +118,18 @@
                 new Rickshaw.Graph.Axis.Time({ graph: chart });
                 new Rickshaw.Graph.Axis.Y({ graph: chart });
 
-                chart.onUpdate(function() {
+                chart.onUpdate(function () {
                     privateMethods.charts.connectionsActivity.stack = 0;
                 });
 
                 chart.render();
 
-                setInterval(function() {
+                setInterval(function () {
                     series.addData({ connections: privateMethods.charts.connectionsActivity.stack });
                     chart.update();
                 }, 1000);
 
-                privateMethods.socket.on('userConnect', function() {
+                privateMethods.socket.on('userConnect', function () {
                     privateMethods.charts.connectionsActivity.stack++;
                 });
             }
@@ -137,27 +137,27 @@
     };
 
     privateMethods.users = {
-        init: function() {
+        init: function () {
             privateMethods.users.searchForm();
             privateMethods.users.tableActions();
         },
-        searchForm: function() {
-            $('#user-search').submit(function() {
+        searchForm: function () {
+            $('#user-search').submit(function () {
                 window.location = window.location.protocol + '//' + window.location.host + '/admin/users/' + encodeURIComponent($(this).find('input').val());
                 return false;
             });
         },
-        tableActions: function() {
+        tableActions: function () {
             $('.dropdown-toggle').dropdown();
-            $('#user-list .actions button.delete, #user-list .actions .dropdown-menu a').on('click', function() {
+            $('#user-list .actions button.delete, #user-list .actions .dropdown-menu a').on('click', function () {
                 var uid = $(this).parents('tr').attr('id');
                 var withMessages = $(this)[0].tagName.toLowerCase() === 'a';
-                bootbox.confirm('Вы уверены что хотите удалить пользователя' + (withMessages ? ' и его сообщения' : '') + '?', function(confirmed) {
+                bootbox.confirm('Вы уверены что хотите удалить пользователя' + (withMessages ? ' и его сообщения' : '') + '?', function (confirmed) {
                     if (!confirmed) return;
                     $.post('/admin/users/delete', {
-                        _csrf:privateMethods.options.csrf,
-                        uid:uid.substr(4, uid.length),
-                        withMessages:withMessages
+                        _csrf: privateMethods.options.csrf,
+                        uid: uid.substr(4, uid.length),
+                        withMessages: withMessages
                     }).success(function (data) {
                         if (data.error) return $.fn.notifier(data.error);
                         $('#' + uid).fadeOut('fast', function () {
@@ -173,24 +173,24 @@
     };
 
     privateMethods.messages = {
-        init:function () {
+        init: function () {
             privateMethods.messages.searchForm();
             privateMethods.messages.tableActions();
         },
-        searchForm:function () {
+        searchForm: function () {
             $('#message-search').submit(function () {
                 window.location = window.location.protocol + '//' + window.location.host + '/admin/messages/' + encodeURIComponent($(this).find('input').val());
                 return false;
             });
         },
-        tableActions:function () {
-            $('#message-list .actions button.delete').on('click', function() {
+        tableActions: function () {
+            $('#message-list .actions button.delete').on('click', function () {
                 var mid = $(this).parents('tr').attr('id');
-                bootbox.confirm('Вы уверены что хотите удалить сообщение?', function(confirmed) {
+                bootbox.confirm('Вы уверены что хотите удалить сообщение?', function (confirmed) {
                     if (!confirmed) return;
                     $.post('/admin/messages/delete', {
-                        _csrf:privateMethods.options.csrf,
-                        mid:mid.substr(4, mid.length)
+                        _csrf: privateMethods.options.csrf,
+                        mid: mid.substr(4, mid.length)
                     }).success(function (data) {
                         if (data.error) return $.fn.notifier(data.error);
                         $('#' + mid).fadeOut('fast', function () {
@@ -211,6 +211,58 @@
         }
     };
 
+    privateMethods.channels = {
+        init: function () {
+            privateMethods.channels.searchForm();
+            privateMethods.channels.tableActions();
+        },
+        searchForm: function () {
+            $('#channel-search').submit(function () {
+                window.location = window.location.protocol + '//' + window.location.host + '/admin/channels/' + encodeURIComponent($(this).find('input').val());
+                return false;
+            });
+        },
+        tableActions: function () {
+            $('#channel-list .actions button.delete').on('click', function () {
+                if ($(this).hasClass('disabled')) return;
+
+                var cid = $(this).parents('tr').attr('id');
+                bootbox.confirm('Вы уверены что хотите удалить комнату?', function (confirmed) {
+                    if (!confirmed) return;
+                    $.post('/channel/delete/' + cid.substr(4, cid.length), {
+                        _csrf: privateMethods.options.csrf
+                    }).success(function (data) {
+                        if (data.error) return $.fn.notifier(data.error);
+                        $('#' + cid).fadeOut('fast', function () {
+                            $(this).remove();
+                        });
+                    }).error(function () {
+                        $.fn.notifier('Ошибка отправки данных.');
+                    });
+                });
+            });
+
+            $('#channel-list .actions button.clear').on('click', function () {
+                if ($(this).hasClass('disabled')) return;
+
+                var cid = $(this).parents('tr').attr('id');
+                bootbox.confirm('Вы уверены что хотите удалить все сообщения в комнате?', function (confirmed) {
+                    if (!confirmed) return;
+                    $.post('/admin/channels/clear', {
+                        _csrf: privateMethods.options.csrf,
+                        cid: cid.substr(4, cid.length)
+                    }).success(function (data) {
+                        if (data.error) return $.fn.notifier(data.error);
+                        $('#' + cid + ' .messages').text('0');
+                        $('#' + cid + ' .actions button.clear').addClass('disabled');
+                    }).error(function () {
+                        $.fn.notifier('Ошибка отправки данных.');
+                    });
+                });
+            });
+        }
+    };
+
     privateMethods.init = function (admin) {
         $.extend(true, privateMethods, admin);
 
@@ -225,7 +277,7 @@
         }
     };
 
-    $.fn.admin = function(env, csrf, logServer, secretKey, section) {
+    $.fn.admin = function (env, csrf, logServer, secretKey, section) {
         return instance ? instance : instance = new Admin({
             env: env,
             csrf: csrf,

@@ -11,7 +11,7 @@ module.exports = function (app) {
                 term: { channelId: channel.id }
             });
             app.set('log').debug('move messages to "deleted" channel');
-            app.Message.update.sync(app.Message, { channelId: channel.id }, { channelId: app.set('channels')['deleted'].id }, null);
+            app.Message.update.sync(app.Message, { channelId: channel.id }, { channelId: app.set('channels')['deleted'].id }, false, true);
         }
 
         channel.remove.sync(channel);
@@ -38,7 +38,7 @@ module.exports = function (app) {
                 return;
             }
 
-            if (channel.owner.toHexString() !== req.user.id) {
+            if (channel.owner.toHexString() !== req.user.id && !req.user.isSystem() && !app.set('channels')[channel.url]) {
                 res.send({ error: 'Доступ запрещен' });
             }
 

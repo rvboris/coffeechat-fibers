@@ -1,4 +1,4 @@
-var sync = require('sync');
+var sync  = require('sync');
 var nconf = require('nconf');
 
 module.exports = function (app) {
@@ -8,7 +8,7 @@ module.exports = function (app) {
 
     return {
         name: name,
-        interval: 60, // 24 hours
+        interval: 86400, // 24 hours
         callback: function (recipient, stop, interval) {
             app.set('log').debug('find inactive channels');
 

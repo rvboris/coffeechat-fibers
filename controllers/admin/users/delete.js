@@ -5,6 +5,11 @@ module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../../config/' + app.set('argv').env + '.json' });
 
     return function (req, res) {
+        if (!req.body.uid) {
+            res.send({ error: 'Не указан ID пользователя' });
+            return;
+        }
+
         sync(function () {
             if (req.user.id === req.body.uid) {
                 res.send({ error: 'Вы не можете удалить самого себя' });
@@ -35,7 +40,7 @@ module.exports = function (app) {
                     term: { userId: userToDelete.id }
                 });
             } else {
-                app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, null);
+                app.Message.update.sync(app.Message, { userId: userToDelete.id }, { userId: app.set('users')['deleted'].id }, false, true);
                 // TODO: Update ES index (bulk?)
             }
 

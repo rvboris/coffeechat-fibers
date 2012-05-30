@@ -41,7 +41,8 @@
     },
     "admin": {
         "usersPerPage": 30,
-        "messagesPerPage": 30
+        "messagesPerPage": 30,
+        "channelsPerPage": 30
     },
     "elasticsearch": {
         "host": "localhost",

@@ -1,4 +1,4 @@
-h3 Список пользователей
+h3 Список пользователей (!{usersCount})
 if users.length === 0
   .alert.alert-info
     Пользователей не найдено
@@ -15,10 +15,10 @@ else
     tbody
       each user in users
         - var isDisabled = (user.role === 'R' || user.role === 'S' ? 'disabled' : '')
-        tr(id='uid-' + user._id)
+        tr(id='uid-' + user.id)
           td !{user.name}
-          td !{moment(user.stats.lastaccess).format('DD.MM.YYYY HH:MM (z)')}
-          td !{moment(user.date).format('DD.MM.YYYY HH:MM (z)')}
+          td !{moment(user.stats.lastaccess).format('DD.MM.YYYY HH:MM (Z)')}
+          td !{moment(user.date).format('DD.MM.YYYY HH:MM (Z)')}
           td !{messages[user.id]}
           td !{user.role}
           td.actions
