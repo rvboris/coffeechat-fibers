@@ -94,6 +94,8 @@ module.exports = function (app) {
             delete elastic.docs;
             delete elastic.highlighted;
 
+            var messagesCount = messages.count;
+
             delete messages.count;
             messages = messages.objects;
 
@@ -107,6 +109,7 @@ module.exports = function (app) {
                 users: users,
                 channels: channels,
                 messages: messages,
+                messagesCount: messagesCount,
                 query: params.query,
                 moment: moment,
                 pagination: {

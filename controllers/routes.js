@@ -207,6 +207,13 @@ module.exports = function (app) {
         require('./admin/messages/index.js')(app)
     );
     app.get(
+        '/admin/channels/:channel?/:page?',
+        app.set('helpers').user.session,
+        app.set('helpers').user.userAccess,
+        app.set('helpers').user.rootAccess,
+        require('./admin/channels/index.js')(app)
+    );
+    app.get(
         '/admin/tasks',
         app.set('helpers').user.session,
         app.set('helpers').user.userAccess,
@@ -221,6 +228,14 @@ module.exports = function (app) {
         app.set('helpers').user.userAccess,
         app.set('helpers').user.rootAccess,
         require('./admin/users/delete.js')(app)
+    );
+    app.post(
+        '/admin/channels/clear',
+        app.set('helpers').user.xhrAccess,
+        app.set('helpers').user.session,
+        app.set('helpers').user.userAccess,
+        app.set('helpers').user.rootAccess,
+        require('./admin/channels/clear.js')(app)
     );
     app.post(
         '/admin/messages/delete',

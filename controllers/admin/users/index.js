@@ -48,6 +48,7 @@ module.exports = function (app) {
                 secretKey:app.set('helpers').utils.base64.encode(aes.enc(req.session.user.id, app.set('serverKey'))),
                 section:'users',
                 users:users,
+                usersCount: usersCount,
                 messages:messages,
                 query:name,
                 moment:moment,

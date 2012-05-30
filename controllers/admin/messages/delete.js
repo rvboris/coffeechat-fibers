@@ -5,6 +5,11 @@ module.exports = function (app) {
     nconf.use('file', { file: __dirname + '/../../../config/' + app.set('argv').env + '.json' });
 
     return function (req, res) {
+        if (!req.body.mid) {
+            res.send({ error: 'Не указан ID сообщения' });
+            return;
+        }
+
         sync(function () {
             var messageToDelete = app.Message.findById.sync(app.Message, req.body.mid);
 

@@ -66,10 +66,9 @@ module.exports = function (app) {
                     subscriptions[i].time = new Date();
                     subscriptions[i].save.sync(subscriptions[i]);
                     channel = app.Channel.findById.sync(app.Channel, subscriptions[i].channelId);
-                    if (channel) {
-                        channel.lastaccess = subscriptions[i].time;
-                        channel.save.sync(channel);
-                    }
+                    if (!channel) continue;
+                    channel.lastaccess = subscriptions[i].time;
+                    channel.save.sync(channel);
                 }
 
                 user.stats.fulltime += Math.round((new Date().getTime() - user.stats.lastaccess.getTime()) / 1000);
@@ -83,6 +82,22 @@ module.exports = function (app) {
 
                 app.set('log').debug('"%s" user subscriptions updated', user.name);
                 process.send({ cmd: 'event', msg: 'userConnect' });
+            });
+        },
+        guestConnect: function (message) {
+            sync(function() {
+                for (var i = 0, channel; i < message.activeChannels; i++) {
+                    channel = app.Channel.findById.sync(app.Channel, message.activeChannels[i]);
+                    if (!channel) continue;
+                    channel.lastaccess = new Date();
+                    channel.save.sync(channel);
+                }
+            }, function(err) {
+                if (err) {
+                    app.set('log').error(err.stack);
+                    return;
+                }
+                process.send({ cmd: 'event', msg: 'guestConnect' });
             });
         },
         userSend: function (user, channel, message) {

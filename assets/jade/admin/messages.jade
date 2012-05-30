@@ -1,4 +1,4 @@
-h3 Сообщения
+h3 Сообщения (!{messagesCount})
 if messages.length === 0
   .alert.alert-info
     Сообщений не найдено
@@ -14,9 +14,9 @@ else
         th Действия
     tbody
       each message in messages
-        tr(id='mid-' + message._id)
+        tr(id='mid-' + message.id)
           td.id
-            a(href='/message/' + message._id) #
+            a(href='/message/' + message.id) #
           td.name
             a(href='/admin/users/' + users[message.userId]) !{users[message.userId]}
           td.date !{moment(message.time).format('DD.MM.YYYY HH:MM')}

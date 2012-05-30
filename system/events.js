@@ -57,6 +57,14 @@ module.exports = function (app) {
         }
     });
 
+    eventer.on('guestConnect', function (message) {
+        for (var i = 0; i < events.length; i++) {
+            if (events[i].guestConnect && typeof events[i].guestConnect === 'function') {
+                events[i].guestConnect(message);
+            }
+        }
+    });
+
     eventer.on('syncEvent', function (plugin, command) {
         var args = Array.prototype.slice.call(arguments);
         args.shift();

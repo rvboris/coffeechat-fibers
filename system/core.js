@@ -88,6 +88,15 @@ module.exports = function (app) {
 
                         app.set('events').emit('guestSubscribe', message, channel);
                     }
+
+                    // Connecting
+                    if (message.channel === '/meta/connect') {
+                        app.set('log').debug('guest is connected');
+
+                        if (!message.activeChannels || message.activeChannels.length === 0) return;
+
+                        app.set('events').emit('guestConnect', message);
+                    }
                 } else { // Is user
                     var user = app.User.findById.sync(app.User, token);
 
