@@ -104,7 +104,7 @@ module.exports = function (app) {
                 return res.send({ error: result.error });
             }
 
-            res.send(result.user);
+            res.send(app.set('helpers').user.createPrivate.sync(app.set('helpers').user, result.user));
 
             if (result.newSubscriptions.length) {
                 (function publish (iteration) {

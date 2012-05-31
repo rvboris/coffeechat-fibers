@@ -236,6 +236,9 @@ module.exports = function (app) {
 
                         matches = message.subscription.match(/(?:^\/channel\/)([0-9a-z]+)$/);
 
+                        console.log(message);
+                        console.log(matches);
+
                         if (matches === null || matches.length < 2) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
                             if (matches === null || matches.length < 2) {
@@ -259,7 +262,7 @@ module.exports = function (app) {
                             channel = app.Channel.findById.sync(app.Channel, matches[1]);
                         }
 
-                        if (channel.password && channel.owner.toHexString() !== user.id) {
+                        if (channel.password && channel.owner.toHexString() !== user.id && !user.isSystem()) {
                             if (!message.password) {
                                 app.set('log').debug('access denied, password not found');
                                 message.error = 'Для этой комнаты требуется пароль';
@@ -267,6 +270,15 @@ module.exports = function (app) {
                             } else if (!channel.authenticate(message.password)) {
                                 app.set('log').debug('access denied, wrong password');
                                 message.error = 'Доступ запрещен, неверный пароль';
+                                return;
+                            }
+                        }
+
+                        if (channel['private'] && !user.isSystem()) {
+                            var excludeUsers = app.set('systemUserIds');
+                            excludeUsers.push(user.id);
+                            if (app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: { $nin: excludeUsers } }) >= 2) {
+                                message.error = 'Доступ запрещен';
                                 return;
                             }
                         }

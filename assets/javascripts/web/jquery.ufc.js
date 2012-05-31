@@ -1408,8 +1408,12 @@
                     privateMethods.channel.qtips.passwordCallbackParams[2] = {};
                 }
                 privateMethods.channel.qtips.passwordCallbackParams[2].password = result;
-                $.fn.sys().channel.subscribe.apply(null, privateMethods.channel.qtips.passwordCallbackParams);
-                privateMethods.channel.qtips.passwordCallbackParams = null;
+                $.fn.sys().channel.subscribe(
+                    privateMethods.channel.qtips.passwordCallbackParams[0],
+                    privateMethods.channel.qtips.passwordCallbackParams[1],
+                    privateMethods.channel.qtips.passwordCallbackParams[2],
+                    privateMethods.channel.qtips.passwordCallbackParams[3]);
+                //$.fn.sys().channel.subscribe.apply(null, privateMethods.channel.qtips.passwordCallbackParams);
             },
             'passwordCallbackParams': null
         },

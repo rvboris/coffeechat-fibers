@@ -13,7 +13,7 @@ module.exports = function (app) {
                 return;
             }
 
-            if (channel['private']) {
+            if (channel['private'] && !req.user.isSystem()) {
                 res.send(401);
                 return;
             }
