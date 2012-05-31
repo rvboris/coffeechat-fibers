@@ -127,7 +127,7 @@ module.exports = function (app) {
             }
 
             if (result.user) {
-                res.send(result.user);
+                res.send(app.set('helpers').user.createPrivate.sync(app.set('helpers').user, result.user));
                 return;
             }
 
