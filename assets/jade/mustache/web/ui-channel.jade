@@ -14,7 +14,7 @@ script(type='text/html')#mu-ui-channel-qtips-password
   span.channel-password Пароль:
   input(type='password', maxlength='30').channel-password
   div.actions.channel-password.clearfix
-    button(onclick='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val())').send Отправить
+    button(onclick='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val().toString())').send Отправить
     button(onclick='$.fn.ufc().channel.qtips.passwordCallback(false)').cancel Отмена
 
 script(type='text/html')#mu-ui-channel-qtips-profile
