@@ -236,9 +236,6 @@ module.exports = function (app) {
 
                         matches = message.subscription.match(/(?:^\/channel\/)([0-9a-z]+)$/);
 
-                        console.log(message);
-                        console.log(matches);
-
                         if (matches === null || matches.length < 2) {
                             matches = message.subscription.match(/(?:^\/(channel|user)\/)([0-9a-z]+)(?:\/(users|private))?$/);
                             if (matches === null || matches.length < 2) {

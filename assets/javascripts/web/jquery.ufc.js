@@ -1391,6 +1391,13 @@
             'password': function (channelName, channelId, params, callback) {
                 privateMethods.channel.qtips.passwordCallbackParams = arguments;
 
+                if (typeof arguments[3] === 'function') {
+                    privateMethods.channel.qtips.passwordCallbackParams[3] = function() {
+                        privateMethods.channel.qtips.passwordCallbackParams = null;
+                        arguments[3]();
+                    }
+                }
+
                 $(window).qtip($.extend(true, {}, privateMethods.channel.qtips.modalParams, {
                     id: 'passwordModal',
                     content: {
