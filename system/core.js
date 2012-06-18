@@ -208,11 +208,13 @@ module.exports = function (app) {
                             if (app.set('channels')[channel.url]) {
                                 if (app.set('channels')[channel.url].params.history) {
                                     msg.save.sync(msg);
+                                    message.data.id = msg.id;
                                 } else {
                                     msg.validate.sync(msg);
                                 }
                             } else if (!channel['private']) {
                                 msg.save.sync(msg);
+                                message.data.id = msg.id;
                             } else {
                                 msg.validate.sync(msg);
                             }
@@ -272,12 +274,13 @@ module.exports = function (app) {
                         }
 
                         if (channel['private'] && !user.isSystem()) {
-                            var excludeUsers = app.set('systemUserIds');
-                            excludeUsers.push(user.id);
-                            if (app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: { $nin: excludeUsers } }) >= 2) {
+                            app.set('systemUserIds').excludeUsers = app.set('systemUserIds').slice();
+                            app.set('systemUserIds').excludeUsers.push(user.id);
+                            if (app.Subscription.count.sync(app.Subscription, { channelId: channel.id, userId: { $nin: app.set('systemUserIds').excludeUsers } }) >= 2) {
                                 message.error = 'Доступ запрещен';
                                 return;
                             }
+                            delete app.set('systemUserIds').excludeUsers;
                         }
 
                         var result = app.set('helpers').channel.subscribe.sync(app.set('helpers').channel, user, channel.id);

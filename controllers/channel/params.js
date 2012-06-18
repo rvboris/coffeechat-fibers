@@ -9,10 +9,6 @@ module.exports = function (app) {
                 throw new Error('channel "' + req.params.channel + '" not found');
             }
 
-            if (channel['private']) {
-                throw new Error('access denied');
-            }
-
             return channel;
         }, function (err, channel) {
             if (err) {
@@ -24,7 +20,7 @@ module.exports = function (app) {
             res.send({
                 description: channel.description || '',
                 secure: channel.salt ? true : false
-            })
+            });
         });
     };
 };

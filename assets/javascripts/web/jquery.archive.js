@@ -33,6 +33,10 @@
         }
 
         privateMethods.smiles();
+
+        if (typeof share42 === 'function') {
+            share42(window.location.protocol + '//' + window.location.host + '/images/web/social.png');
+        }
     };
 
     $.fn.archive = function(env, csrf) {

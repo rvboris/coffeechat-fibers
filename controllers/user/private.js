@@ -57,7 +57,7 @@ module.exports = function (app) {
 
                     var num = channel.length > 0 ? (parseInt(channel[0].url.match(/\d+$/)[0]) + 1) : 1;
                     channel = app.set('helpers').channel.create.sync(app.set('helpers').channel, {
-                        'name': 'Приват #' + num,
+                        'name': 'Приват ' + num,
                         'url': 'prv' + num,
                         'private': true,
                         'owner': toUser.id

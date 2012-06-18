@@ -12,10 +12,11 @@ script(type='text/html')#mu-ui-channel-qtips-private
 
 script(type='text/html')#mu-ui-channel-qtips-password
   span.channel-password Пароль:
-  input(type='password', maxlength='30').channel-password
-  div.actions.channel-password.clearfix
-    button(onclick='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val().toString())').send Отправить
-    button(onclick='$.fn.ufc().channel.qtips.passwordCallback(false)').cancel Отмена
+  form(onsubmit='$.fn.ufc().channel.qtips.passwordCallback($(\'div.qtip input.channel-password\').val().toString());return false;')
+    input(type='password', maxlength='30').channel-password
+    div.actions.channel-password.clearfix
+      button(type='submit').send Отправить
+      button(onclick='$.fn.ufc().channel.qtips.passwordCallback(false);return false;').cancel Отмена
 
 script(type='text/html')#mu-ui-channel-qtips-profile
   img(src='{{pic}}', height='60', width='60').pic
