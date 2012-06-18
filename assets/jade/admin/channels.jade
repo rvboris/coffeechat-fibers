@@ -21,7 +21,7 @@ else
         - var isClearDisabled = (messages[channel.id] === 0 || channel.url === 'deleted' ? 'disabled' : '')
         tr(id='сid-' + channel.id)
           td
-            if channel.private || channel.url === 'deleted'
+            if channel.url === 'deleted'
               !{channel.name}
             else
               a(href='/c/' + channel.url) !{channel.name}

@@ -1080,7 +1080,7 @@
             }).next().trigger('click');
 
             if ($('div.qtip').filter(':visible').find('button.yes').data('name') === user.name) {
-                $(window).qtip('api').hide();
+                $(window).qtip('api').destroy();
 
                 $.fn.sys().actions.popup = false;
                 $.fn.sys().actions['private'].queue.shift();
@@ -1408,7 +1408,7 @@
             },
             'passwordCallback': function (result) {
                 if (result === false) {
-                    $(window).qtip('api').hide();
+                    $(window).qtip('api').destroy();
                     return;
                 }
                 if (!privateMethods.channel.qtips.passwordCallbackParams[2]) {

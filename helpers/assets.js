@@ -158,7 +158,8 @@ module.exports = function(env, paths, options) {
         // jquery.archive
         var webArchive = ams.build
             .create(paths.js.root)
-            .add(paths.js.root + '/web/jquery.archive.js');
+            .add(paths.js.root + '/web/jquery.archive.js')
+            .add(paths.js.jqueryPlugins + '/jquery.share42.js');
 
         if (env === 'production') webArchive.process(options);
 
