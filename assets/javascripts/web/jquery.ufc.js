@@ -754,7 +754,8 @@
                                         channelId: channelId,
                                         ifOwner: (data.owner !== '$') && (data.owner !== $.fn.sys().options.currentUser.name),
                                         ifMessages: data.messages > 0 && !data.hidden && !data.password,
-                                        ifRemove: data.owner === $.fn.sys().options.currentUser.name
+                                        ifRemove: data.owner === $.fn.sys().options.currentUser.name,
+                                        ifClear: data.owner === $.fn.sys().options.currentUser.name
                                     }));
                                 },
                                 data: { _csrf: privateMethods.options.csrf }

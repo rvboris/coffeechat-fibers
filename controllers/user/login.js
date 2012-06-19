@@ -99,7 +99,7 @@ module.exports = function (app) {
             if (result.newSubscriptions) {
                 (function publish (iteration) {
                     iteration = iteration || 0;
-                    app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', {
+                    app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', { // TODO: heavy testing
                         token: app.set('serverToken'),
                         action: 'con',
                         users: result.userChannels[result.newSubscriptions[iteration].id]
