@@ -78,6 +78,13 @@ module.exports = function (app) {
         require('./channel/delete.js')(app)
     );
     app.post(
+        '/channel/clear/:channel',
+        app.set('helpers').user.xhrAccess,
+        app.set('helpers').user.session,
+        app.set('helpers').user.userAccess,
+        require('./channel/clear.js')(app)
+    );
+    app.post(
         '/channel/list',
         app.set('helpers').user.xhrAccess,
         require('./channel/list.js')(app)

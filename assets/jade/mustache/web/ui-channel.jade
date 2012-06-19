@@ -65,6 +65,9 @@ script(type='text/html')#mu-ui-channel-qtips-info
     | {{#ifRemove}}
     button(onclick='$.fn.sys().channel.remove("{{channelId}}")') Удалить
     | {{/ifRemove}}
+    | {{#ifClear}}
+    button(onclick='$.fn.sys().channel.clear("{{channelId}}")') Очистить
+    | {{/ifClear}}
 
 script(type='text/html')#mu-ui-channel-type-private
   li(style='{{isHidden}}') {{name}}
