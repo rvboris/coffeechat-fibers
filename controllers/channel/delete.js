@@ -58,7 +58,11 @@ module.exports = function (app) {
                         token: app.set('serverToken'),
                         action: 'channel.unsubscribe',
                         channel: { id: channel.id },
-                        fromUser: { name: req.user.name, bySystem: req.user.isSystem() }
+                        fromUser: {
+                            name: req.user.name,
+                            bySystem: req.user.isSystem()
+                        },
+                        source: 'delete'
                     }).callback(function () {
                         app.set('log').debug('user force to unsubscribe');
                         iteration++;

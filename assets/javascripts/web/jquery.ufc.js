@@ -787,6 +787,7 @@
                                         gender: $.fn.sys().gender.toStringDisplay(data.gender),
                                         messages: data.messages,
                                         points: data.points,
+                                        channelId: channelId,
                                         user: {
                                             name: data.name,
                                             status: data.status
@@ -796,7 +797,8 @@
                                             disabled: data.isIgnore ? 'on' : 'off',
                                             command: data.isIgnore ? 'remove' : 'add',
                                             text: data.isIgnore ? 'Убрать игнор' : 'Игнор'
-                                        }
+                                        },
+                                        isKick: $.fn.sys().options.currentUser.channelsOwner.indexOf(channelId) >= 0
                                     }));
                                 },
                                 data: { _csrf: privateMethods.options.csrf }
