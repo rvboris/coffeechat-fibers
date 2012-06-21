@@ -36,7 +36,9 @@ script(type='text/html')#mu-ui-channel-qtips-profile
   .clearfix.actions
     button(class='private {{#isPrivateDisabled}}{{.}}{{/isPrivateDisabled}}', onclick='$.fn.sys().actions.private.request("{{user.name}}", "{{user.status}}")') Приват
     button(class='private {{isIgnored.disabled}}', onclick='$.fn.sys().actions.ignore("{{user.name}}", "{{isIgnored.command}}")') {{isIgnored.text}}
-
+    | {{#isKick}}
+    button(onclick='$.fn.sys().channel.kick("{{channelId}}", "{{user.name}}")') Выгнать
+    | {{/isKick}}
 script(type='text/html')#mu-ui-channel-qtips-info
   ul.clearfix.channelinfo
     li
