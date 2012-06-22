@@ -96,10 +96,10 @@ module.exports = function (app) {
                 return;
             }
 
-            if (result.newSubscriptions) {
+            if (result.newSubscriptions.length > 0) {
                 (function publish (iteration) {
                     iteration = iteration || 0;
-                    app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', { // TODO: heavy testing
+                    app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', {
                         token: app.set('serverToken'),
                         action: 'con',
                         users: result.userChannels[result.newSubscriptions[iteration].id]
