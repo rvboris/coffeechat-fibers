@@ -1,65 +1,68 @@
-h3 Сообщения (!{messagesCount})
-if messages.length === 0
-  .alert.alert-info
-    Сообщений не найдено
-else
-  table.table.table-striped.table-bordered#message-list
-    thead
-      tr
-        th #
-        th Отправитель
-        th Дата
-        th Комната
-        th Текст
-        th Действия
-    tbody
-      each message in messages
-        tr(id='mid-' + message.id)
-          td.id
-            a(href='/message/' + message.id) #
-          td.name
-            a(href='/admin/users/' + users[message.userId]) !{users[message.userId]}
-          td.date !{moment(message.time).format('DD.MM.YYYY HH:MM')}
-          td.channel !{channels[message.channelId]}
-          td.text !{message.text}
-          td.actions
-            button.btn.btn-danger.btn-mini.delete Удалить
-  .row-fluid
-    .span4
-      form(method='GET', action='/admin/messages/').form-search#message-search
-        input(type='text', name='text', maxlength='50').input-medium.search-query
-        button(type='submit').btn
-          i.icon-search
-          |  Поиск
-    .span8
-      if pagination.pages > 1
-        .pagination.pagination-right
-          ul
-            if pagination.isFirstPage
-              li.disabled
-                a(href='/admin/messages/' + query).disabled ←
-            else
-              li
-                a(href='/admin/messages/' + query + '/' + (pagination.currentPage - 1)) ←
+extends layout
 
-            - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
-              - if (i < 0) continue;
-              li
-                a(href='/admin/messages/' + query + '/' + i) !{i + 1}
-            - }
+block content
+  h3 Сообщения (!{messagesCount})
+  if messages.length === 0
+    .alert.alert-info
+      Сообщений не найдено
+  else
+    table.table.table-striped.table-bordered#message-list
+      thead
+        tr
+          th #
+          th Отправитель
+          th Дата
+          th Комната
+          th Текст
+          th Действия
+      tbody
+        each message in messages
+          tr(id='mid-' + message.id)
+            td.id
+              a(href='/message/' + message.id) #
+            td.name
+              a(href='/admin/users/' + users[message.userId]) !{users[message.userId]}
+            td.date !{moment(message.time).format('DD.MM.YYYY HH:MM')}
+            td.channel !{channels[message.channelId]}
+            td.text !{message.text}
+            td.actions
+              button.btn.btn-danger.btn-mini.delete Удалить
+    .row-fluid
+      .span4
+        form(method='GET', action='/admin/messages/').form-search#message-search
+          input(type='text', name='text', maxlength='50').input-medium.search-query
+          button(type='submit').btn
+            i.icon-search
+            |  Поиск
+      .span8
+        if pagination.pages > 1
+          .pagination.pagination-right
+            ul
+              if pagination.isFirstPage
+                li.disabled
+                  a(href='/admin/messages/' + query).disabled ←
+              else
+                li
+                  a(href='/admin/messages/' + query + '/' + (pagination.currentPage - 1)) ←
 
-              li.active
-                a(href='/admin/messages/' + query + '/' + pagination.currentPage) !{pagination.currentPage + 1}
+              - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
+                - if (i < 0) continue;
+                li
+                  a(href='/admin/messages/' + query + '/' + i) !{i + 1}
+              - }
 
-            - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
-              - if (i >= pagination.pages) break;
-              li
-                a(href='/admin/messages/' + query + '/' + i) !{i + 1}
-            - }
+                li.active
+                  a(href='/admin/messages/' + query + '/' + pagination.currentPage) !{pagination.currentPage + 1}
 
-            if pagination.isLastPage
-              li.disabled
-                a(href='/admin/messages/' + query + '/' + (pagination.pages - 1)).disabled →
-            else
-              li
-                a(href='/admin/messages/' + query + '/' + (pagination.currentPage + 1)) →
+              - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
+                - if (i >= pagination.pages) break;
+                li
+                  a(href='/admin/messages/' + query + '/' + i) !{i + 1}
+              - }
+
+              if pagination.isLastPage
+                li.disabled
+                  a(href='/admin/messages/' + query + '/' + (pagination.pages - 1)).disabled →
+              else
+                li
+                  a(href='/admin/messages/' + query + '/' + (pagination.currentPage + 1)) →

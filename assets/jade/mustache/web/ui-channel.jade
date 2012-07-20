@@ -39,6 +39,7 @@ script(type='text/html')#mu-ui-channel-qtips-profile
     | {{#isKick}}
     button(onclick='$.fn.sys().channel.kick("{{channelId}}", "{{user.name}}")') Выгнать
     | {{/isKick}}
+
 script(type='text/html')#mu-ui-channel-qtips-info
   ul.clearfix.channelinfo
     li
@@ -60,15 +61,15 @@ script(type='text/html')#mu-ui-channel-qtips-info
       span.value.link
         a(href='/c/{{url}}', target='_blank') permalink
   .actions.channelinfo.clearfix
-    button(onclick='window.print()') Печать
+    button(onclick='window.print()', title='Печать').print Печать
     | {{#ifMessages}}
-    a(href='/archive/{{url}}', target='_blank') Архив
+    a(href='/archive/{{url}}', target='_blank', title='Архив').history Архив
     | {{/ifMessages}}
     | {{#ifRemove}}
-    button(onclick='$.fn.sys().channel.remove("{{channelId}}")') Удалить
+    button(onclick='$.fn.sys().channel.remove("{{channelId}}")', title='Удалить комнату').remove Удалить
     | {{/ifRemove}}
     | {{#ifClear}}
-    button(onclick='$.fn.sys().channel.clear("{{channelId}}")') Очистить
+    button(onclick='$.fn.sys().channel.clear("{{channelId}}")', title='Очистить комнату').clear Очистить
     | {{/ifClear}}
 
 script(type='text/html')#mu-ui-channel-type-private

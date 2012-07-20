@@ -55,7 +55,7 @@ module.exports = function (app) {
             req.user && req.user.id !== '0' ? next() : res.send(403);
         },
         xhrAccess: function (req, res, next) {
-            req.isXMLHttpRequest ? next() : res.send(401);
+            req.xhr ? next() : res.send(401);
         },
         createPublic: function (user) {
             return {

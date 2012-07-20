@@ -12,7 +12,7 @@ module.exports = function (app) {
     return function (req, res) {
         var recaptcha = new recaptchaAsync.reCaptcha();
 
-        if (req.isXMLHttpRequest) {
+        if (req.xhr) {
             recaptcha.on('data', function (result) {
                 if (result.is_valid) {
                     if (!req.body.contact.name || !req.body.contact.email || !req.body.contact.message) {

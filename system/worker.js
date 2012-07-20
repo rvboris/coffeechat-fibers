@@ -16,8 +16,9 @@ var aes           = require('../helpers/aes.js');
 var EventEmitter  = require('events').EventEmitter;
 var ElasticSearch = require('elasticsearchclient');
 var nconf         = require('nconf');
-var app           = express.createServer();
-var subServer     = express.createServer();
+var http          = require('http');
+var app           = express();
+var subServer     = express();
 var proxy         = new httpProxy.RoutingProxy();
 
 module.exports = function (argv) {
@@ -190,19 +191,19 @@ module.exports = function (argv) {
                         }
                     }
                 }
-            });
-
-            app.set('helpers').elastic.sync(app.set('helpers'), 'putMapping', nconf.get('elasticsearch').index, 'message', {
-                properties: {
-                    text: {
-                        boost: 1.0,
-                        store: 'yes',
-                        term_vector: 'with_positions_offsets',
-                        type: 'string',
-                        search_analyzer: 'myAnalyzer',
-                        index_analyzer: 'myAnalyzer'
+            }, function () {
+                app.set('helpers').elastic.sync(app.set('helpers'), 'putMapping', nconf.get('elasticsearch').index, 'message', {
+                    properties: {
+                        text: {
+                            boost: 1.0,
+                            store: 'yes',
+                            term_vector: 'with_positions_offsets',
+                            type: 'string',
+                            search_analyzer: 'myAnalyzer',
+                            index_analyzer: 'myAnalyzer'
+                        }
                     }
-                }
+                });
             });
         };
 
@@ -237,7 +238,6 @@ module.exports = function (argv) {
                 app.use(express.cookieParser(app.set('sessionKey')));
                 app.use(express.session({
                     store: new redisStore(nconf.get('redis')),
-                    secret: app.set('sessionKey'),
                     cookie: nconf.get('session').cookie
                 }));
 
@@ -302,7 +302,6 @@ module.exports = function (argv) {
 
             starter.on('start', function (syncServer) {
                 app.set('syncServer', syncServer);
-                app.set('faye').bayeux.attach(app);
 
                 var stdout = process.stdout;
 
@@ -313,13 +312,17 @@ module.exports = function (argv) {
                     process.send({ cmd: 'log', msg: string });
                 });
 
+                var server = http.createServer(app);
+
                 if (app.set('argv').env === 'production') {
-                    app.listen(app.set('argv').port, '127.0.0.1');
+                    server.listen(app.set('argv').port, '127.0.0.1');
                 } else {
-                    app.listen(app.set('argv').port);
+                    server.listen(app.set('argv').port);
                 }
 
-                app.set('log').info('worker pid %s started on port %s', process.env.NODE_WORKER_ID, app.set('argv').port);
+                app.set('faye').bayeux.attach(server);
+
+                app.set('log').info('worker pid %s started on port %s', process.pid, app.set('argv').port);
             });
 
             return starter;

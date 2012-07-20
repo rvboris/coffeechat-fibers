@@ -7,7 +7,7 @@ var aes        = require('../../helpers/aes.js');
 module.exports = function (app) {
     var uploadPath = path.normalize(__dirname + '/../../public/userpics');
 
-    if (!path.existsSync(uploadPath)) {
+    if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, 0x1ff);
     }
 
