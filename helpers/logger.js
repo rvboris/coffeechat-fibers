@@ -1,5 +1,5 @@
-var moment   = require('moment');
-var workerId = process.env.NODE_WORKER_ID;
+var cluster = require('cluster');
+var moment  = require('moment');
 
 var levels = {
     EMERGENCY: 0,
@@ -14,14 +14,14 @@ var levels = {
 
 var level = levels.DEBUG;
 
-function getWorker (args) {
+function getWorker(args) {
     var lastArgument = args[args.length - 1];
     if (typeof lastArgument === 'object' && lastArgument.worker) return 'W' + lastArgument.worker;
-    if (workerId) return 'W' + workerId;
+    if (cluster.isWorker) return 'W' + process.pid;
     return 'M';
 }
 
-function log (app, levelStr, args) {
+function log(app, levelStr, args) {
     var i = 1;
     var msg;
 
@@ -33,22 +33,31 @@ function log (app, levelStr, args) {
         msg = args[0].toString();
     }
 
-    if (!workerId) {
+    if (cluster.isMaster) {
         msg += '\n';
         msg = '[' + moment().format('DD.MM.YY HH:mm:ss Z') + '] [' + getWorker(args) + '] ' + levelStr + ' ' + msg;
-        if (app.set('logserver')) app.set('logserver').log(msg);
-        if (levels[levelStr] > level || !args[0]) return;
+
+        if (app.set('logserver')) {
+            app.set('logserver').log(msg);
+        }
+
+        if (levels[levelStr] > level || !args[0]) {
+            return;
+        }
+
         process.stdout.write(msg);
     } else {
         process.send({ cmd: 'log', msg: msg, params: {
             lvl: levelStr.toLowerCase(),
-            worker: workerId
+            worker: process.pid
         }});
     }
 }
 
 module.exports = function (lvl, app) {
-    if ('string' === typeof lvl) level = levels[lvl.toUpperCase()] || levels.DEBUG;
+    if ('string' === typeof lvl) {
+        level = levels[lvl.toUpperCase()] || levels.DEBUG;
+    }
 
     return {
         emergency: function () {

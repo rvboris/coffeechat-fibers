@@ -96,7 +96,7 @@ module.exports = function (app) {
                 return;
             }
 
-            if (result.newSubscriptions.length > 0) {
+            if (result.newSubscriptions && result.newSubscriptions.length > 0) {
                 (function publish (iteration) {
                     iteration = iteration || 0;
                     app.set('faye').bayeux.getClient().publish('/channel/' + result.newSubscriptions[iteration].id + '/users', {

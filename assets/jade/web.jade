@@ -81,10 +81,10 @@ html(lang='ru')
             |  /
             button#logout Выйти
           #login(style='display:none')
-            != partial('forms/web/login')
+            include forms/web/login
         - else
           #login
-            != partial('forms/web/login')
+            include forms/web/login
       section#container
         noscript
           Для работы сайта сайта необходимо включить javascript
@@ -109,20 +109,20 @@ html(lang='ru')
             div
         #channels-content
           #smiles
-            != partial('partials/web/smiles')
+            include partials/web/smiles
       section.account.clearfix
         h1 Управление аккаунтом
-        != partial('forms/web/account', { csrf: csrf })
+        include forms/web/account
         h1 Настройки звука
-        != partial('forms/web/audio-settings')
+        include forms/web/audio-settings
         h1 Настройки интерфейса
-        != partial('forms/web/interface-settings')
+        include forms/web/interface-settings
       section.help.clearfix
-        != partial('partials/web/help')
+        include partials/web/help
       section.forgot.clearfix
-        != partial('forms/web/forgot', { csrf: csrf })
+        include forms/web/forgot
       section.create-channel.clearfix
-        != partial('forms/web/create-channel', { csrf: csrf })
+        include forms/web/create-channel
       footer#bottom
         div
           button.history.up ˄
@@ -133,9 +133,9 @@ html(lang='ru')
             button(type='submit')#send >>>
           button#help ?
           button#smile =)
-    != partial('mustache/web/ui-channel')
-    != partial('mustache/web/ui-message')
-    != partial('mustache/web/ui-user')
-    != partial('mustache/web/ui-login')
-    != partial('mustache/web/ui-tab')
-    != partial('partials/web/metrika', { user: user, channels: channels })
+    include mustache/web/ui-channel
+    include mustache/web/ui-message
+    include mustache/web/ui-user
+    include mustache/web/ui-login
+    include mustache/web/ui-tab
+    include partials/web/metrika

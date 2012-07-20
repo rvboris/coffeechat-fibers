@@ -9,7 +9,7 @@ var logserver = require('./logserver.js');
 var mongoose  = require('mongoose');
 var sync      = require('sync');
 var nconf     = require('nconf');
-var app       = express.createServer();
+var app       = express();
 var aes       = require('../helpers/aes.js');
 var task      = require('./task.js');
 
@@ -324,7 +324,7 @@ module.exports = function (argv) {
 
         for (i in signals) {
             process.on(signals[i], function () {
-                for (var j in workers) workers[j].kill();
+                for (var j in workers) workers[j].destroy();
                 process.exit(1);
             });
         }

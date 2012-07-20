@@ -1664,16 +1664,30 @@ input, textarea, button
         border-color #97AEB3
         color #63797A
   &.channelinfo
-    a
+    a, button
       text-decoration none
-      line-height 21px
-      height auto
-      padding 0 5px
-      margin 10px 3px 5px 3px
+      margin 10px 10px 5px 10px
       float left
-    button
-      float left
-      margin 10px 3px 5px 3px
+      border none
+      text-indent -99999px
+      &:hover
+        background-position right center
+    .clear
+      height 26px
+      width 22px
+      background url(/images/web/clear.png) left center no-repeat
+    .history
+      height 26px
+      width 26px
+      background url(/images/web/history.png) left center no-repeat
+    .remove
+      height 26px
+      width 20px
+      background url(/images/web/remove.png) left center no-repeat
+    .print
+      height 26px
+      width 26px
+      background url(/images/web/print.png) left center no-repeat
 .qtip .yesno
   margin 10px 0
   button

@@ -1,89 +1,92 @@
-h3 Список комнат (!{channelsCount})
-if channels.length === 0
-  .alert.alert-info
-    Комнат не найдено
-else
-  table.table.table-striped.table-bordered#channel-list
-    thead
-      tr
-        th Имя
-        th Владелец
-        th Дата создания
-        th Последняя активность
-        th Сообщения
-        th Скрытая
-        th Защищенная
-        th Приватная
-        th Действия
-    tbody
-      each channel in channels
-        - var isRemoveDisabled = (channel.system ? 'disabled' : '')
-        - var isClearDisabled = (messages[channel.id] === 0 || channel.url === 'deleted' ? 'disabled' : '')
-        tr(id='сid-' + channel.id)
-          td
-            if channel.url === 'deleted'
-              !{channel.name}
-            else
-              a(href='/c/' + channel.url) !{channel.name}
-          td !{owners[channel.id].name}
-          td !{moment(channel.date).format('DD.MM.YYYY HH:MM')}
-          td !{moment(channel.lastaccess).format('DD.MM.YYYY HH:MM')}
-          td.messages !{messages[channel.id]}
-          td
-            if (channel.hidden === true)
-              span.label.label-success !{channel.hidden}
-            else
-              span.label.label-important !{channel.hidden}
-          td
-            if (channel.password === true)
-              span.label.label-success !{channel.password}
-            else
-              span.label.label-important !{channel.password}
-          td
-            if (channel.private === true)
-              span.label.label-success !{channel.private}
-            else
-              span.label.label-important !{channel.private}
-          td.actions
-            .btn-group
-              button(class=isRemoveDisabled).btn.btn-danger.btn-mini.delete Удалить
-              button(class=isClearDisabled).btn.btn-danger.btn-mini.clear Очистить
-  .row-fluid
-    .span4
-      form(method='GET', action='/admin/channels/').form-search#channel-search
-        input(type='text', name='channel', maxlength='30').input-medium.search-query
-        button(type='submit').btn
-          i.icon-search
-          |  Поиск по имени
-    .span8
-      if pagination.pages > 1
-        .pagination.pagination-right
-          ul
-            if pagination.isFirstPage
-              li.disabled
-                a(href='/admin/channels/' + query).disabled ←
-            else
-              li
-                a(href='/admin/channels/' + query + '/' + (pagination.currentPage - 1)) ←
+extends layout
 
-            - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
-              - if (i < 0) continue;
-              li
-                a(href='/admin/channels/' + query + '/' + i) !{i + 1}
-            - }
+block content
+  h3 Список комнат (!{channelsCount})
+  if channels.length === 0
+    .alert.alert-info
+      Комнат не найдено
+  else
+    table.table.table-striped.table-bordered#channel-list
+      thead
+        tr
+          th Имя
+          th Владелец
+          th Дата создания
+          th Последняя активность
+          th Сообщения
+          th Скрытая
+          th Защищенная
+          th Приватная
+          th Действия
+      tbody
+        each channel in channels
+          - var isRemoveDisabled = (channel.system ? 'disabled' : '')
+          - var isClearDisabled = (messages[channel.id] === 0 || channel.url === 'deleted' ? 'disabled' : '')
+          tr(id='сid-' + channel.id)
+            td
+              if channel.url === 'deleted'
+                !{channel.name}
+              else
+                a(href='/c/' + channel.url) !{channel.name}
+            td !{owners[channel.id].name}
+            td !{moment(channel.date).format('DD.MM.YYYY HH:MM')}
+            td !{moment(channel.lastaccess).format('DD.MM.YYYY HH:MM')}
+            td.messages !{messages[channel.id]}
+            td
+              if (channel.hidden === true)
+                span.label.label-success !{channel.hidden}
+              else
+                span.label.label-important !{channel.hidden}
+            td
+              if (channel.password === true)
+                span.label.label-success !{channel.password}
+              else
+                span.label.label-important !{channel.password}
+            td
+              if (channel.private === true)
+                span.label.label-success !{channel.private}
+              else
+                span.label.label-important !{channel.private}
+            td.actions
+              .btn-group
+                button(class=isRemoveDisabled).btn.btn-danger.btn-mini.delete Удалить
+                button(class=isClearDisabled).btn.btn-danger.btn-mini.clear Очистить
+    .row-fluid
+      .span4
+        form(method='GET', action='/admin/channels/').form-search#channel-search
+          input(type='text', name='channel', maxlength='30').input-medium.search-query
+          button(type='submit').btn
+            i.icon-search
+            |  Поиск по имени
+      .span8
+        if pagination.pages > 1
+          .pagination.pagination-right
+            ul
+              if pagination.isFirstPage
+                li.disabled
+                  a(href='/admin/channels/' + query).disabled ←
+              else
+                li
+                  a(href='/admin/channels/' + query + '/' + (pagination.currentPage - 1)) ←
 
-              li.active
-                a(href='/admin/channels/' + query + '/' + pagination.currentPage) !{pagination.currentPage + 1}
+              - for (var i = (pagination.currentPage - 5); i <= (pagination.currentPage - 1); i++) {
+                - if (i < 0) continue;
+                li
+                  a(href='/admin/channels/' + query + '/' + i) !{i + 1}
+              - }
 
-            - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
-              - if (i >= pagination.pages) break;
-              li
-                a(href='/admin/channels/' + query + '/' + i) !{i + 1}
-            - }
+                li.active
+                  a(href='/admin/channels/' + query + '/' + pagination.currentPage) !{pagination.currentPage + 1}
 
-            if pagination.isLastPage
-              li.disabled
-                a(href='/admin/channels/' + query + '/' + (pagination.pages - 1)).disabled →
-            else
-              li
-                a(href='/admin/channels/' + query + '/' + (pagination.currentPage + 1)) →
+              - for (var i = (pagination.currentPage + 1); i <= (pagination.currentPage + 5); i++) {
+                - if (i >= pagination.pages) break;
+                li
+                  a(href='/admin/channels/' + query + '/' + i) !{i + 1}
+              - }
+
+              if pagination.isLastPage
+                li.disabled
+                  a(href='/admin/channels/' + query + '/' + (pagination.pages - 1)).disabled →
+              else
+                li
+                  a(href='/admin/channels/' + query + '/' + (pagination.currentPage + 1)) →

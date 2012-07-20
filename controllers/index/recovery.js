@@ -85,7 +85,7 @@ module.exports = function (app) {
                 });
             });
 
-            if (req.isXMLHttpRequest && req.body) {
+            if (req.xhr && req.body) {
                 if (!req.body.user.recaptcha_challenge_field || !req.body.user.recaptcha_response_field) {
                     res.send({ error: 'Код подверждения не заполен' });
                     return;
