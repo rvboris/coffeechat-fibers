@@ -63,11 +63,11 @@ exports.define = function (app, mongoose, callback) {
             return true;
         },
         isValidChannelDescription: function (name) {
-            try {
+/*            try {
                 vdr.check(name).len(10, 100).regex(regexp.alphabet);
             } catch (e) {
                 return false;
-            }
+            }*/
             return true;
         }
     };
@@ -211,9 +211,9 @@ exports.define = function (app, mongoose, callback) {
 
     var defineChannelBanModel = function () {
         var channelBan = new schema({
-            'userId':    { 'type': objectId, 'required': true },
+            'userId':    { 'type': objectId, 'required': true, ref: 'User' },
             'userIp':    { 'type': String, required: false },
-            'channelId': { 'type': objectId, 'required': true },
+            'channelId': { 'type': objectId, 'required': true, ref: 'Channel' },
             'date':      { 'type': Date, 'default': new Date() }
         });
 
@@ -224,8 +224,8 @@ exports.define = function (app, mongoose, callback) {
 
     var defineMessageModel = function () {
         var message = new schema({
-            'userId':    { 'type': objectId, 'required': true },
-            'channelId': { 'type': objectId, 'index': true, 'required': true },
+            'userId':    { 'type': objectId, 'required': true, ref: 'User' },
+            'channelId': { 'type': objectId, 'index': true, 'required': true, ref: 'Channel' },
             'time':      { 'type': Date, 'required': true },
             'text':      { 'type': String, 'required': true, 'validate': [validators.isValidMessage, 'invalid message']}
         });
@@ -270,8 +270,8 @@ exports.define = function (app, mongoose, callback) {
 
     var defineSubscriptionModel = function () {
         var subscription = new schema({
-            'userId':    { 'type': objectId, 'required': true, 'index': true },
-            'channelId': { 'type': objectId, 'required': true, 'index': true },
+            'userId':    { 'type': objectId, 'required': true, 'index': true, ref: 'User' },
+            'channelId': { 'type': objectId, 'required': true, 'index': true, ref: 'Channel' },
             'role':      { 'type': String, 'default': 'U', 'enum': ['U', 'A', 'M'] }, // U - User, A - Author, M - Moderator
             'time':      { 'type': Date, 'required': true, 'index': true }
         });
@@ -287,7 +287,7 @@ exports.define = function (app, mongoose, callback) {
 
     var definePasswordRecoveryModel = function () {
         var passwordRecovery = new schema({
-            'userId': { 'type': objectId, 'required': true },
+            'userId': { 'type': objectId, 'required': true, ref: 'User' },
             'key':    { 'type': String, 'requred': true },
             'time':   { 'type': Date, 'required': true, 'default': new Date() }
         });

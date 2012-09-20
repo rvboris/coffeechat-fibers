@@ -170,7 +170,7 @@ module.exports = function (app) {
                         }
 
                         if (!user.isSystem()) {
-                            var query = app.Message.findOne({ userId: user.id }, ['time']).sort('time', -1);
+                            var query = app.Message.findOne({ userId: user.id }, 'time').sort('-time');
                             var lastMessage = query.execFind.sync(query);
 
                             if (lastMessage.length > 0 && new Date().getTime() - lastMessage[0].time.getTime() <= 3000) {
@@ -195,9 +195,9 @@ module.exports = function (app) {
 
                             msg.to = msg.formatTo(message.data.to);
 
-                            var users = app.User.find.sync(app.User, { name: { $in: message.data.to } }, []);
+                            var users = app.User.count.sync(app.User, { name: { $in: message.data.to } });
 
-                            if (users.length !== message.data.to.length) {
+                            if (users !== message.data.to.length) {
                                 app.set('log').debug('users in the message is not found');
                                 message.error = 'Кому вы отправляете?';
                                 return;

@@ -11,11 +11,11 @@ module.exports = function (app) {
                 subscriptions[i].remove.sync(subscriptions[i]);
             }
 
-            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel, userId: { $nin: app.set('systemUserIds') } }, ['userId']);
+            subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel, userId: { $nin: app.set('systemUserIds') } }, 'userId');
             if (!subscriptions) return;
 
             return subscriptions.map(function (subscription) {
-                return app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscription.userId.toHexString(), ['name', 'gender', 'status']));
+                return app.set('helpers').user.createPublic(app.User.findById.sync(app.User, subscription.userId.toHexString(), 'name gender status'));
             });
         }, function (err, list) {
             if (err) {

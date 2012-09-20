@@ -2,7 +2,7 @@ var path      = require('path');
 var cluster   = require('cluster');
 var express   = require('express');
 var dnode     = require('dnode');
-var rbytes    = require('rbytes');
+var crypto    = require('crypto');
 var bcrypt    = require('bcrypt');
 var logger    = require('../helpers/logger.js');
 var logserver = require('./logserver.js');
@@ -23,9 +23,9 @@ module.exports = function (argv) {
         Loader.prototype.preInit = function () {
             app.set('argv', argv);
             app.set('salt', bcrypt.genSaltSync(10));
-            app.set('serverToken', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
-            app.set('serverKey', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
-            app.set('sessionKey', bcrypt.hashSync(rbytes.randomBytes(16).toHex(), app.set('salt')));
+            app.set('serverToken', bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), app.set('salt')));
+            app.set('serverKey', bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), app.set('salt')));
+            app.set('sessionKey', bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), app.set('salt')));
 
             process.argv.NODE_ENV = app.set('argv').env;
 
@@ -278,10 +278,9 @@ module.exports = function (argv) {
 
         app.set('logserver', logserver(app));
 
-        for (var i = 0, workers = []; i < argv.workers; i++) {
+        for (var i = 0; i < argv.workers; i++) {
             try {
-                workers[i] = cluster.fork();
-                workers[i].on('message', function (msg) {
+                cluster.fork().on('message', function (msg) {
                     if (!msg.cmd || !app.set('logserver')) return;
                     if (msg.cmd === 'log') {
                         if (msg.params) {
@@ -308,11 +307,11 @@ module.exports = function (argv) {
         });
 
         cluster.on('death', function (worker) {
-            for (var i in workers) {
-                if (workers[i].pid !== worker.pid) continue;
+            for (var id in cluster.workers) {
+                if (cluster.workers[id].pid !== worker.pid) continue;
                 app.set('log').debug('worker %s died. restart...', worker.pid);
                 try {
-                    workers[i] = cluster.fork();
+                    cluster.workers[id] = cluster.fork();
                 } catch (e) {
                     app.set('log').critical('worker fork error');
                     process.exit(1);
@@ -324,7 +323,7 @@ module.exports = function (argv) {
 
         for (i in signals) {
             process.on(signals[i], function () {
-                for (var j in workers) workers[j].destroy();
+                for (var id in cluster.workers) cluster.workers[id].destroy();
                 process.exit(1);
             });
         }

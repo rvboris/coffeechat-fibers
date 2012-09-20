@@ -50,7 +50,7 @@ module.exports = function (app) {
             }
 
             if (app.Subscription.count.sync(app.Subscription, { channelId: req.params.channel }) > 0) {
-                var subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel }, ['userId']);
+                var subscriptions = app.Subscription.find.sync(app.Subscription, { channelId: req.params.channel }, 'userId');
 
                 (function publish (iteration) {
                     iteration = iteration || 0;

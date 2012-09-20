@@ -6,14 +6,14 @@ module.exports = function (app) {
 
     return function (req, res) {
         sync(function () {
-            var message = app.Message.findById.sync(app.Message, req.params.message, ['time', 'text', 'userId']);
+            var message = app.Message.findById.sync(app.Message, req.params.message, 'time text userId');
 
             if (!message) {
                 app.set('log').debug('message not found');
                 return;
             }
 
-            var user = app.User.findById.sync(app.User, message.userId.toHexString(), ['name']);
+            var user = app.User.findById.sync(app.User, message.userId.toHexString(), 'name');
 
             if (!user) {
                 app.set('log').debug('user not found');

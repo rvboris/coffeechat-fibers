@@ -19,7 +19,7 @@ module.exports = function (app) {
                     'stats.lastaccess': {
                         $lte: new Date(new Date().getTime() - interval * 21 * 1000)
                     }
-                }, ['name', 'email']);
+                }, 'name email');
 
                 app.set('log').debug('%s innactive users to remove', usersToRemove.length);
 
@@ -52,7 +52,7 @@ module.exports = function (app) {
                         $lt: new Date(new Date().getTime() - interval * 14 * 1000)
                     },
                     'email': { $exists: true }
-                }, ['email']);
+                }, 'email');
 
                 app.set('log').debug('%s innactive users to notify', usersToNotify.length);
 

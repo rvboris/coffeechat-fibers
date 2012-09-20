@@ -28,12 +28,12 @@ module.exports = function (app) {
                 pages = Math.ceil(usersCount / usersPerPage);
 
                 if (name === '*') {
-                    query = app.User.find({}, ['_id', 'role', 'name', 'date', 'stats']);
+                    query = app.User.find({}, '_id role name date stats');
                 } else {
-                    query = app.User.find({ name: { $regex: name } }, ['_id', 'role', 'name', 'date', 'stats']);
+                    query = app.User.find({ name: { $regex: name } }, '_id role name date stats');
                 }
 
-                users = query.skip(page * usersPerPage).limit(usersPerPage).sort('date', -1).execFind.sync(query);
+                users = query.skip(page * usersPerPage).limit(usersPerPage).sort('-date').execFind.sync(query);
 
                 for (var i = 0; i < users.length; i++) {
                     messages[users[i].id] = app.Message.count.sync(app.Message, { userId:users[i].id });

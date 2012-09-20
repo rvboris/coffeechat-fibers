@@ -24,7 +24,7 @@ module.exports = function (app) {
                 }
 
                 sync(function () {
-                    return app.User.findById.sync(app.User, userId, ['role']);
+                    return app.User.findById.sync(app.User, userId, 'role');
                 }, function (err, user) {
                     if (err) {
                         callback('failed');
@@ -49,7 +49,7 @@ module.exports = function (app) {
             for (var i = 0; i < clients.length; i++) {
                 var userId = clients[i].get.sync(clients[i], 'authorized');
                 if (!userId) return;
-                var user = app.User.findById.sync(app.User, userId, ['role']);
+                var user = app.User.findById.sync(app.User, userId, 'role');
                 if (!user) return;
                 if (!user.isSystem() || user.role !== 'R') return;
                 clients[i].emit(event, msg);
