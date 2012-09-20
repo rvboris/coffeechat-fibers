@@ -31,7 +31,7 @@ module.exports = function (app) {
                 pages = Math.ceil(messages.count / messagesPerPage);
 
                 if (params.query === '*') {
-                    query = app.Message.find({}).skip(params.page * messagesPerPage).limit(messagesPerPage).sort('time', -1);
+                    query = app.Message.find({}).skip(params.page * messagesPerPage).limit(messagesPerPage).sort('-time');
                     messages.objects = query.execFind.sync(query);
 
                     for (i = 0; i < messages.objects.length; i++) {
@@ -63,10 +63,10 @@ module.exports = function (app) {
                         return doc._id
                     });
 
-                    query = app.Message.find({ _id: { $in: messages.ids } }, ['_id', 'channelId', 'time'])
+                    query = app.Message.find({ _id: { $in: messages.ids } }, '_id channelId time')
                         .skip(params.page * messagesPerPage)
                         .limit(messagesPerPage)
-                        .sort('time', -1);
+                        .sort('-time');
 
                     messages.objects = query.execFind.sync(query);
 
@@ -76,8 +76,8 @@ module.exports = function (app) {
                     }
                 }
 
-                users.objects = app.User.find.sync(app.User, { _id: { $in: users.ids, $nin: app.set('systemUserIds') } }, ['name']);
-                channels.objects = app.Channel.find.sync(app.Channel, { _id: { $in: channels.ids } }, ['name']);
+                users.objects = app.User.find.sync(app.User, { _id: { $in: users.ids, $nin: app.set('systemUserIds') } }, 'name');
+                channels.objects = app.Channel.find.sync(app.Channel, { _id: { $in: channels.ids } }, 'name');
 
                 for (i = 0; i < users.objects.length; i++) users.array[users.objects[i].id] = users.objects[i].name;
                 for (i = 0; i < channels.objects.length; i++) channels.array[channels.objects[i].id] = channels.objects[i].name;

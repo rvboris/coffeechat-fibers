@@ -30,7 +30,7 @@ module.exports = function (app) {
                 var subscription = app.Subscription.find.sync(app.Subscription, {
                     channelId: req.params.channel,
                     userId: userToKick.id
-                }, ['userId']);
+                }, 'userId');
 
                 app.set('faye').bayeux.getClient().publish('/user/' + userToKick.id, {
                     token: app.set('serverToken'),

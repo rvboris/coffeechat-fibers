@@ -6,7 +6,7 @@ module.exports = function (app) {
             var profileUser = app.User.findOne.sync(app.User, {
                 name: req.params.name,
                 '_id': { $nin: app.set('systemUserIds') }
-            }, ['name', 'pic', 'status', 'gender', 'points']);
+            }, 'name pic status gender points');
 
             if (!profileUser) {
                 app.set('log').debug('user not found');

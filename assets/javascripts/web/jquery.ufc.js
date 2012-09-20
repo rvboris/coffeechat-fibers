@@ -61,6 +61,17 @@
                 });
             }
 
+            $('.scrollableArea').each(function(idx, element) {
+                if (!$(element).parent().hasClass('chat')) $(element).unwrap();
+
+                $(element).next().remove().next().remove();
+
+                $(element).slimScroll({
+                    position: 'right',
+                    height: $('.chat:last').height() + 'px'
+                });
+            });
+
             scrollable.prop({ scrollTop: scrollable.prop('scrollHeight') });
         });
 
@@ -875,6 +886,13 @@
                 mouseArea: $('#channel-' + channelId + '-content .sidebar')
             });
 
+            setTimeout(function() {
+                $('#channel-' + channelId + '-content .scrollableArea').slimScroll({
+                    position: 'right',
+                    height: $('#channel-' + channelId + '-content .chat').height() + 'px'
+                });
+            }, 1000);
+            
             $('#channel-' + channelId + '-content .sidebar input.filter').val('');
 
             $('#channel-' + channelId + '-content .sidebar input.filter').change(function() {

@@ -33,13 +33,13 @@ module.exports = function (app) {
                     private: false,
                     hidden: false,
                     password: { $exists : false }
-                }, ['name', 'url'], { skip: 0, limit: channelsPerPage });
+                }, 'name url', { skip: 0, limit: channelsPerPage });
             } else if (req.params.channel === 'p' && req.params.monthyear && app.set('helpers').utils.isInt(parseInt(req.params.monthyear))) {
                 channels = app.Channel.find.sync(app.Channel, {
                     private: false,
                     hidden: false,
                     password: { $exists : false }
-                }, ['name', 'url'], { skip: req.params.monthyear * channelsPerPage, limit: channelsPerPage });
+                }, 'name url', { skip: req.params.monthyear * channelsPerPage, limit: channelsPerPage });
             }
 
             if (channels && channels.length > 0) {
@@ -80,7 +80,7 @@ module.exports = function (app) {
                 private: false,
                 hidden: false,
                 password: { $exists: false }
-            }, ['name', 'url']);
+            }, 'name url');
             if (!channel) return;
 
             title = 'Архив - ' + channel.name;
@@ -221,7 +221,7 @@ module.exports = function (app) {
                         $gte: startDate,
                         $lt: endDate
                     }
-                }, ['time', 'text', 'userId'], { skip: page * messagesPerPage, limit: messagesPerPage });
+                }, 'time text userId', { skip: page * messagesPerPage, limit: messagesPerPage });
 
                 userIds = [];
                 usersArray = [];
@@ -231,7 +231,7 @@ module.exports = function (app) {
                     messages[i].timeString = moment(new Date(messages[i].time)).format('HH:mm:ss');
                 }
 
-                users = app.User.find.sync(app.User, { _id: { $in: userIds } }, ['name']);
+                users = app.User.find.sync(app.User, { _id: { $in: userIds } }, 'name');
 
                 for (i = 0; i < users.length; i++) {
                     usersArray[users[i].id] = users[i].name;

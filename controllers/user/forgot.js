@@ -1,6 +1,6 @@
 var sync       = require('sync');
-var rbytes     = require('rbytes');
 var bcrypt     = require('bcrypt');
+var crypto     = require('crypto');
 var moment     = require('moment');
 var nodemailer = require('nodemailer');
 var check      = require('validator').check;
@@ -41,7 +41,7 @@ module.exports = function (app) {
                 return { error: 'Сведения для восстановления пароля уже были отправлены вам на email.' };
             }
 
-            var key = bcrypt.hashSync(rbytes.randomBytes(16).toHex(), bcrypt.genSaltSync(10));
+            var key = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), bcrypt.genSaltSync(10));
             var link = 'http://' + app.set('host') + '/recovery/' + encodeURIComponent(key);
 
             if (nodemailer.send_mail.sync(nodemailer, {

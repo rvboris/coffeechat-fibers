@@ -17,7 +17,7 @@ module.exports = function (app) {
             req.user.status = req.body.status;
             req.user.save.sync(req.user);
 
-            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
+            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, 'channelId');
 
             if (!subscriptions) {
                 res.send(200);

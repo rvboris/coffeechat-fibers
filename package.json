@@ -1,0 +1,58 @@
+{
+    "name": "coffeechat",
+    "preferGlobal": "false",
+    "version": "0.1.0",
+    "author": "Boris Ryabov <rv.boris@gmail.com>",
+    "description": "a modern web chat multiroom system",
+    "contributors": [
+        {
+            "name": "Boris Ryabov",
+            "email": "rv.boris@gmail.com"
+        }
+    ],
+    "main": "./index.js",
+    "repository": {
+        "type": "hg",
+        "url": "https://bitbucket.org/rvboris/coffeechat"
+    },
+    "keywords": [
+        "chat"
+    ],
+    "dependencies" : {
+        "ams"                : ">=0.0.21",
+        "bcrypt"             : ">=0.7.1",
+        "connect"            : ">=2.4.4",
+        "connect-redis"      : ">=1.4.1",
+        "dnode"              : ">=1.0.1",
+        "elasticsearchclient": ">=0.2.2",
+        "express"            : ">=3.0.0rc4",
+        "faye"               : ">=0.8.3",
+        "faye-redis"         : ">=0.1.1",
+        "file"               : ">=0.2.1",
+        "formidable"         : ">=1.0.11",
+        "get"                : ">=1.1.10",
+        "http-proxy"         : ">=0.8.2",
+        "jade"               : ">=0.27.2",
+        "mime"               : ">=1.2.7",
+        "moment"             : ">=1.7.0",
+        "mongoose"           : ">=3.1.0",
+        "nconf"              : ">=0.6.4",
+        "nodemailer"         : ">=0.3.22",
+        "optimist"           : ">=0.3.4",
+        "path"               : ">=0.4.9",
+        "recaptcha-async"    : ">=0.0.4",
+        "redis"              : ">=0.7.2",
+        "socket.io"          : ">=0.9.10",
+        "stylus"             : ">=0.29.0",
+        "sync"               : ">=0.2.1",
+        "validator"          : ">=0.4.11"
+
+    },
+    "analyze": false,
+    "devDependencies": {},
+    "bundleDependencies": [],
+    "license": "Commercial",
+    "engines": {
+        "node": ">=0.8.x"
+    }
+}

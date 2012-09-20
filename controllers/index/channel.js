@@ -5,7 +5,7 @@ module.exports = function (app) {
         sync(function () {
             var channel = app.Channel.findOne.sync(app.Channel, {
                 url: req.params.channel
-            }, ['name', 'url', 'private']);
+            }, 'name url private');
 
             if (!channel) {
                 app.set('log').debug('channel not found');

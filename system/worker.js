@@ -9,7 +9,7 @@ var redisStore    = require('connect-redis')(express);
 var logger        = require('../helpers/logger.js');
 var sync          = require('sync');
 var dnode         = require('dnode');
-var rbytes        = require('rbytes');
+var crypto        = require('crypto');
 var mime          = require('mime');
 var httpProxy     = require('http-proxy');
 var aes           = require('../helpers/aes.js');
@@ -209,7 +209,7 @@ module.exports = function (argv) {
 
         Loader.prototype.synchronize = function () {
             app.set('log').debug('synchronizing...');
-            var tKey = rbytes.randomBytes(24).toHex();
+            var tKey = crypto.randomBytes(24).toString('hex');
             this.dnode(this.syncEvents(tKey), tKey);
         };
 

@@ -30,7 +30,7 @@ module.exports = function (app) {
         session: function (req, res, next) {
             if (req.session.user && req.session.user.id !== '0') {
                 sync(function () {
-                    return app.User.findById.sync(app.User, req.session.user.id, []);
+                    return app.User.findById.sync(app.User, req.session.user.id);
                 }, function (err, user) {
                     if (err) {
                         app.set('log').error(err.stack);
@@ -75,7 +75,7 @@ module.exports = function (app) {
                 ignore: user.ignore,
                 settings: user.settings,
                 role: user.role,
-                channelsOwner: user.id === '0' ? [] : app.Channel.find.sync(app.Channel, { owner: user.id }, ['_id']).map(function (channel) {
+                channelsOwner: user.id === '0' ? [] : app.Channel.find.sync(app.Channel, { owner: user.id }, '_id').map(function (channel) {
                     return channel.id;
                 }) || []
             };

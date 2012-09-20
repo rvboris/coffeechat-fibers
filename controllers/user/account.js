@@ -38,7 +38,7 @@ module.exports = function (app) {
 
             if (!pubTrigger) return;
 
-            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, ['channelId']);
+            var subscriptions = app.Subscription.find.sync(app.Subscription, { userId: req.user.id }, 'channelId');
 
             for (var i = 0; i < subscriptions.length; i++) {
                 app.set('faye').bayeux.getClient().publish('/channel/' + subscriptions[i].channelId.toHexString() + '/users', {

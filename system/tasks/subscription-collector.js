@@ -58,7 +58,7 @@ module.exports = function (app) {
                         }
                     });
 
-                    if (app.Channel.findById.sync(app.Channel, subscriptionsChannels[i].id, ['hidden']).hidden) {
+                    if (app.Channel.findById.sync(app.Channel, subscriptionsChannels[i].id, 'hidden').hidden) {
                         subscriptionsChannels = subscriptionsChannels.splice(i, 1);
                         continue;
                     }

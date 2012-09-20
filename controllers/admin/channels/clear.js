@@ -11,7 +11,7 @@ module.exports = function (app) {
         }
 
         sync(function () {
-            var channel = app.Channel.findById.sync(app.Channel, req.body.cid, ['_id']);
+            var channel = app.Channel.findById.sync(app.Channel, req.body.cid, '_id');
 
             if (!channel) {
                 res.send({ error: 'Комната на найдена' });

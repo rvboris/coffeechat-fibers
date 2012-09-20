@@ -43,7 +43,7 @@ module.exports = function (app) {
 
                 if (persistent) return;
 
-                var channel = app.Channel.findById.sync(app.Channel, channelId, ['private', 'name']);
+                var channel = app.Channel.findById.sync(app.Channel, channelId, 'private name');
 
                 if (channel && channel['private']) {
                     app.set('log').debug('remove channel "%s"', channel.name);

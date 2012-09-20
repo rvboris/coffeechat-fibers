@@ -3,7 +3,7 @@ var sync = require('sync');
 module.exports = function (app) {
     return function (req, res) {
         sync(function () {
-            var channels = app.Channel.find.sync(app.Channel, { 'private': false, 'hidden': false }, ['name', 'url']);
+            var channels = app.Channel.find.sync(app.Channel, { 'private': false, 'hidden': false }, 'name url');
 
             if (!channels) {
                 throw new Error('channels not found');

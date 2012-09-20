@@ -29,17 +29,17 @@ module.exports = function (app) {
                 pages = Math.ceil(channelsCount / channelsPerPage);
 
                 if (channel === '*') {
-                    query = app.Channel.find({}, ['_id', 'name', 'owner', 'date', 'lastaccess', 'hidden', 'password', 'private', 'url']);
+                    query = app.Channel.find({}, '_id name owner date lastaccess hidden password private url');
                 } else {
-                    query = app.Channel.find({ name: { $regex: channel } }, ['_id', 'name', 'owner', 'date', 'lastaccess', 'hidden', 'password', 'private', 'url']);
+                    query = app.Channel.find({ name: { $regex: channel } }, '_id name owner date lastaccess hidden password private url');
                 }
 
-                channels = query.skip(page * channelsPerPage).limit(channelsPerPage).sort('date', -1).execFind.sync(query);
+                channels = query.skip(page * channelsPerPage).limit(channelsPerPage).sort('-date').execFind.sync(query);
 
                 for (var i = 0; i < channels.length; i++) {
                     messages[channels[i].id] = app.Message.count.sync(app.Message, { channelId: channels[i].id });
                     owners[channels[i].id] = {
-                        name: app.User.findById.sync(app.User, channels[i].owner.toHexString(), ['name']).name
+                        name: app.User.findById.sync(app.User, channels[i].owner.toHexString(), 'name').name
                     };
                     channels[i].password = channels[i].password ? true : false;
                     channels[i].system = app.set('channels')[channels[i].url];

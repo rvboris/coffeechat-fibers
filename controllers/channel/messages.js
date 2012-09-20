@@ -6,12 +6,12 @@ module.exports = function (app) {
 
     return function (req, res) {
         sync(function () {
-            var query = app.Message.find({ channelId: req.params.channel }, ['time', 'text', 'userId']).limit(nconf.get('messages').historyPreload).sort('time', -1);
+            var query = app.Message.find({ channelId: req.params.channel }, 'time text userId').limit(nconf.get('messages').historyPreload).sort('-time');
             var messages = query.execFind.sync(query);
             if (!messages) return;
 
             return messages.map(function (message) {
-                var user = app.User.findById.sync(app.User, message.userId.toHexString(), ['name']);
+                var user = app.User.findById.sync(app.User, message.userId.toHexString(), 'name');
                 var archive = user.name === 'deleted';
 
                 return {

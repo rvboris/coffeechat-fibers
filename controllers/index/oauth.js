@@ -1,6 +1,5 @@
 var crypto = require('crypto');
 var sync   = require('sync');
-var rbytes = require('rbytes');
 var get    = require('get');
 
 module.exports = function (app) {
@@ -48,7 +47,7 @@ module.exports = function (app) {
             var userName = userData.first_name + ' ' + userData.last_name;
             var userIdentity = crypto.createHash('md5').update(userData.identity).digest('hex');
             var userProvider = crypto.createHash('md5').update(userData.network).digest('hex');
-            var userPassword = rbytes.randomBytes(16).toHex();
+            var userPassword = crypto.randomBytes(16).toString('hex');
 
             var user = app.User.findOne.sync(app.User, { name: userName /*, '_id': { $nin: app.set('systemUserIds') } */ });
 
